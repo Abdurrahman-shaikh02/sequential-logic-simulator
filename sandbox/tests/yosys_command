@@ -1,0 +1,2 @@
+yosys -p "read_verilog test.v; proc; simplemap; techmap; write_table netlist.table"
+yosys -p "read_verilog test.v; proc; simplemap; techmap; opt; write_table netlist.table"

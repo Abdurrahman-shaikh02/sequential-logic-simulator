@@ -1,0 +1,11 @@
+test	clk	-	-	pi	\clk
+test	d	-	-	pi	\d
+test	q	-	-	po	\q
+test	reset	-	-	pi	\reset
+test	$procdff$5	$dff	CLK	in	\clk
+test	$procdff$5	$dff	D	in	$procmux$3_Y
+test	$procdff$5	$dff	Q	out	\q
+test	$procmux$3	$mux	A	in	\d
+test	$procmux$3	$mux	B	in	1'0
+test	$procmux$3	$mux	S	in	\reset
+test	$procmux$3	$mux	Y	out	$procmux$3_Y

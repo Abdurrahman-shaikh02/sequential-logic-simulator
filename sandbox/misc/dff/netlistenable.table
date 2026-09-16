@@ -1,0 +1,11 @@
+test	clk	-	-	pi	\clk
+test	d	-	-	pi	\d
+test	enable	-	-	pi	\enable
+test	q	-	-	po	\q
+test	$procdff$4	$dff	CLK	in	\clk
+test	$procdff$4	$dff	D	in	$procmux$2_Y
+test	$procdff$4	$dff	Q	out	\q
+test	$procmux$2	$mux	A	in	\q
+test	$procmux$2	$mux	B	in	\d
+test	$procmux$2	$mux	S	in	\enable
+test	$procmux$2	$mux	Y	out	$procmux$2_Y

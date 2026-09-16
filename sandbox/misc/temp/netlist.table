@@ -1,0 +1,14 @@
+test	a	-	-	pi	\a
+test	b	-	-	pi	\b
+test	c	-	-	pi	\c
+test	inputd	-	-	pi	\inputd
+test	y	-	-	po	$or$test.v:2$3_Y
+test	$and$test.v:2$1	$and	A	in	\a
+test	$and$test.v:2$1	$and	B	in	\b
+test	$and$test.v:2$1	$and	Y	out	$and$test.v:2$1_Y
+test	$and$test.v:2$2	$and	A	in	\c
+test	$and$test.v:2$2	$and	B	in	\d
+test	$and$test.v:2$2	$and	Y	out	$and$test.v:2$2_Y
+test	$or$test.v:2$3	$or	A	in	$and$test.v:2$1_Y
+test	$or$test.v:2$3	$or	B	in	$and$test.v:2$2_Y
+test	$or$test.v:2$3	$or	Y	out	$or$test.v:2$3_Y

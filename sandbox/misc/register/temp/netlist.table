@@ -1,0 +1,21 @@
+dff	clk	-	-	pi	\clk
+dff	d	-	-	pi	\d
+dff	q	-	-	po	\q
+dff	$procdff$2	$dff	CLK	in	\clk
+dff	$procdff$2	$dff	D	in	\d
+dff	$procdff$2	$dff	Q	out	\q
+register4	clk	-	-	pi	\clk
+register4	d	-	-	pi	\d
+register4	q	-	-	po	\q
+register4	ff0	dff	clk	in	\clk
+register4	ff0	dff	d	in	\d [0]
+register4	ff0	dff	q	out	\q [0]
+register4	ff1	dff	clk	in	\clk
+register4	ff1	dff	d	in	\d [1]
+register4	ff1	dff	q	out	\q [1]
+register4	ff2	dff	clk	in	\clk
+register4	ff2	dff	d	in	\d [2]
+register4	ff2	dff	q	out	\q [2]
+register4	ff3	dff	clk	in	\clk
+register4	ff3	dff	d	in	\d [3]
+register4	ff3	dff	q	out	\q [3]

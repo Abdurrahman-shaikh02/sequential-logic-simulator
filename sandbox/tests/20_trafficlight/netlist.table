@@ -1,0 +1,53 @@
+test_traffic_fsm	clk	-	-	pi	\clk
+test_traffic_fsm	state	-	-	po	\current_state
+test_traffic_fsm	$auto$ff.cc:337:slice$8	$_DFF_P_	C	in	\clk
+test_traffic_fsm	$auto$ff.cc:337:slice$8	$_DFF_P_	D	in	$procmux$4_Y [0]
+test_traffic_fsm	$auto$ff.cc:337:slice$8	$_DFF_P_	Q	out	\current_state [0]
+test_traffic_fsm	$auto$ff.cc:337:slice$9	$_DFF_P_	C	in	\clk
+test_traffic_fsm	$auto$ff.cc:337:slice$9	$_DFF_P_	D	in	$procmux$4_Y [1]
+test_traffic_fsm	$auto$ff.cc:337:slice$9	$_DFF_P_	Q	out	\current_state [1]
+test_traffic_fsm	$auto$simplemap.cc:106:simplemap_bitop$31	$_XOR_	A	in	\current_state [0]
+test_traffic_fsm	$auto$simplemap.cc:106:simplemap_bitop$31	$_XOR_	B	in	1'1
+test_traffic_fsm	$auto$simplemap.cc:106:simplemap_bitop$31	$_XOR_	Y	out	$auto$simplemap.cc:271:simplemap_eqne$29 [0]
+test_traffic_fsm	$auto$simplemap.cc:106:simplemap_bitop$32	$_XOR_	A	in	\current_state [1]
+test_traffic_fsm	$auto$simplemap.cc:106:simplemap_bitop$32	$_XOR_	B	in	1'0
+test_traffic_fsm	$auto$simplemap.cc:106:simplemap_bitop$32	$_XOR_	Y	out	$auto$simplemap.cc:271:simplemap_eqne$29 [1]
+test_traffic_fsm	$auto$simplemap.cc:157:simplemap_reduce$36	$_OR_	A	in	$auto$simplemap.cc:271:simplemap_eqne$29 [0]
+test_traffic_fsm	$auto$simplemap.cc:157:simplemap_reduce$36	$_OR_	B	in	$auto$simplemap.cc:271:simplemap_eqne$29 [1]
+test_traffic_fsm	$auto$simplemap.cc:157:simplemap_reduce$36	$_OR_	Y	out	$auto$simplemap.cc:277:simplemap_eqne$33
+test_traffic_fsm	$auto$simplemap.cc:198:logic_reduce$11	$_OR_	A	in	\current_state [0]
+test_traffic_fsm	$auto$simplemap.cc:198:logic_reduce$11	$_OR_	B	in	\current_state [1]
+test_traffic_fsm	$auto$simplemap.cc:198:logic_reduce$11	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$10
+test_traffic_fsm	$auto$simplemap.cc:198:logic_reduce$14	$_OR_	A	in	$procmux$5_CMP
+test_traffic_fsm	$auto$simplemap.cc:198:logic_reduce$14	$_OR_	B	in	$procmux$6_CMP
+test_traffic_fsm	$auto$simplemap.cc:198:logic_reduce$14	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$13
+test_traffic_fsm	$auto$simplemap.cc:198:logic_reduce$20	$_OR_	A	in	$auto$simplemap.cc:465:simplemap_pmux$16
+test_traffic_fsm	$auto$simplemap.cc:198:logic_reduce$20	$_OR_	B	in	$auto$simplemap.cc:465:simplemap_pmux$18
+test_traffic_fsm	$auto$simplemap.cc:198:logic_reduce$20	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$19
+test_traffic_fsm	$auto$simplemap.cc:198:logic_reduce$27	$_OR_	A	in	$auto$simplemap.cc:465:simplemap_pmux$23
+test_traffic_fsm	$auto$simplemap.cc:198:logic_reduce$27	$_OR_	B	in	$auto$simplemap.cc:465:simplemap_pmux$25
+test_traffic_fsm	$auto$simplemap.cc:198:logic_reduce$27	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$26
+test_traffic_fsm	$auto$simplemap.cc:227:simplemap_lognot$12	$_NOT_	A	in	$auto$simplemap.cc:189:logic_reduce$10
+test_traffic_fsm	$auto$simplemap.cc:227:simplemap_lognot$12	$_NOT_	Y	out	$procmux$6_CMP
+test_traffic_fsm	$auto$simplemap.cc:227:simplemap_lognot$38	$_NOT_	A	in	$auto$simplemap.cc:277:simplemap_eqne$33
+test_traffic_fsm	$auto$simplemap.cc:227:simplemap_lognot$38	$_NOT_	Y	out	$procmux$5_CMP
+test_traffic_fsm	$auto$simplemap.cc:460:simplemap_pmux$15	$_AND_	A	in	1'0
+test_traffic_fsm	$auto$simplemap.cc:460:simplemap_pmux$15	$_AND_	B	in	$procmux$5_CMP
+test_traffic_fsm	$auto$simplemap.cc:460:simplemap_pmux$15	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$16
+test_traffic_fsm	$auto$simplemap.cc:460:simplemap_pmux$17	$_AND_	A	in	1'1
+test_traffic_fsm	$auto$simplemap.cc:460:simplemap_pmux$17	$_AND_	B	in	$procmux$6_CMP
+test_traffic_fsm	$auto$simplemap.cc:460:simplemap_pmux$17	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$18
+test_traffic_fsm	$auto$simplemap.cc:460:simplemap_pmux$22	$_AND_	A	in	1'1
+test_traffic_fsm	$auto$simplemap.cc:460:simplemap_pmux$22	$_AND_	B	in	$procmux$5_CMP
+test_traffic_fsm	$auto$simplemap.cc:460:simplemap_pmux$22	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$23
+test_traffic_fsm	$auto$simplemap.cc:460:simplemap_pmux$24	$_AND_	A	in	1'0
+test_traffic_fsm	$auto$simplemap.cc:460:simplemap_pmux$24	$_AND_	B	in	$procmux$6_CMP
+test_traffic_fsm	$auto$simplemap.cc:460:simplemap_pmux$24	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$25
+test_traffic_fsm	$auto$simplemap.cc:474:simplemap_pmux$21	$_MUX_	A	in	1'0
+test_traffic_fsm	$auto$simplemap.cc:474:simplemap_pmux$21	$_MUX_	B	in	$auto$simplemap.cc:189:logic_reduce$19
+test_traffic_fsm	$auto$simplemap.cc:474:simplemap_pmux$21	$_MUX_	S	in	$auto$simplemap.cc:189:logic_reduce$13
+test_traffic_fsm	$auto$simplemap.cc:474:simplemap_pmux$21	$_MUX_	Y	out	$procmux$4_Y [0]
+test_traffic_fsm	$auto$simplemap.cc:474:simplemap_pmux$28	$_MUX_	A	in	1'0
+test_traffic_fsm	$auto$simplemap.cc:474:simplemap_pmux$28	$_MUX_	B	in	$auto$simplemap.cc:189:logic_reduce$26
+test_traffic_fsm	$auto$simplemap.cc:474:simplemap_pmux$28	$_MUX_	S	in	$auto$simplemap.cc:189:logic_reduce$13
+test_traffic_fsm	$auto$simplemap.cc:474:simplemap_pmux$28	$_MUX_	Y	out	$procmux$4_Y [1]

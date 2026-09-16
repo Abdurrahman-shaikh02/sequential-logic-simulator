@@ -1,0 +1,6 @@
+test	a	-	-	pi	\a
+test	b	-	-	pi	\b
+test	y	-	-	po	$xor$test.v:2$1_Y
+test	$xor$test.v:2$1	$xor	A	in	\a
+test	$xor$test.v:2$1	$xor	B	in	\b
+test	$xor$test.v:2$1	$xor	Y	out	$xor$test.v:2$1_Y

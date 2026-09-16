@@ -1,0 +1,14 @@
+test_ring_counter	clk	-	-	pi	\clk
+test_ring_counter	q	-	-	po	\state
+test_ring_counter	$auto$ff.cc:337:slice$4	$_DFF_P_	C	in	\clk
+test_ring_counter	$auto$ff.cc:337:slice$4	$_DFF_P_	D	in	\state [3]
+test_ring_counter	$auto$ff.cc:337:slice$4	$_DFF_P_	Q	out	\state [0]
+test_ring_counter	$auto$ff.cc:337:slice$5	$_DFF_P_	C	in	\clk
+test_ring_counter	$auto$ff.cc:337:slice$5	$_DFF_P_	D	in	\state [0]
+test_ring_counter	$auto$ff.cc:337:slice$5	$_DFF_P_	Q	out	\state [1]
+test_ring_counter	$auto$ff.cc:337:slice$6	$_DFF_P_	C	in	\clk
+test_ring_counter	$auto$ff.cc:337:slice$6	$_DFF_P_	D	in	\state [1]
+test_ring_counter	$auto$ff.cc:337:slice$6	$_DFF_P_	Q	out	\state [2]
+test_ring_counter	$auto$ff.cc:337:slice$7	$_DFF_P_	C	in	\clk
+test_ring_counter	$auto$ff.cc:337:slice$7	$_DFF_P_	D	in	\state [2]
+test_ring_counter	$auto$ff.cc:337:slice$7	$_DFF_P_	Q	out	\state [3]

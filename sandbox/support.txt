@@ -1,0 +1,52 @@
+$_NAND_
+$_AND_
+$_BUF_		---> it kinda didnt show it...
+$_MUX16_	---> yosys didnt make a mux8 instead it used multiple muxes
+$_MUX8_	---> yosys didnt make a mux8 instead it used multiple muxes
+$_MUX4_	---> yosys didnt make a mux4 instead it made three $_MUX_
+$_MUX_
+$_NOT_
+$_NOR_
+$_OR_
+$_XOR_
+$_ANDNOT_
+$_ORNOT_
+
+$_DFF_P_
+$_DFF_N_
+
+Non-standard:
+
+$_TFF_P_
+$_TFF_N_
+$_JKFF_P_
+$_JKFF_N_
+
+
+
+-------------------------------------------------
+
+$_DFFE_PP_
+$_DFFE_PN_
+$_DFFE_NP_
+$_DFFE_NN_
+
+$_DFF_PN0_
+$_DFF_PN1_
+$_DFF_PP0_
+$_DFF_PP1_
+$_DFF_NN0_
+$_DFF_NN1_
+$_DFF_NP0_
+$_DFF_NP1_
+
+
+$_DFFE_ (P/N activation edge : P/N enable bit : 0/1 reset value)
+if E isnt there then theres no enable bit
+
+$_SDFF_		--> S means synchronous reset... reset immediately reset asynchronous, here it waits for the clock
+$_SDFFE_ (P/N activation edge : P/N enable bit : 0/1 reset value)
+
+There are other ones too
+ALDFF
+DFFSR...

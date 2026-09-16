@@ -1,0 +1,12 @@
+test	a	-	-	pi	\a
+test	b	-	-	pi	\b
+test	y	-	-	po	$and$test.v:2$1_Y
+test	$and$test.v:2$1	$and	A	in	\a
+test	$and$test.v:2$1	$and	B	in	\b
+test	$and$test.v:2$1	$and	Y	out	$and$test.v:2$1_Y
+
+$fsm start
+.s S1
+.f S2
+
+$fsm end

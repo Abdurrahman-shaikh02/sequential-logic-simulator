@@ -1,0 +1,6 @@
+test	a	-	-	pi	\a
+test	b	-	-	pi	\b
+test	y	-	-	po	$or$test.v:2$1_Y
+test	$or$test.v:2$1	$or	A	in	\a
+test	$or$test.v:2$1	$or	B	in	\b
+test	$or$test.v:2$1	$or	Y	out	$or$test.v:2$1_Y

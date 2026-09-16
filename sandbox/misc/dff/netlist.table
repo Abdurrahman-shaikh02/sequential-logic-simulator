@@ -1,0 +1,6 @@
+test	clk	-	-	pi	\clk
+test	d	-	-	pi	\d
+test	q	-	-	po	\q
+test	$procdff$2	$dff	CLK	in	\clk
+test	$procdff$2	$dff	D	in	\d
+test	$procdff$2	$dff	Q	out	\q

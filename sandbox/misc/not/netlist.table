@@ -1,0 +1,4 @@
+test	a	-	-	pi	\a
+test	y	-	-	po	$not$test.v:2$1_Y
+test	$not$test.v:2$1	$not	A	in	\a
+test	$not$test.v:2$1	$not	Y	out	$not$test.v:2$1_Y

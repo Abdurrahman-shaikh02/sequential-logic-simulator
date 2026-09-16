@@ -1,0 +1,6 @@
+test_dff_neg	clk	-	-	pi	\clk
+test_dff_neg	d	-	-	pi	\d
+test_dff_neg	q	-	-	po	\q
+test_dff_neg	$auto$ff.cc:337:slice$3	$_DFF_N_	C	in	\clk
+test_dff_neg	$auto$ff.cc:337:slice$3	$_DFF_N_	D	in	\d
+test_dff_neg	$auto$ff.cc:337:slice$3	$_DFF_N_	Q	out	\q

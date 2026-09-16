@@ -1,0 +1,12 @@
+test_encoder	a	-	-	po	$or$test.v:41$1_Y
+test_encoder	b	-	-	po	$or$test.v:45$2_Y
+test_encoder	y0	-	-	pi	\y0
+test_encoder	y1	-	-	pi	\y1
+test_encoder	y2	-	-	pi	\y2
+test_encoder	y3	-	-	pi	\y3
+test_encoder	$auto$simplemap.cc:106:simplemap_bitop$3	$_OR_	A	in	\y2
+test_encoder	$auto$simplemap.cc:106:simplemap_bitop$3	$_OR_	B	in	\y3
+test_encoder	$auto$simplemap.cc:106:simplemap_bitop$3	$_OR_	Y	out	$or$test.v:45$2_Y
+test_encoder	$auto$simplemap.cc:106:simplemap_bitop$4	$_OR_	A	in	\y1
+test_encoder	$auto$simplemap.cc:106:simplemap_bitop$4	$_OR_	B	in	\y3
+test_encoder	$auto$simplemap.cc:106:simplemap_bitop$4	$_OR_	Y	out	$or$test.v:41$1_Y

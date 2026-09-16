@@ -1,0 +1,6 @@
+test	a	-	-	pi	\a
+test	b	-	-	pi	\b
+test	y	-	-	po	$and$test.v:2$1_Y
+test	$auto$simplemap.cc:106:simplemap_bitop$2	$_AND_	A	in	\a
+test	$auto$simplemap.cc:106:simplemap_bitop$2	$_AND_	B	in	\b
+test	$auto$simplemap.cc:106:simplemap_bitop$2	$_AND_	Y	out	$and$test.v:2$1_Y

@@ -1,0 +1,8 @@
+test	a	-	-	pi	\a
+test	b	-	-	pi	\b
+test	y	-	-	po	$not$test.v:2$2_Y
+test	$and$test.v:2$1	$and	A	in	\a
+test	$and$test.v:2$1	$and	B	in	\b
+test	$and$test.v:2$1	$and	Y	out	$and$test.v:2$1_Y
+test	$not$test.v:2$2	$not	A	in	$and$test.v:2$1_Y
+test	$not$test.v:2$2	$not	Y	out	$not$test.v:2$2_Y

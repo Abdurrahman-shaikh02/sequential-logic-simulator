@@ -1,0 +1,15 @@
+test_parallel_register	clk	-	-	pi	\clk
+test_parallel_register	d	-	-	pi	\d
+test_parallel_register	q	-	-	po	\state
+test_parallel_register	$auto$ff.cc:337:slice$3	$_DFF_P_	C	in	\clk
+test_parallel_register	$auto$ff.cc:337:slice$3	$_DFF_P_	D	in	\d [0]
+test_parallel_register	$auto$ff.cc:337:slice$3	$_DFF_P_	Q	out	\state [0]
+test_parallel_register	$auto$ff.cc:337:slice$4	$_DFF_P_	C	in	\clk
+test_parallel_register	$auto$ff.cc:337:slice$4	$_DFF_P_	D	in	\d [1]
+test_parallel_register	$auto$ff.cc:337:slice$4	$_DFF_P_	Q	out	\state [1]
+test_parallel_register	$auto$ff.cc:337:slice$5	$_DFF_P_	C	in	\clk
+test_parallel_register	$auto$ff.cc:337:slice$5	$_DFF_P_	D	in	\d [2]
+test_parallel_register	$auto$ff.cc:337:slice$5	$_DFF_P_	Q	out	\state [2]
+test_parallel_register	$auto$ff.cc:337:slice$6	$_DFF_P_	C	in	\clk
+test_parallel_register	$auto$ff.cc:337:slice$6	$_DFF_P_	D	in	\d [3]
+test_parallel_register	$auto$ff.cc:337:slice$6	$_DFF_P_	Q	out	\state [3]

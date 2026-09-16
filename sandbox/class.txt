@@ -1,0 +1,111 @@
+i have a class diagram ready for the evaluation and graph part.
+
+class Node{
+	List * head;
+	virtual int evaluate(enum port, int value){}
+}
+
+struct List{
+	Node &n;
+	List * next
+	enum port p;
+}
+
+enum port{A, B, S, J, K, D, T, C}
+
+Sequential_node : Node{
+}
+
+Combinational_node : Node{
+}
+
+class and : Combinational_Node{
+	int A;
+	int B;
+	int evaluate(enum port, int val){
+		set this.A/B
+		int t = this.A & this.b
+		loop over the list pointed to by head and enqueue their evaluates in the combinational queue
+	}
+}
+
+//similary other combinational gates.
+
+jkff : Sequential_Node{
+	int J, K, Q, C;
+	evaluate(enum port p, int val){
+		switch(P){
+			case J or K: enqueue operation set_port(J/K, val) in the Sequential Queue
+			case C:
+				enqueue change_state() in the Sequential queue;
+			default : error
+		}
+	}
+
+	int set_port(enum port p, int val){
+		switch(p){
+			//set whichever variable
+		}
+	}
+
+	int change_state(){
+		this.J, this.K -> calculate this.Q
+		enqueue this.commit() in the Sequential queue
+	}
+	
+	int commit(){
+		loop over every node in the list pointed to by head and call proper evaluates on those.
+	}
+}
+
+Primary Node : Node{
+	int val;
+	enum type;
+	int evaluate (enum port, int val){
+		switch(this.type){
+			IN:
+				this.val = val
+				loop over every node in the list pointed to by the head and call the proper evaluate functions on those
+			OUT: 
+				this.val = val
+			default : error
+		}
+	}
+}
+
+enum type{IN, OUT}
+
+Operation {
+	Node & n;
+	enum operation op;
+	//arguments
+	enum port p;
+	int value;
+	int run(){
+		switch(op){
+			//dispatch the right function call
+		}
+	}
+}
+
+enum operation {
+	EVALUATE,
+	SET_PORT,
+	CHANGE_STATE,
+	COMMIT
+}
+
+Operation_Queue{
+	vector<Operation> q;	//or a queue whatever
+
+	int enqueue(Node &n, enum operation){
+		//construct operation and add to queue
+	}
+	Operation & dequeue(){
+		...
+	}
+
+	int isEmpty(){
+		..
+	}
+}

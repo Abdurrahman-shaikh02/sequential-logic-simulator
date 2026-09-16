@@ -1,0 +1,146 @@
+test_binary_counter	clk	-	-	pi	\clk
+test_binary_counter	q	-	-	po	\count
+test_binary_counter	$auto$ff.cc:337:slice$4	$_DFF_P_	C	in	\clk
+test_binary_counter	$auto$ff.cc:337:slice$4	$_DFF_P_	D	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$xor$/usr/local/bin/../share/yosys/techmap.v:296$84_Y [0]
+test_binary_counter	$auto$ff.cc:337:slice$4	$_DFF_P_	Q	out	\count [0]
+test_binary_counter	$auto$ff.cc:337:slice$5	$_DFF_P_	C	in	\clk
+test_binary_counter	$auto$ff.cc:337:slice$5	$_DFF_P_	D	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$xor$/usr/local/bin/../share/yosys/techmap.v:296$84_Y [1]
+test_binary_counter	$auto$ff.cc:337:slice$5	$_DFF_P_	Q	out	\count [1]
+test_binary_counter	$auto$ff.cc:337:slice$6	$_DFF_P_	C	in	\clk
+test_binary_counter	$auto$ff.cc:337:slice$6	$_DFF_P_	D	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$xor$/usr/local/bin/../share/yosys/techmap.v:296$84_Y [2]
+test_binary_counter	$auto$ff.cc:337:slice$6	$_DFF_P_	Q	out	\count [2]
+test_binary_counter	$auto$ff.cc:337:slice$7	$_DFF_P_	C	in	\clk
+test_binary_counter	$auto$ff.cc:337:slice$7	$_DFF_P_	D	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$xor$/usr/local/bin/../share/yosys/techmap.v:296$84_Y [3]
+test_binary_counter	$auto$ff.cc:337:slice$7	$_DFF_P_	Q	out	\count [3]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$118	$_OR_	A	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$91_Y [0]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$118	$_OR_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$92_Y [0]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$118	$_OR_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$94_Y [0]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$119	$_OR_	A	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$91_Y [1]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$119	$_OR_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$92_Y [1]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$119	$_OR_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$94_Y [1]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$120	$_OR_	A	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$91_Y [2]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$120	$_OR_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$92_Y [2]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$120	$_OR_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$94_Y [2]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$121	$_OR_	A	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$91_Y [3]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$121	$_OR_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$92_Y [3]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$121	$_OR_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$94_Y [3]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$122	$_XOR_	A	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$90_Y [0]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$122	$_XOR_	B	in	1'0
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$122	$_XOR_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$93_Y [0]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$123	$_XOR_	A	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$90_Y [1]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$123	$_XOR_	B	in	1'0
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$123	$_XOR_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$93_Y [1]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$124	$_XOR_	A	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$90_Y [2]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$124	$_XOR_	B	in	1'0
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$124	$_XOR_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$93_Y [2]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$125	$_XOR_	A	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$90_Y [3]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$125	$_XOR_	B	in	1'0
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$125	$_XOR_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$93_Y [3]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$126	$_AND_	A	in	1'0
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$126	$_AND_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$90_Y [0]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$126	$_AND_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$92_Y [0]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$127	$_AND_	A	in	1'0
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$127	$_AND_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$90_Y [1]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$127	$_AND_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$92_Y [1]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$128	$_AND_	A	in	1'0
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$128	$_AND_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$90_Y [2]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$128	$_AND_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$92_Y [2]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$129	$_AND_	A	in	1'0
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$129	$_AND_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$90_Y [3]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$129	$_AND_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$92_Y [3]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$130	$_AND_	A	in	\count [0]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$130	$_AND_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$83_Y [0]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$130	$_AND_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$91_Y [0]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$131	$_AND_	A	in	\count [1]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$131	$_AND_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$83_Y [1]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$131	$_AND_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$91_Y [1]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$132	$_AND_	A	in	\count [2]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$132	$_AND_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$83_Y [2]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$132	$_AND_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$91_Y [2]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$133	$_AND_	A	in	\count [3]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$133	$_AND_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$83_Y [3]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$133	$_AND_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$91_Y [3]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$134	$_XOR_	A	in	\count [0]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$134	$_XOR_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$83_Y [0]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$134	$_XOR_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$90_Y [0]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$135	$_XOR_	A	in	\count [1]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$135	$_XOR_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$83_Y [1]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$135	$_XOR_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$90_Y [1]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$136	$_XOR_	A	in	\count [2]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$136	$_XOR_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$83_Y [2]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$136	$_XOR_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$90_Y [2]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$137	$_XOR_	A	in	\count [3]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$137	$_XOR_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$83_Y [3]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$137	$_XOR_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$90_Y [3]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$138	$_OR_	A	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$94_Y [2]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$138	$_OR_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:248$107_Y
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$138	$_OR_	Y	out	$techmap$add$test.v:9$2.$auto$alumacc.cc:565:replace_alu$81 [2]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$139	$_OR_	A	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.lcu.$or$/usr/local/bin/../share/yosys/techmap.v:240$102_Y
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$139	$_OR_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:240$104_Y
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$139	$_OR_	Y	out	$techmap$add$test.v:9$2.$auto$alumacc.cc:565:replace_alu$81 [3]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$140	$_AND_	A	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:241$103_Y
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$140	$_AND_	B	in	$techmap$add$test.v:9$2.$auto$alumacc.cc:565:replace_alu$81 [1]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$140	$_AND_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:240$104_Y
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$141	$_AND_	A	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$93_Y [3]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$141	$_AND_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$93_Y [2]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$141	$_AND_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:241$103_Y
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$142	$_OR_	A	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$94_Y [3]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$142	$_OR_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:240$101_Y
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$142	$_OR_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.lcu.$or$/usr/local/bin/../share/yosys/techmap.v:240$102_Y
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$143	$_AND_	A	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$93_Y [3]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$143	$_AND_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$94_Y [2]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$143	$_AND_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:240$101_Y
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$144	$_AND_	A	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$93_Y [2]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$144	$_AND_	B	in	$techmap$add$test.v:9$2.$auto$alumacc.cc:565:replace_alu$81 [1]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$144	$_AND_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:248$107_Y
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$145	$_OR_	A	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$94_Y [1]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$145	$_OR_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:240$98_Y
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$145	$_OR_	Y	out	$techmap$add$test.v:9$2.$auto$alumacc.cc:565:replace_alu$81 [1]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$146	$_AND_	A	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$93_Y [1]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$146	$_AND_	B	in	$techmap$add$test.v:9$2.$auto$alumacc.cc:565:replace_alu$81 [0]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$146	$_AND_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:240$98_Y
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$147	$_OR_	A	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$94_Y [0]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$147	$_OR_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:231$96_Y
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$147	$_OR_	Y	out	$techmap$add$test.v:9$2.$auto$alumacc.cc:565:replace_alu$81 [0]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$148	$_AND_	A	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$93_Y [0]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$148	$_AND_	B	in	1'0
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$148	$_AND_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:231$96_Y
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$85	$_XOR_	A	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$93_Y [0]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$85	$_XOR_	B	in	1'0
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$85	$_XOR_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$xor$/usr/local/bin/../share/yosys/techmap.v:296$84_Y [0]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$86	$_XOR_	A	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$93_Y [1]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$86	$_XOR_	B	in	$techmap$add$test.v:9$2.$auto$alumacc.cc:565:replace_alu$81 [0]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$86	$_XOR_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$xor$/usr/local/bin/../share/yosys/techmap.v:296$84_Y [1]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$87	$_XOR_	A	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$93_Y [2]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$87	$_XOR_	B	in	$techmap$add$test.v:9$2.$auto$alumacc.cc:565:replace_alu$81 [1]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$87	$_XOR_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$xor$/usr/local/bin/../share/yosys/techmap.v:296$84_Y [2]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$88	$_XOR_	A	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$93_Y [3]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$88	$_XOR_	B	in	$techmap$add$test.v:9$2.$auto$alumacc.cc:565:replace_alu$81 [2]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$88	$_XOR_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$xor$/usr/local/bin/../share/yosys/techmap.v:296$84_Y [3]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$89	$_XOR_	A	in	1'0
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$89	$_XOR_	B	in	$techmap$add$test.v:9$2.$auto$alumacc.cc:565:replace_alu$81 [3]
+test_binary_counter	$auto$simplemap.cc:106:simplemap_bitop$89	$_XOR_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$xor$/usr/local/bin/../share/yosys/techmap.v:296$84_Y [4]
+test_binary_counter	$auto$simplemap.cc:298:simplemap_mux$110	$_MUX_	A	in	1'1
+test_binary_counter	$auto$simplemap.cc:298:simplemap_mux$110	$_MUX_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$not$/usr/local/bin/../share/yosys/techmap.v:279$82_Y [0]
+test_binary_counter	$auto$simplemap.cc:298:simplemap_mux$110	$_MUX_	S	in	1'0
+test_binary_counter	$auto$simplemap.cc:298:simplemap_mux$110	$_MUX_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$83_Y [0]
+test_binary_counter	$auto$simplemap.cc:298:simplemap_mux$111	$_MUX_	A	in	1'0
+test_binary_counter	$auto$simplemap.cc:298:simplemap_mux$111	$_MUX_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$not$/usr/local/bin/../share/yosys/techmap.v:279$82_Y [1]
+test_binary_counter	$auto$simplemap.cc:298:simplemap_mux$111	$_MUX_	S	in	1'0
+test_binary_counter	$auto$simplemap.cc:298:simplemap_mux$111	$_MUX_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$83_Y [1]
+test_binary_counter	$auto$simplemap.cc:298:simplemap_mux$112	$_MUX_	A	in	1'0
+test_binary_counter	$auto$simplemap.cc:298:simplemap_mux$112	$_MUX_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$not$/usr/local/bin/../share/yosys/techmap.v:279$82_Y [2]
+test_binary_counter	$auto$simplemap.cc:298:simplemap_mux$112	$_MUX_	S	in	1'0
+test_binary_counter	$auto$simplemap.cc:298:simplemap_mux$112	$_MUX_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$83_Y [2]
+test_binary_counter	$auto$simplemap.cc:298:simplemap_mux$113	$_MUX_	A	in	1'0
+test_binary_counter	$auto$simplemap.cc:298:simplemap_mux$113	$_MUX_	B	in	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$not$/usr/local/bin/../share/yosys/techmap.v:279$82_Y [3]
+test_binary_counter	$auto$simplemap.cc:298:simplemap_mux$113	$_MUX_	S	in	1'0
+test_binary_counter	$auto$simplemap.cc:298:simplemap_mux$113	$_MUX_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$83_Y [3]
+test_binary_counter	$auto$simplemap.cc:46:simplemap_not$114	$_NOT_	A	in	1'1
+test_binary_counter	$auto$simplemap.cc:46:simplemap_not$114	$_NOT_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$not$/usr/local/bin/../share/yosys/techmap.v:279$82_Y [0]
+test_binary_counter	$auto$simplemap.cc:46:simplemap_not$115	$_NOT_	A	in	1'0
+test_binary_counter	$auto$simplemap.cc:46:simplemap_not$115	$_NOT_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$not$/usr/local/bin/../share/yosys/techmap.v:279$82_Y [1]
+test_binary_counter	$auto$simplemap.cc:46:simplemap_not$116	$_NOT_	A	in	1'0
+test_binary_counter	$auto$simplemap.cc:46:simplemap_not$116	$_NOT_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$not$/usr/local/bin/../share/yosys/techmap.v:279$82_Y [2]
+test_binary_counter	$auto$simplemap.cc:46:simplemap_not$117	$_NOT_	A	in	1'0
+test_binary_counter	$auto$simplemap.cc:46:simplemap_not$117	$_NOT_	Y	out	$techmap$techmap$add$test.v:9$2.$auto$alumacc.cc:548:replace_alu$79.$not$/usr/local/bin/../share/yosys/techmap.v:279$82_Y [3]

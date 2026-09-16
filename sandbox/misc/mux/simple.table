@@ -1,0 +1,8 @@
+test	a	-	-	pi	\a
+test	b	-	-	pi	\b
+test	sel	-	-	pi	\sel
+test	y	-	-	po	$ternary$test.v:8$1_Y
+test	$auto$simplemap.cc:298:simplemap_mux$2	$_MUX_	A	in	\b
+test	$auto$simplemap.cc:298:simplemap_mux$2	$_MUX_	B	in	\a
+test	$auto$simplemap.cc:298:simplemap_mux$2	$_MUX_	S	in	\sel
+test	$auto$simplemap.cc:298:simplemap_mux$2	$_MUX_	Y	out	$ternary$test.v:8$1_Y

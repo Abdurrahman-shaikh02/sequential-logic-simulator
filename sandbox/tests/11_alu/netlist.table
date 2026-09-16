@@ -1,0 +1,439 @@
+test_alu	a	-	-	pi	\a
+test_alu	b	-	-	pi	\b
+test_alu	sel	-	-	pi	\sel
+test_alu	y	-	-	po	$procmux$6_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$105	$_XOR_	A	in	\a [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$105	$_XOR_	B	in	\b [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$105	$_XOR_	Y	out	$xor$test.v:32$5_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$106	$_XOR_	A	in	\a [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$106	$_XOR_	B	in	\b [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$106	$_XOR_	Y	out	$xor$test.v:32$5_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$107	$_XOR_	A	in	\a [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$107	$_XOR_	B	in	\b [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$107	$_XOR_	Y	out	$xor$test.v:32$5_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$108	$_XOR_	A	in	\a [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$108	$_XOR_	B	in	\b [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$108	$_XOR_	Y	out	$xor$test.v:32$5_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$109	$_AND_	A	in	\a [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$109	$_AND_	B	in	\b [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$109	$_AND_	Y	out	$and$test.v:31$4_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$110	$_AND_	A	in	\a [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$110	$_AND_	B	in	\b [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$110	$_AND_	Y	out	$and$test.v:31$4_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$111	$_AND_	A	in	\a [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$111	$_AND_	B	in	\b [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$111	$_AND_	Y	out	$and$test.v:31$4_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$112	$_AND_	A	in	\a [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$112	$_AND_	B	in	\b [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$112	$_AND_	Y	out	$and$test.v:31$4_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$16	$_XOR_	A	in	\sel [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$16	$_XOR_	B	in	1'1
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$16	$_XOR_	Y	out	$auto$simplemap.cc:271:simplemap_eqne$14 [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$17	$_XOR_	A	in	\sel [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$17	$_XOR_	B	in	1'0
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$17	$_XOR_	Y	out	$auto$simplemap.cc:271:simplemap_eqne$14 [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$193	$_XOR_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$193	$_XOR_	B	in	1'0
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$193	$_XOR_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$xor$/usr/local/bin/../share/yosys/techmap.v:296$192_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$194	$_XOR_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$194	$_XOR_	B	in	$techmap$add$test.v:29$2.$auto$alumacc.cc:565:replace_alu$186 [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$194	$_XOR_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$xor$/usr/local/bin/../share/yosys/techmap.v:296$192_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$195	$_XOR_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$195	$_XOR_	B	in	$techmap$add$test.v:29$2.$auto$alumacc.cc:565:replace_alu$186 [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$195	$_XOR_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$xor$/usr/local/bin/../share/yosys/techmap.v:296$192_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$196	$_XOR_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$196	$_XOR_	B	in	$techmap$add$test.v:29$2.$auto$alumacc.cc:565:replace_alu$186 [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$196	$_XOR_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$xor$/usr/local/bin/../share/yosys/techmap.v:296$192_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$197	$_XOR_	A	in	1'0
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$197	$_XOR_	B	in	$techmap$add$test.v:29$2.$auto$alumacc.cc:565:replace_alu$186 [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$197	$_XOR_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$xor$/usr/local/bin/../share/yosys/techmap.v:296$192_Y [4]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$226	$_XOR_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$226	$_XOR_	B	in	1'1
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$226	$_XOR_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$xor$/usr/local/bin/../share/yosys/techmap.v:296$192_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$227	$_XOR_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$227	$_XOR_	B	in	$techmap$sub$test.v:30$3.$auto$alumacc.cc:565:replace_alu$189 [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$227	$_XOR_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$xor$/usr/local/bin/../share/yosys/techmap.v:296$192_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$228	$_XOR_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$228	$_XOR_	B	in	$techmap$sub$test.v:30$3.$auto$alumacc.cc:565:replace_alu$189 [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$228	$_XOR_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$xor$/usr/local/bin/../share/yosys/techmap.v:296$192_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$229	$_XOR_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$229	$_XOR_	B	in	$techmap$sub$test.v:30$3.$auto$alumacc.cc:565:replace_alu$189 [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$229	$_XOR_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$xor$/usr/local/bin/../share/yosys/techmap.v:296$192_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$230	$_XOR_	A	in	1'0
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$230	$_XOR_	B	in	$techmap$sub$test.v:30$3.$auto$alumacc.cc:565:replace_alu$189 [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$230	$_XOR_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$xor$/usr/local/bin/../share/yosys/techmap.v:296$192_Y [4]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$239	$_OR_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$199_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$239	$_OR_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$200_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$239	$_OR_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$202_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$240	$_OR_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$199_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$240	$_OR_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$200_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$240	$_OR_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$202_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$241	$_OR_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$199_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$241	$_OR_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$200_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$241	$_OR_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$202_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$242	$_OR_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$199_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$242	$_OR_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$200_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$242	$_OR_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$202_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$243	$_XOR_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$198_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$243	$_XOR_	B	in	1'0
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$243	$_XOR_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$244	$_XOR_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$198_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$244	$_XOR_	B	in	1'0
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$244	$_XOR_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$245	$_XOR_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$198_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$245	$_XOR_	B	in	1'0
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$245	$_XOR_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$246	$_XOR_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$198_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$246	$_XOR_	B	in	1'0
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$246	$_XOR_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$247	$_AND_	A	in	1'0
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$247	$_AND_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$198_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$247	$_AND_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$200_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$248	$_AND_	A	in	1'0
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$248	$_AND_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$198_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$248	$_AND_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$200_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$249	$_AND_	A	in	1'0
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$249	$_AND_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$198_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$249	$_AND_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$200_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$250	$_AND_	A	in	1'0
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$250	$_AND_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$198_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$250	$_AND_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$200_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$251	$_AND_	A	in	\a [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$251	$_AND_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$191_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$251	$_AND_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$199_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$252	$_AND_	A	in	\a [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$252	$_AND_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$191_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$252	$_AND_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$199_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$253	$_AND_	A	in	\a [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$253	$_AND_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$191_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$253	$_AND_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$199_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$254	$_AND_	A	in	\a [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$254	$_AND_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$191_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$254	$_AND_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$199_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$255	$_XOR_	A	in	\a [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$255	$_XOR_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$191_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$255	$_XOR_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$198_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$256	$_XOR_	A	in	\a [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$256	$_XOR_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$191_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$256	$_XOR_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$198_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$257	$_XOR_	A	in	\a [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$257	$_XOR_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$191_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$257	$_XOR_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$198_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$258	$_XOR_	A	in	\a [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$258	$_XOR_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$191_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$258	$_XOR_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$198_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$259	$_OR_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$202_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$259	$_OR_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:248$215_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$259	$_OR_	Y	out	$techmap$add$test.v:29$2.$auto$alumacc.cc:565:replace_alu$186 [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$26	$_XOR_	A	in	\sel [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$26	$_XOR_	B	in	1'0
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$26	$_XOR_	Y	out	$auto$simplemap.cc:271:simplemap_eqne$24 [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$260	$_OR_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.lcu.$or$/usr/local/bin/../share/yosys/techmap.v:240$210_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$260	$_OR_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:240$212_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$260	$_OR_	Y	out	$techmap$add$test.v:29$2.$auto$alumacc.cc:565:replace_alu$186 [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$261	$_AND_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:241$211_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$261	$_AND_	B	in	$techmap$add$test.v:29$2.$auto$alumacc.cc:565:replace_alu$186 [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$261	$_AND_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:240$212_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$262	$_AND_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$262	$_AND_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$262	$_AND_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:241$211_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$263	$_OR_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$202_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$263	$_OR_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:240$209_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$263	$_OR_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.lcu.$or$/usr/local/bin/../share/yosys/techmap.v:240$210_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$264	$_AND_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$264	$_AND_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$202_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$264	$_AND_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:240$209_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$265	$_AND_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$265	$_AND_	B	in	$techmap$add$test.v:29$2.$auto$alumacc.cc:565:replace_alu$186 [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$265	$_AND_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:248$215_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$266	$_OR_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$202_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$266	$_OR_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:240$206_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$266	$_OR_	Y	out	$techmap$add$test.v:29$2.$auto$alumacc.cc:565:replace_alu$186 [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$267	$_AND_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$267	$_AND_	B	in	$techmap$add$test.v:29$2.$auto$alumacc.cc:565:replace_alu$186 [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$267	$_AND_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:240$206_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$268	$_OR_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$202_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$268	$_OR_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:231$204_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$268	$_OR_	Y	out	$techmap$add$test.v:29$2.$auto$alumacc.cc:565:replace_alu$186 [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$269	$_AND_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$269	$_AND_	B	in	1'0
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$269	$_AND_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:231$204_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$27	$_XOR_	A	in	\sel [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$27	$_XOR_	B	in	1'1
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$27	$_XOR_	Y	out	$auto$simplemap.cc:271:simplemap_eqne$24 [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$270	$_OR_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$199_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$270	$_OR_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$200_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$270	$_OR_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$202_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$271	$_OR_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$199_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$271	$_OR_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$200_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$271	$_OR_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$202_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$272	$_OR_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$199_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$272	$_OR_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$200_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$272	$_OR_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$202_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$273	$_OR_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$199_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$273	$_OR_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$200_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$273	$_OR_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$202_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$274	$_XOR_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$198_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$274	$_XOR_	B	in	1'0
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$274	$_XOR_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$275	$_XOR_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$198_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$275	$_XOR_	B	in	1'0
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$275	$_XOR_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$276	$_XOR_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$198_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$276	$_XOR_	B	in	1'0
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$276	$_XOR_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$277	$_XOR_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$198_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$277	$_XOR_	B	in	1'0
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$277	$_XOR_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$278	$_AND_	A	in	1'0
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$278	$_AND_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$198_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$278	$_AND_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$200_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$279	$_AND_	A	in	1'0
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$279	$_AND_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$198_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$279	$_AND_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$200_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$280	$_AND_	A	in	1'0
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$280	$_AND_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$198_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$280	$_AND_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$200_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$281	$_AND_	A	in	1'0
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$281	$_AND_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$198_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$281	$_AND_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$200_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$282	$_AND_	A	in	\a [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$282	$_AND_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$191_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$282	$_AND_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$199_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$283	$_AND_	A	in	\a [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$283	$_AND_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$191_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$283	$_AND_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$199_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$284	$_AND_	A	in	\a [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$284	$_AND_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$191_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$284	$_AND_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$199_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$285	$_AND_	A	in	\a [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$285	$_AND_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$191_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$285	$_AND_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$and$/usr/local/bin/../share/yosys/techmap.v:205$199_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$286	$_XOR_	A	in	\a [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$286	$_XOR_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$191_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$286	$_XOR_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$198_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$287	$_XOR_	A	in	\a [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$287	$_XOR_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$191_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$287	$_XOR_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$198_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$288	$_XOR_	A	in	\a [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$288	$_XOR_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$191_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$288	$_XOR_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$198_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$289	$_XOR_	A	in	\a [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$289	$_XOR_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$191_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$289	$_XOR_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:205$198_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$290	$_OR_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$202_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$290	$_OR_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:248$215_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$290	$_OR_	Y	out	$techmap$sub$test.v:30$3.$auto$alumacc.cc:565:replace_alu$189 [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$291	$_OR_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.lcu.$or$/usr/local/bin/../share/yosys/techmap.v:240$210_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$291	$_OR_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:240$212_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$291	$_OR_	Y	out	$techmap$sub$test.v:30$3.$auto$alumacc.cc:565:replace_alu$189 [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$292	$_AND_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:241$211_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$292	$_AND_	B	in	$techmap$sub$test.v:30$3.$auto$alumacc.cc:565:replace_alu$189 [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$292	$_AND_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:240$212_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$293	$_AND_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$293	$_AND_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$293	$_AND_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:241$211_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$294	$_OR_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$202_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$294	$_OR_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:240$209_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$294	$_OR_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.lcu.$or$/usr/local/bin/../share/yosys/techmap.v:240$210_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$295	$_AND_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [3]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$295	$_AND_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$202_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$295	$_AND_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:240$209_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$296	$_AND_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [2]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$296	$_AND_	B	in	$techmap$sub$test.v:30$3.$auto$alumacc.cc:565:replace_alu$189 [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$296	$_AND_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:248$215_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$297	$_OR_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$202_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$297	$_OR_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:240$206_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$297	$_OR_	Y	out	$techmap$sub$test.v:30$3.$auto$alumacc.cc:565:replace_alu$189 [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$298	$_AND_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$298	$_AND_	B	in	$techmap$sub$test.v:30$3.$auto$alumacc.cc:565:replace_alu$189 [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$298	$_AND_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:240$206_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$299	$_OR_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$or$/usr/local/bin/../share/yosys/techmap.v:206$202_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$299	$_OR_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:231$204_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$299	$_OR_	Y	out	$techmap$sub$test.v:30$3.$auto$alumacc.cc:565:replace_alu$189 [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$300	$_AND_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.fa.$xor$/usr/local/bin/../share/yosys/techmap.v:206$201_Y [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$300	$_AND_	B	in	1'1
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$300	$_AND_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:231$204_Y
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$97	$_XOR_	A	in	\sel [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$97	$_XOR_	B	in	1'1
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$97	$_XOR_	Y	out	$auto$simplemap.cc:271:simplemap_eqne$95 [0]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$98	$_XOR_	A	in	\sel [1]
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$98	$_XOR_	B	in	1'1
+test_alu	$auto$simplemap.cc:106:simplemap_bitop$98	$_XOR_	Y	out	$auto$simplemap.cc:271:simplemap_eqne$95 [1]
+test_alu	$auto$simplemap.cc:157:simplemap_reduce$102	$_OR_	A	in	$auto$simplemap.cc:271:simplemap_eqne$95 [0]
+test_alu	$auto$simplemap.cc:157:simplemap_reduce$102	$_OR_	B	in	$auto$simplemap.cc:271:simplemap_eqne$95 [1]
+test_alu	$auto$simplemap.cc:157:simplemap_reduce$102	$_OR_	Y	out	$auto$simplemap.cc:277:simplemap_eqne$99
+test_alu	$auto$simplemap.cc:157:simplemap_reduce$21	$_OR_	A	in	$auto$simplemap.cc:271:simplemap_eqne$14 [0]
+test_alu	$auto$simplemap.cc:157:simplemap_reduce$21	$_OR_	B	in	$auto$simplemap.cc:271:simplemap_eqne$14 [1]
+test_alu	$auto$simplemap.cc:157:simplemap_reduce$21	$_OR_	Y	out	$auto$simplemap.cc:277:simplemap_eqne$18
+test_alu	$auto$simplemap.cc:157:simplemap_reduce$31	$_OR_	A	in	$auto$simplemap.cc:271:simplemap_eqne$24 [0]
+test_alu	$auto$simplemap.cc:157:simplemap_reduce$31	$_OR_	B	in	$auto$simplemap.cc:271:simplemap_eqne$24 [1]
+test_alu	$auto$simplemap.cc:157:simplemap_reduce$31	$_OR_	Y	out	$auto$simplemap.cc:277:simplemap_eqne$28
+test_alu	$auto$simplemap.cc:198:logic_reduce$12	$_OR_	A	in	\sel [0]
+test_alu	$auto$simplemap.cc:198:logic_reduce$12	$_OR_	B	in	\sel [1]
+test_alu	$auto$simplemap.cc:198:logic_reduce$12	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$11
+test_alu	$auto$simplemap.cc:198:logic_reduce$35	$_OR_	A	in	$procmux$7_CMP
+test_alu	$auto$simplemap.cc:198:logic_reduce$35	$_OR_	B	in	$procmux$8_CMP
+test_alu	$auto$simplemap.cc:198:logic_reduce$35	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$34 [0]
+test_alu	$auto$simplemap.cc:198:logic_reduce$36	$_OR_	A	in	$procmux$9_CMP
+test_alu	$auto$simplemap.cc:198:logic_reduce$36	$_OR_	B	in	$procmux$10_CMP
+test_alu	$auto$simplemap.cc:198:logic_reduce$36	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$34 [1]
+test_alu	$auto$simplemap.cc:198:logic_reduce$38	$_OR_	A	in	$auto$simplemap.cc:189:logic_reduce$34 [0]
+test_alu	$auto$simplemap.cc:198:logic_reduce$38	$_OR_	B	in	$auto$simplemap.cc:189:logic_reduce$34 [1]
+test_alu	$auto$simplemap.cc:198:logic_reduce$38	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$37
+test_alu	$auto$simplemap.cc:198:logic_reduce$48	$_OR_	A	in	$auto$simplemap.cc:465:simplemap_pmux$40
+test_alu	$auto$simplemap.cc:198:logic_reduce$48	$_OR_	B	in	$auto$simplemap.cc:465:simplemap_pmux$42
+test_alu	$auto$simplemap.cc:198:logic_reduce$48	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$47 [0]
+test_alu	$auto$simplemap.cc:198:logic_reduce$49	$_OR_	A	in	$auto$simplemap.cc:465:simplemap_pmux$44
+test_alu	$auto$simplemap.cc:198:logic_reduce$49	$_OR_	B	in	$auto$simplemap.cc:465:simplemap_pmux$46
+test_alu	$auto$simplemap.cc:198:logic_reduce$49	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$47 [1]
+test_alu	$auto$simplemap.cc:198:logic_reduce$51	$_OR_	A	in	$auto$simplemap.cc:189:logic_reduce$47 [0]
+test_alu	$auto$simplemap.cc:198:logic_reduce$51	$_OR_	B	in	$auto$simplemap.cc:189:logic_reduce$47 [1]
+test_alu	$auto$simplemap.cc:198:logic_reduce$51	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$50
+test_alu	$auto$simplemap.cc:198:logic_reduce$62	$_OR_	A	in	$auto$simplemap.cc:465:simplemap_pmux$54
+test_alu	$auto$simplemap.cc:198:logic_reduce$62	$_OR_	B	in	$auto$simplemap.cc:465:simplemap_pmux$56
+test_alu	$auto$simplemap.cc:198:logic_reduce$62	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$61 [0]
+test_alu	$auto$simplemap.cc:198:logic_reduce$63	$_OR_	A	in	$auto$simplemap.cc:465:simplemap_pmux$58
+test_alu	$auto$simplemap.cc:198:logic_reduce$63	$_OR_	B	in	$auto$simplemap.cc:465:simplemap_pmux$60
+test_alu	$auto$simplemap.cc:198:logic_reduce$63	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$61 [1]
+test_alu	$auto$simplemap.cc:198:logic_reduce$65	$_OR_	A	in	$auto$simplemap.cc:189:logic_reduce$61 [0]
+test_alu	$auto$simplemap.cc:198:logic_reduce$65	$_OR_	B	in	$auto$simplemap.cc:189:logic_reduce$61 [1]
+test_alu	$auto$simplemap.cc:198:logic_reduce$65	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$64
+test_alu	$auto$simplemap.cc:198:logic_reduce$76	$_OR_	A	in	$auto$simplemap.cc:465:simplemap_pmux$68
+test_alu	$auto$simplemap.cc:198:logic_reduce$76	$_OR_	B	in	$auto$simplemap.cc:465:simplemap_pmux$70
+test_alu	$auto$simplemap.cc:198:logic_reduce$76	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$75 [0]
+test_alu	$auto$simplemap.cc:198:logic_reduce$77	$_OR_	A	in	$auto$simplemap.cc:465:simplemap_pmux$72
+test_alu	$auto$simplemap.cc:198:logic_reduce$77	$_OR_	B	in	$auto$simplemap.cc:465:simplemap_pmux$74
+test_alu	$auto$simplemap.cc:198:logic_reduce$77	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$75 [1]
+test_alu	$auto$simplemap.cc:198:logic_reduce$79	$_OR_	A	in	$auto$simplemap.cc:189:logic_reduce$75 [0]
+test_alu	$auto$simplemap.cc:198:logic_reduce$79	$_OR_	B	in	$auto$simplemap.cc:189:logic_reduce$75 [1]
+test_alu	$auto$simplemap.cc:198:logic_reduce$79	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$78
+test_alu	$auto$simplemap.cc:198:logic_reduce$90	$_OR_	A	in	$auto$simplemap.cc:465:simplemap_pmux$82
+test_alu	$auto$simplemap.cc:198:logic_reduce$90	$_OR_	B	in	$auto$simplemap.cc:465:simplemap_pmux$84
+test_alu	$auto$simplemap.cc:198:logic_reduce$90	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$89 [0]
+test_alu	$auto$simplemap.cc:198:logic_reduce$91	$_OR_	A	in	$auto$simplemap.cc:465:simplemap_pmux$86
+test_alu	$auto$simplemap.cc:198:logic_reduce$91	$_OR_	B	in	$auto$simplemap.cc:465:simplemap_pmux$88
+test_alu	$auto$simplemap.cc:198:logic_reduce$91	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$89 [1]
+test_alu	$auto$simplemap.cc:198:logic_reduce$93	$_OR_	A	in	$auto$simplemap.cc:189:logic_reduce$89 [0]
+test_alu	$auto$simplemap.cc:198:logic_reduce$93	$_OR_	B	in	$auto$simplemap.cc:189:logic_reduce$89 [1]
+test_alu	$auto$simplemap.cc:198:logic_reduce$93	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$92
+test_alu	$auto$simplemap.cc:227:simplemap_lognot$104	$_NOT_	A	in	$auto$simplemap.cc:277:simplemap_eqne$99
+test_alu	$auto$simplemap.cc:227:simplemap_lognot$104	$_NOT_	Y	out	$procmux$7_CMP
+test_alu	$auto$simplemap.cc:227:simplemap_lognot$13	$_NOT_	A	in	$auto$simplemap.cc:189:logic_reduce$11
+test_alu	$auto$simplemap.cc:227:simplemap_lognot$13	$_NOT_	Y	out	$procmux$10_CMP
+test_alu	$auto$simplemap.cc:227:simplemap_lognot$23	$_NOT_	A	in	$auto$simplemap.cc:277:simplemap_eqne$18
+test_alu	$auto$simplemap.cc:227:simplemap_lognot$23	$_NOT_	Y	out	$procmux$9_CMP
+test_alu	$auto$simplemap.cc:227:simplemap_lognot$33	$_NOT_	A	in	$auto$simplemap.cc:277:simplemap_eqne$28
+test_alu	$auto$simplemap.cc:227:simplemap_lognot$33	$_NOT_	Y	out	$procmux$8_CMP
+test_alu	$auto$simplemap.cc:298:simplemap_mux$218	$_MUX_	A	in	\b [0]
+test_alu	$auto$simplemap.cc:298:simplemap_mux$218	$_MUX_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$not$/usr/local/bin/../share/yosys/techmap.v:279$190_Y [0]
+test_alu	$auto$simplemap.cc:298:simplemap_mux$218	$_MUX_	S	in	1'0
+test_alu	$auto$simplemap.cc:298:simplemap_mux$218	$_MUX_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$191_Y [0]
+test_alu	$auto$simplemap.cc:298:simplemap_mux$219	$_MUX_	A	in	\b [1]
+test_alu	$auto$simplemap.cc:298:simplemap_mux$219	$_MUX_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$not$/usr/local/bin/../share/yosys/techmap.v:279$190_Y [1]
+test_alu	$auto$simplemap.cc:298:simplemap_mux$219	$_MUX_	S	in	1'0
+test_alu	$auto$simplemap.cc:298:simplemap_mux$219	$_MUX_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$191_Y [1]
+test_alu	$auto$simplemap.cc:298:simplemap_mux$220	$_MUX_	A	in	\b [2]
+test_alu	$auto$simplemap.cc:298:simplemap_mux$220	$_MUX_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$not$/usr/local/bin/../share/yosys/techmap.v:279$190_Y [2]
+test_alu	$auto$simplemap.cc:298:simplemap_mux$220	$_MUX_	S	in	1'0
+test_alu	$auto$simplemap.cc:298:simplemap_mux$220	$_MUX_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$191_Y [2]
+test_alu	$auto$simplemap.cc:298:simplemap_mux$221	$_MUX_	A	in	\b [3]
+test_alu	$auto$simplemap.cc:298:simplemap_mux$221	$_MUX_	B	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$not$/usr/local/bin/../share/yosys/techmap.v:279$190_Y [3]
+test_alu	$auto$simplemap.cc:298:simplemap_mux$221	$_MUX_	S	in	1'0
+test_alu	$auto$simplemap.cc:298:simplemap_mux$221	$_MUX_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$191_Y [3]
+test_alu	$auto$simplemap.cc:298:simplemap_mux$231	$_MUX_	A	in	\b [0]
+test_alu	$auto$simplemap.cc:298:simplemap_mux$231	$_MUX_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$not$/usr/local/bin/../share/yosys/techmap.v:279$190_Y [0]
+test_alu	$auto$simplemap.cc:298:simplemap_mux$231	$_MUX_	S	in	1'1
+test_alu	$auto$simplemap.cc:298:simplemap_mux$231	$_MUX_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$191_Y [0]
+test_alu	$auto$simplemap.cc:298:simplemap_mux$232	$_MUX_	A	in	\b [1]
+test_alu	$auto$simplemap.cc:298:simplemap_mux$232	$_MUX_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$not$/usr/local/bin/../share/yosys/techmap.v:279$190_Y [1]
+test_alu	$auto$simplemap.cc:298:simplemap_mux$232	$_MUX_	S	in	1'1
+test_alu	$auto$simplemap.cc:298:simplemap_mux$232	$_MUX_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$191_Y [1]
+test_alu	$auto$simplemap.cc:298:simplemap_mux$233	$_MUX_	A	in	\b [2]
+test_alu	$auto$simplemap.cc:298:simplemap_mux$233	$_MUX_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$not$/usr/local/bin/../share/yosys/techmap.v:279$190_Y [2]
+test_alu	$auto$simplemap.cc:298:simplemap_mux$233	$_MUX_	S	in	1'1
+test_alu	$auto$simplemap.cc:298:simplemap_mux$233	$_MUX_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$191_Y [2]
+test_alu	$auto$simplemap.cc:298:simplemap_mux$234	$_MUX_	A	in	\b [3]
+test_alu	$auto$simplemap.cc:298:simplemap_mux$234	$_MUX_	B	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$not$/usr/local/bin/../share/yosys/techmap.v:279$190_Y [3]
+test_alu	$auto$simplemap.cc:298:simplemap_mux$234	$_MUX_	S	in	1'1
+test_alu	$auto$simplemap.cc:298:simplemap_mux$234	$_MUX_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$ternary$/usr/local/bin/../share/yosys/techmap.v:279$191_Y [3]
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$39	$_AND_	A	in	$xor$test.v:32$5_Y [0]
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$39	$_AND_	B	in	$procmux$7_CMP
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$39	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$40
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$41	$_AND_	A	in	$and$test.v:31$4_Y [0]
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$41	$_AND_	B	in	$procmux$8_CMP
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$41	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$42
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$43	$_AND_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$xor$/usr/local/bin/../share/yosys/techmap.v:296$192_Y [0]
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$43	$_AND_	B	in	$procmux$9_CMP
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$43	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$44
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$45	$_AND_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$xor$/usr/local/bin/../share/yosys/techmap.v:296$192_Y [0]
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$45	$_AND_	B	in	$procmux$10_CMP
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$45	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$46
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$53	$_AND_	A	in	$xor$test.v:32$5_Y [1]
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$53	$_AND_	B	in	$procmux$7_CMP
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$53	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$54
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$55	$_AND_	A	in	$and$test.v:31$4_Y [1]
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$55	$_AND_	B	in	$procmux$8_CMP
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$55	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$56
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$57	$_AND_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$xor$/usr/local/bin/../share/yosys/techmap.v:296$192_Y [1]
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$57	$_AND_	B	in	$procmux$9_CMP
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$57	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$58
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$59	$_AND_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$xor$/usr/local/bin/../share/yosys/techmap.v:296$192_Y [1]
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$59	$_AND_	B	in	$procmux$10_CMP
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$59	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$60
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$67	$_AND_	A	in	$xor$test.v:32$5_Y [2]
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$67	$_AND_	B	in	$procmux$7_CMP
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$67	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$68
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$69	$_AND_	A	in	$and$test.v:31$4_Y [2]
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$69	$_AND_	B	in	$procmux$8_CMP
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$69	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$70
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$71	$_AND_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$xor$/usr/local/bin/../share/yosys/techmap.v:296$192_Y [2]
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$71	$_AND_	B	in	$procmux$9_CMP
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$71	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$72
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$73	$_AND_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$xor$/usr/local/bin/../share/yosys/techmap.v:296$192_Y [2]
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$73	$_AND_	B	in	$procmux$10_CMP
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$73	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$74
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$81	$_AND_	A	in	$xor$test.v:32$5_Y [3]
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$81	$_AND_	B	in	$procmux$7_CMP
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$81	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$82
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$83	$_AND_	A	in	$and$test.v:31$4_Y [3]
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$83	$_AND_	B	in	$procmux$8_CMP
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$83	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$84
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$85	$_AND_	A	in	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$xor$/usr/local/bin/../share/yosys/techmap.v:296$192_Y [3]
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$85	$_AND_	B	in	$procmux$9_CMP
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$85	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$86
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$87	$_AND_	A	in	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$xor$/usr/local/bin/../share/yosys/techmap.v:296$192_Y [3]
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$87	$_AND_	B	in	$procmux$10_CMP
+test_alu	$auto$simplemap.cc:460:simplemap_pmux$87	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$88
+test_alu	$auto$simplemap.cc:46:simplemap_not$222	$_NOT_	A	in	\b [0]
+test_alu	$auto$simplemap.cc:46:simplemap_not$222	$_NOT_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$not$/usr/local/bin/../share/yosys/techmap.v:279$190_Y [0]
+test_alu	$auto$simplemap.cc:46:simplemap_not$223	$_NOT_	A	in	\b [1]
+test_alu	$auto$simplemap.cc:46:simplemap_not$223	$_NOT_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$not$/usr/local/bin/../share/yosys/techmap.v:279$190_Y [1]
+test_alu	$auto$simplemap.cc:46:simplemap_not$224	$_NOT_	A	in	\b [2]
+test_alu	$auto$simplemap.cc:46:simplemap_not$224	$_NOT_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$not$/usr/local/bin/../share/yosys/techmap.v:279$190_Y [2]
+test_alu	$auto$simplemap.cc:46:simplemap_not$225	$_NOT_	A	in	\b [3]
+test_alu	$auto$simplemap.cc:46:simplemap_not$225	$_NOT_	Y	out	$techmap$techmap$add$test.v:29$2.$auto$alumacc.cc:548:replace_alu$184.$not$/usr/local/bin/../share/yosys/techmap.v:279$190_Y [3]
+test_alu	$auto$simplemap.cc:46:simplemap_not$235	$_NOT_	A	in	\b [0]
+test_alu	$auto$simplemap.cc:46:simplemap_not$235	$_NOT_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$not$/usr/local/bin/../share/yosys/techmap.v:279$190_Y [0]
+test_alu	$auto$simplemap.cc:46:simplemap_not$236	$_NOT_	A	in	\b [1]
+test_alu	$auto$simplemap.cc:46:simplemap_not$236	$_NOT_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$not$/usr/local/bin/../share/yosys/techmap.v:279$190_Y [1]
+test_alu	$auto$simplemap.cc:46:simplemap_not$237	$_NOT_	A	in	\b [2]
+test_alu	$auto$simplemap.cc:46:simplemap_not$237	$_NOT_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$not$/usr/local/bin/../share/yosys/techmap.v:279$190_Y [2]
+test_alu	$auto$simplemap.cc:46:simplemap_not$238	$_NOT_	A	in	\b [3]
+test_alu	$auto$simplemap.cc:46:simplemap_not$238	$_NOT_	Y	out	$techmap$techmap$sub$test.v:30$3.$auto$alumacc.cc:548:replace_alu$187.$not$/usr/local/bin/../share/yosys/techmap.v:279$190_Y [3]
+test_alu	$auto$simplemap.cc:474:simplemap_pmux$52	$_MUX_	A	in	1'x
+test_alu	$auto$simplemap.cc:474:simplemap_pmux$52	$_MUX_	B	in	$auto$simplemap.cc:189:logic_reduce$50
+test_alu	$auto$simplemap.cc:474:simplemap_pmux$52	$_MUX_	S	in	$auto$simplemap.cc:189:logic_reduce$37
+test_alu	$auto$simplemap.cc:474:simplemap_pmux$52	$_MUX_	Y	out	$procmux$6_Y [0]
+test_alu	$auto$simplemap.cc:474:simplemap_pmux$66	$_MUX_	A	in	1'x
+test_alu	$auto$simplemap.cc:474:simplemap_pmux$66	$_MUX_	B	in	$auto$simplemap.cc:189:logic_reduce$64
+test_alu	$auto$simplemap.cc:474:simplemap_pmux$66	$_MUX_	S	in	$auto$simplemap.cc:189:logic_reduce$37
+test_alu	$auto$simplemap.cc:474:simplemap_pmux$66	$_MUX_	Y	out	$procmux$6_Y [1]
+test_alu	$auto$simplemap.cc:474:simplemap_pmux$80	$_MUX_	A	in	1'x
+test_alu	$auto$simplemap.cc:474:simplemap_pmux$80	$_MUX_	B	in	$auto$simplemap.cc:189:logic_reduce$78
+test_alu	$auto$simplemap.cc:474:simplemap_pmux$80	$_MUX_	S	in	$auto$simplemap.cc:189:logic_reduce$37
+test_alu	$auto$simplemap.cc:474:simplemap_pmux$80	$_MUX_	Y	out	$procmux$6_Y [2]
+test_alu	$auto$simplemap.cc:474:simplemap_pmux$94	$_MUX_	A	in	1'x
+test_alu	$auto$simplemap.cc:474:simplemap_pmux$94	$_MUX_	B	in	$auto$simplemap.cc:189:logic_reduce$92
+test_alu	$auto$simplemap.cc:474:simplemap_pmux$94	$_MUX_	S	in	$auto$simplemap.cc:189:logic_reduce$37
+test_alu	$auto$simplemap.cc:474:simplemap_pmux$94	$_MUX_	Y	out	$procmux$6_Y [3]
