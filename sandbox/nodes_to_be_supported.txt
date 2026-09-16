@@ -1,9 +1,8 @@
+Following nodes :-
+
+Combinational:
 $_NAND_
 $_AND_
-$_BUF_		---> it kinda didnt show it...
-$_MUX16_	---> yosys didnt make a mux8 instead it used multiple muxes
-$_MUX8_	---> yosys didnt make a mux8 instead it used multiple muxes
-$_MUX4_	---> yosys didnt make a mux4 instead it made three $_MUX_
 $_MUX_
 $_NOT_
 $_NOR_
@@ -12,11 +11,11 @@ $_XOR_
 $_ANDNOT_
 $_ORNOT_
 
+Sequential:
+Yosys supported:
 $_DFF_P_
 $_DFF_N_
-
-Non-standard:
-
+Yosys not supported:
 $_TFF_P_
 $_TFF_N_
 $_JKFF_P_
@@ -25,6 +24,12 @@ $_JKFF_N_
 
 
 -------------------------------------------------
+NOTHING BELOW THIS
+$_BUF_		---> it kinda didnt show it...
+
+$_MUX16_	---> yosys didnt make a mux8 instead it used multiple muxes
+$_MUX8_	---> yosys didnt make a mux8 instead it used multiple muxes
+$_MUX4_	---> yosys didnt make a mux4 instead it made three $_MUX_
 
 $_DFFE_PP_
 $_DFFE_PN_
