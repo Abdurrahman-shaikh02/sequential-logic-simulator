@@ -1,71 +1,117 @@
 i have a class diagram ready for the evaluation and graph part.
 
 class Node{
-	List * head;
-	virtual int evaluate(enum port, int value){}
+private:
+	List connections;
+public:
+	int add_connection(Node &n, enum port p){
+		connections.add_element(n, p);
+	}
+
+	void commit(int val){
+		connections.loop_and_evaluate(int val);
+	}
+	virtual void evaluate(enum port, int value) = 0;
 }
 
-struct List{
-	Node &n;
-	List * next
-	enum port p;
+class List{
+private:
+	class ListNode{
+		Node &n;
+		enum port p;
+		ListNode * next;
+
+		ListNode(Node &n, enum port p){
+		}
+	}
+
+	ListNode *head = NULL;
+	
+public:
+	ListNode * get_head(){
+		return head;
+	}
+	void add_element(Node &, enum port p){
+		//traverse the list pointed to by head... and then add another listnode
+	}
+	void loop_and_evaluate(int val){
+		temp = l.get_head();
+		//loop over the list and enqueue the evaluate methods on all of them in Combi queue
+
+	}
 }
 
 enum port{A, B, S, J, K, D, T, C}
 
 Sequential_node : Node{
+	virtual void set_port(enum port p, int val) = 0;	//just oop design lol
+	virtual void change_state() = 0;	//just oop design lol
 }
 
 Combinational_node : Node{
+	//nothinggggggggggggggggggggg
 }
 
 class and : Combinational_Node{
 	int A;
 	int B;
-	int evaluate(enum port, int val){
+	void evaluate(enum port, int val){
 		set this.A/B
 		int t = this.A & this.b
-		loop over the list pointed to by head and enqueue their evaluates in the combinational queue
+		this.commit(t);
+	}
+}
+
+class mux : Combinational_Node{
+	int A;
+	int B;
+	int S;
+	void evaluate(enum port p, int val){
+		switch (p){
+			A/B: set A / B
+			S:
+				set S
+			default: error
+		}
+		t = S? A: B;
+		this.commit(t)
 	}
 }
 
 //similary other combinational gates.
 
 jkff : Sequential_Node{
-	int J, K, Q, C;
-	evaluate(enum port p, int val){
+	int J, K, Q;
+	void evaluate(enum port p, int val){
 		switch(P){
 			case J or K: enqueue operation set_port(J/K, val) in the Sequential Queue
 			case C:
 				enqueue change_state() in the Sequential queue;
-			default : error
+			default: error
 		}
 	}
 
-	int set_port(enum port p, int val){
+	void set_port(enum port p, int val){
 		switch(p){
 			//set whichever variable
 		}
 	}
 
-	int change_state(){
+	void change_state(){
 		this.J, this.K -> calculate this.Q
-		enqueue this.commit() in the Sequential queue
-	}
-	
-	int commit(){
-		loop over every node in the list pointed to by head and call proper evaluates on those.
+		enqueue this.commit(this.Q) in the Sequential queue
 	}
 }
 
 Primary Node : Node{
 	int val;
 	enum type;
-	int evaluate (enum port, int val){
+	//this evaluate will never be queued, it will be called manually
+	void evaluate (enum port, int val){
 		switch(this.type){
 			IN:
 				this.val = val
-				loop over every node in the list pointed to by the head and call the proper evaluate functions on those
+				this.commit(val);
 			OUT: 
 				this.val = val
 			default : error
@@ -76,12 +122,16 @@ Primary Node : Node{
 enum type{IN, OUT}
 
 Operation {
-	Node & n;
+	Node * n;
 	enum operation op;
 	//arguments
 	enum port p;
 	int value;
-	int run(){
+	Operation(Node &n, port, val){
+		...
+		//but store it as a pointer... so that we can cast it into a child class and then run the required method
+	}
+	void run(){
 		switch(op){
 			//dispatch the right function call
 		}
@@ -97,6 +147,12 @@ enum operation {
 
 Operation_Queue{
 	vector<Operation> q;	//or a queue whatever
+	
+	void reorder(){
+		if there is a CHANGE_STATE operation after a SET_PORT operation on the same flip flop
+		then swap those operations
+		all other operation remain in their position
+	}
 
 	int enqueue(Node &n, enum operation){
 		//construct operation and add to queue
