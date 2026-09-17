@@ -189,6 +189,7 @@ Operation_Queue{
 }
 
 class Simulator {
+	//the simulator instance we use can be a global object so both queues and nodes can be global...
 	Operation_Queue combination_queue;
 	Operation_Queue sequential_queue;
 	vector<Node> nodes;
