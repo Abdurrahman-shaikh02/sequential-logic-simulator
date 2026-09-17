@@ -41,7 +41,7 @@ public:
 	}
 }
 
-enum port{A, B, S, J, K, D, T, C}
+enum port{A, B, S, J, K, D, T, CLK}
 
 Sequential_node : Node{
 	virtual void set_port(enum port p, int val) = 0;	//just oop design lol
@@ -82,11 +82,19 @@ class mux : Combinational_Node{
 
 jkff : Sequential_Node{
 	int J, K, Q;
+	int CLK;
 	void evaluate(enum port p, int val){
 		switch(P){
 			case J or K: enqueue operation set_port(J/K, val) in the Sequential Queue
-			case C:
-				enqueue change_state() in the Sequential queue;
+			case CLK:
+				search if there is already a change_state operation pending in the sequential_queue
+				if yes delete that operation.
+
+				if(this.CLK < val){	// or > depending on which 
+					enqueue change_state() in the Sequential queue;
+				}else{
+					set CLK = val;
+				}
 			default: error
 		}
 	}
@@ -99,6 +107,7 @@ jkff : Sequential_Node{
 
 	void change_state(){
 		this.J, this.K -> calculate this.Q
+		set CLK = 0 or 1 depending on whether its negatively triggered or positively triggered.
 		enqueue this.commit(this.Q) in the Sequential queue
 	}
 }
@@ -177,4 +186,32 @@ Operation_Queue{
 	int isEmpty(){
 		..
 	}
+}
+
+class Simulator {
+	Operation_Queue combination_queue;
+	Operation_Queue sequential_queue;
+	vector<Node> nodes;
+	int primary_input_count;
+	int primary_output_count;
+
+	void run(){
+		//before calling this run function first call evaluate(O, value) on the proper nodes.
+		//ONLY THEN CALL run()
+
+		while(~(combinational_queue.isEmpty() && sequential_queue.isEmpty())){
+			while(~combination_queue.isEmpty()){
+				Operation x = combinational_queue.dequeue()
+				x.run();
+			}
+
+			sequential_queue.reorder();
+			
+			while(~sequential_queue.isEmpty()){
+				Operation x = sequential_queue.dequeue()
+				x.run();
+			}
+		}
+	}
+
 }
