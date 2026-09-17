@@ -104,26 +104,26 @@ jkff : Sequential_Node{
 }
 
 Primary Node : Node{
-	int value;
-}
-
-class InputNode : PrimaryNode{
+	int val;
+	enum type;
 	//this evaluate will never be queued, it will be called manually
 	void evaluate (enum port, int val){
-		this.value = val
-		this.commit(val);
+		switch(this.type){
+			IN:
+				this.val = val
+				this.commit(val);
+			OUT: 
+				this.val = val
+			default : error
+		}
 	}
 }
 
-class OutputNode : PrimaryNode{
-	//this evaluate will never be queued, it will be called manually
-	void evaluate (enum port, int val){
-		this.value = val
-	}
-}
+enum type{IN, OUT}
 
 Operation {
-	Node & n;
+	Node * n;
+	enum operation op;
 	//arguments
 	enum port p;
 	int value;
@@ -131,31 +131,18 @@ Operation {
 		...
 		//but store it as a pointer... so that we can cast it into a child class and then run the required method
 	}
-	virtual void run() = 0;
-}
-
-class evaluateOperation : Operation {
-	run(){
-		n.evaluate(p, val);
+	void run(){
+		switch(op){
+			//dispatch the right function call
+		}
 	}
 }
 
-class setPortOperation : Operation {
-	run(){
-		((Sequential_Node &)n).set_port(p, val);
-	}
-}
-
-class changeStateOperation : Operation {
-	run(){
-		((Sequential_Node &)n)->change_state(p, val);
-	}
-}
-
-class commitOperation : Operation {
-	run(){
-		n.commit(val);
-	}
+enum operation {
+	EVALUATE,
+	SET_PORT,
+	CHANGE_STATE,
+	COMMIT
 }
 
 Operation_Queue{
