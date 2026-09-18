@@ -1,0 +1,71 @@
+synthesize:
+
+1) 
+    encode states: (0 -> reset, all others -> 01,10,11,100...)
+    encode input names
+    encode output names
+    n = max(1,ceil(log2( num_states)))                          # num of flipflops needed
+    
+2)
+    Q[0...n-1]          #Q[i] = names of flip-flop i's output wire  
+    
+    Dterms[0...n-1]     #Dterms[i] = holds list of flipflop state and input that make ith flipflop 1
+                         ex: (Q0=0,Q1=1,in1=0,in2=0) -> generic term
+                             [(Q0=0,in1=1), (Q0=1,in1=0)] -> Dterms[i]
+    
+    Oterms[0...out_num-1]     #Oterms[j] = holds list of configurations which activates jth output line
+                               ex: Oterms [1] = [(Q0=0,in1=0), (Q0=1,in0=0)] -> 1st output line is set high when the circuit is in the given config.
+    
+3)
+    for each row (C,P,N,O) in table:
+        # C = current state, P = required input values,
+        # N = next state, V = output line values
+        
+        - build the term
+        (configuration of fsm in terms of flipflop states and input)
+        
+        #ith flipflop is being set
+        - for i in 0...n-1:
+            if ith bit in N == 1: append term to Dterms[i]
+        
+        # jth output line is being set
+        - for each j in V:
+            if j == 1: append term to Oterms[i]
+        
+4)
+    write all inputs as primary input lines in netlist
+    write all outputs as primary output lines in netlist
+    write one line for clock 
+    write one line for reset
+    
+5)
+    for i in 0..n-1:
+        dwire   # wire to connect to ith d flip-flop
+        if Dterms[i] is empty: dwire = constant 0 wire
+        
+        else:
+            andWires[]
+            for each term in Dterms[i]:
+                listWires[]
+                
+                for each (wire, value) in term:
+                    if value == 1: add wire directly to listWires
+                    
+                    else:
+                        write a NOT gate with in=wire; output=freshWire
+                        add freshWire to listWires
+                
+                write an AND gate with input = allwires in listWires; output =freshWire
+                add freshWire to andWires
+                    
+            write an OR gate with input = all andWires; output=freshWire
+            dwire = freshWire
+        
+        write a Dflipflop with D = dwire, CLK = clk, ARST = reset, Q=Q[i]
+        
+6)
+    for each output wire out:
+        ##do the exact same thing as above
+        
+        connect owire to the primary-output wire of out
+        
