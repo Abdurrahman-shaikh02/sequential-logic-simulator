@@ -1,0 +1,68 @@
+traffic  en     -     -     pi   \en
+traffic  clk    -     -     pi   \clk
+traffic  reset  -     -     pi   \reset
+traffic  R      -     -     po   \R
+traffic  Y      -     -     po   \Y
+traffic  G      -     -     po   \G
+
+traffic  n0     $not  A     in   \Q0        # NOT Q0  (shared)
+traffic  n0     $not  Y     out  nq0
+traffic  n1     $not  A     in   \Q1        # NOT Q1  (shared)
+traffic  n1     $not  Y     out  nq1
+traffic  ne     $not  A     in   \en        # NOT en  (shared)
+traffic  ne     $not  Y     out  nen
+
+# --- D0 = (nq0·nq1·en) + (Q0·nq1·nen) ---
+traffic  a0     $and  A     in   nq0        # term: advance Sg->Sy
+traffic  a0     $and  B     in   nq1
+traffic  a0     $and  Y     out  t0a
+traffic  a0b    $and  A     in   t0a
+traffic  a0b    $and  B     in   \en
+traffic  a0b    $and  Y     out  t0aa
+traffic  a1     $and  A     in   \Q0        # term: hold in Sy
+traffic  a1     $and  B     in   nq1
+traffic  a1     $and  Y     out  t0b
+traffic  a1b    $and  A     in   t0b
+traffic  a1b    $and  B     in   nen
+traffic  a1b    $and  Y     out  t0bb
+traffic  or0    $or   A     in   t0aa
+traffic  or0    $or   B     in   t0bb
+traffic  or0    $or   Y     out  wD0
+
+# --- D1 = (Q0·nq1·en) + (nq0·Q1·nen) ---
+traffic  b0     $and  A     in   \Q0        # term: advance Sy->Sr
+traffic  b0     $and  B     in   nq1
+traffic  b0     $and  Y     out  t1a
+traffic  b0b    $and  A     in   t1a
+traffic  b0b    $and  B     in   \en
+traffic  b0b    $and  Y     out  t1aa
+traffic  b1     $and  A     in   nq0        # term: hold in Sr
+traffic  b1     $and  B     in   \Q1
+traffic  b1     $and  Y     out  t1b
+traffic  b1b    $and  A     in   t1b
+traffic  b1b    $and  B     in   nen
+traffic  b1b    $and  Y     out  t1bb
+traffic  or1    $or   A     in   t1aa
+traffic  or1    $or   B     in   t1bb
+traffic  or1    $or   Y     out  wD1
+
+# --- outputs (state-only) ---
+traffic  og     $and  A     in   nq0        # G = nq0·nq1
+traffic  og     $and  B     in   nq1
+traffic  og     $and  Y     out  \G
+traffic  oy     $and  A     in   \Q0        # Y = Q0·nq1
+traffic  oy     $and  B     in   nq1
+traffic  oy     $and  Y     out  \Y
+traffic  orr    $and  A     in   nq0        # R = nq0·Q1
+traffic  orr    $and  B     in   \Q1
+traffic  orr    $and  Y     out  \R
+
+# --- flip-flops ---
+traffic  ff0    $adff D     in   wD0
+traffic  ff0    $adff CLK   in   \clk
+traffic  ff0    $adff ARST  in   \reset
+traffic  ff0    $adff Q     out  \Q0
+traffic  ff1    $adff D     in   wD1
+traffic  ff1    $adff CLK   in   \clk
+traffic  ff1    $adff ARST  in   \reset
+traffic  ff1    $adff Q     out  \Q1
