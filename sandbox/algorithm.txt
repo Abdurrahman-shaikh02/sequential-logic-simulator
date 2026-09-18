@@ -1,14 +1,4 @@
 
-when some signals change say x, y signals change
-
-
-//----------
-/* DONE BY W3 */
-call
-x.evaluate 
-y.evaluate
-//----------
-
 Simulator.run(){
 	while(C queue is not empty || S queue is not empty){
 		while(C queue is not empty){
@@ -19,15 +9,15 @@ Simulator.run(){
 		Sort the S queue:
 			if there is a set_port before a change_state operation on the same ff.
 				then swap those two operations.
-					Idea is to always do the update first and the setting port.
-					(Because we are assuming zero propagation delay and because of that signals reach at the same time
-					 and because edge happens first and then the level(we assume trigger is on edges and ports get set at the level)
-					 so trigger first then set port.)
+				Idea is to always do the update first and the setting port.
+				(Because we are assuming zero propagation delay and because of that signals reach at the same time
+				and because edge happens first and then the level(we assume trigger is on edges and ports get set at the level)
+				so trigger first then set port.)
 
-					Then while(S queue is not empty){
-						dequeue()
-							run operation
-					}
+				Then while(S queue is not empty){
+					dequeue()
+					run operation
+				}
 	}
 
 	return

@@ -1,0 +1,40 @@
+How will W1 and W2 use the evaluation engine?
+
+//----------
+/* DONE BY W3 */
+Simulator.synthesize(...)
+Simulator.parse(...)
+
+when some signals change say x, y signals change
+call
+x.evaluate()
+y.evaluate()
+
+Simulator.run()
+
+If u, v were primary output nodes:-
+u.get_out()
+v.get_out()
+//----------
+
+
+
+//----------
+/* DONE BY W1 */
+They will give a pure combinational circuit
+
+Simulator.parse(...)
+
+Say x, y are primary input nodes and their signals must change.
+call
+x.evaluate(..)
+y.evaluate(..)
+
+Simulator.run()
+
+If u, v were primary output nodes:-
+u.get_out()
+v.get_out()
+
+Now generate whatever truth table you want to make
+//----------
