@@ -1,0 +1,11 @@
+inputs:  en
+outputs: R Y G
+reset:   Sg
+
+# current | en | next | R Y G
+Sg | 0 | Sg | 0 0 1      # en=0: hold green
+Sg | 1 | Sy | 0 0 1      # en=1: advance to yellow
+Sy | 0 | Sy | 0 1 0      # hold yellow
+Sy | 1 | Sr | 0 1 0      # advance to red
+Sr | 0 | Sr | 1 0 0      # hold red
+Sr | 1 | Sg | 1 0 0      # advance to green

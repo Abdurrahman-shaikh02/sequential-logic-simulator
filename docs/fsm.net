@@ -1,0 +1,6 @@
+inputs:  <in1> <in2> ...        # signal names, in column order
+outputs: <out1> <out2> ...      # signal names, in column order
+reset:   <state>                # gets the all-zeros encoding
+
+# current | in1 in2 ... | next | out1 out2 ...     (one row per transition)
+<C> | <bits> | <N> | <bits>

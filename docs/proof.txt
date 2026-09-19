@@ -1,0 +1,45 @@
+what is an fsm?
+Q: set of states         # finite m states
+A: set of input (0 or 1) # n distinct inputs
+q0: start state # reset state
+T: set of transitions
+O: set of outputs        # k distinct output lines
+
+ F = (Q,E,q0,T,O)
+
+so proof is:
+
+transition => P( q , a1 a2 a3 a4...an ) = (q', o1 o2 o3 ... ok)
+
+each ai for i in (1 ,n) ai = 1 or 0
+#n = num inputs
+
+each oi for i in (1 ,k) oi = 1 or 0
+#k = num outputs
+
+representation of a simulation fsm?
+- D : num flipflops # p flipflops
+  A : input lines
+  O : output line
+  B : set of p terms
+
+  for each bi in B:
+    bi is set of terms for which Di th flip flop should be set to 1.
+
+    term = [(d1*d2*...dp * a1*a2*a3*...a4)]
+
+  IF P(q, a1a2a3...an) = (q', o1o2o3o4...on) => C(d1 d2 d3...dp, a1 a2 a3 a4 ... an) = (d1' d2' d3' ... dp', o1 o2 o3 o4 ... ok)
+
+
+for each qi in Q:
+    let qi = i
+    i = 
+
+
+0 0 0 0
+di = ()
+
+i1 ---- 7 --- |
+i2 
+i3
+i4
