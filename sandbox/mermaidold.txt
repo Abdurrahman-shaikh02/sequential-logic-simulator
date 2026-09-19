@@ -1,0 +1,267 @@
+classDiagram
+direction LR
+    class Port {
+	    O
+	    A
+	    B
+	    S
+	    J
+	    K
+	    D
+	    T
+	    CLK
+    }
+
+    class Node {
+	    -List connections
+	    #int out
+	    +add_connection(Node &n, Port p)
+	    +get_out() int
+	    +commit(int val)
+	    +evaluate(Port p, int val)*
+    }
+
+    class List {
+	    -ListNode head
+	    +add_element(Node n, Port p)
+	    +loop_and_evaluate(int val)
+    }
+
+    class ListNode {
+	    -Node n
+	    -Port p
+	    -ListNode next
+    }
+
+    class Combinational_Node {
+    }
+
+    class NAND {
+	    -int A
+	    -int B
+	    +evaluate(Port p, int val)
+    }
+
+    class AND {
+	    -int A
+	    -int B
+	    +evaluate(Port p, int val)
+    }
+
+    class MUX {
+	    -int A
+	    -int B
+	    -int S
+	    +evaluate(Port p, int val)
+    }
+
+    class NOT {
+	    -int A
+	    +evaluate(Port p, int val)
+    }
+
+    class NOR {
+	    -int A
+	    -int B
+	    +evaluate(Port p, int val)
+    }
+
+    class OR {
+	    -int A
+	    -int B
+	    +evaluate(Port p, int val)
+    }
+
+    class XOR {
+	    -int A
+	    -int B
+	    +evaluate(Port p, int val)
+    }
+
+    class ANDNOT {
+	    -int A
+	    -int B
+	    +evaluate(Port p, int val)
+    }
+
+    class ORNOT {
+	    -int A
+	    -int B
+	    +evaluate(Port p, int val)
+    }
+
+    class DFF_P {
+	    -int D
+	    -int CLK
+	    +evaluate(Port p, int val)
+	    +set_port(Port p, int val)
+	    +change_state()
+    }
+
+    class DFF_N {
+	    -int D
+	    -int CLK
+	    +evaluate(Port p, int val)
+	    +set_port(Port p, int val)
+	    +change_state()
+    }
+
+    class TFF_P {
+	    -int T
+	    -int CLK
+	    +evaluate(Port p, int val)
+	    +set_port(Port p, int val)
+	    +change_state()
+    }
+
+    class TFF_N {
+	    -int T
+	    -int CLK
+	    +evaluate(Port p, int val)
+	    +set_port(Port p, int val)
+	    +change_state()
+    }
+
+    class JKFF_P {
+	    -int J
+	    -int K
+	    -int CLK
+	    +evaluate(Port p, int val)
+	    +set_port(Port p, int val)
+	    +change_state()
+    }
+
+    class JKFF_N {
+	    -int J
+	    -int K
+	    -int CLK
+	    +evaluate(Port p, int val)
+	    +set_port(Port p, int val)
+	    +change_state()
+    }
+
+    class PrimaryNode {
+    }
+
+    class InputNode {
+	    +evaluate(Port p, int val)
+    }
+
+    class OutputNode {
+	    +evaluate(Port p, int val)
+    }
+
+    class OperationType {
+	    EVALUATE
+	    SET_PORT
+	    CHANGE_STATE
+	    COMMIT
+    }
+
+    class Operation {
+	    -Node &target
+	    -Port p
+	    -int value
+	    -enum OperationType type
+		#Operation(Node &target, port p, int value)
+	    +isEqual(Operation op) bool
+	    +run()*
+    }
+
+    class EvaluateOperation {
+		+EvaluateOperation(Node &target, port p, int value)
+	    +run()
+    }
+
+    class SetPortOperation {
+		+SetPortOperation(Node &target, port p, int value)
+	    +run()
+    }
+
+    class ChangeStateOperation {
+		+ChangeStateOperation(Node &target, port p, int value)
+	    +run()
+    }
+
+    class CommitOperation {
+		+CommitOperation(Node &target, port p, int value)
+	    +run()
+    }
+
+    class OperationQueue {
+	    -Operation[] q
+	    +enqueue(Operation op)
+	    +dequeue() Operation
+	    +delete(Operation op)
+	    +isEmpty() bool
+	    +reorder()
+    }
+
+    class Simulator {
+	    +OperationQueue combQueue$
+	    +OperationQueue seqQueue$
+	    +Node[] nodes $
+	    +int primaryInputCount$
+	    +int primaryOutputCount$
+	    +parse(String path) int $
+	    +synthesize(String path) String $
+	    +run()$
+    }
+
+    class Parser {
+	    +parse(String path) int $
+    }
+
+    class Synthesizer {
+	    +synthesize(String path) String $
+    }
+
+    class Sequential_Node {
+	    +set_port(Port p, int val)*
+	    +change_state()*
+    }
+
+	<<enumeration>> Port
+	<<abstract>> Node
+	<<abstract>> Combinational_Node
+	<<abstract>> PrimaryNode
+	<<enumeration>> OperationType
+	<<abstract>> Operation
+	<<abstract>> Sequential_Node
+
+    Node <|-- Sequential_Node
+    Node <|-- Combinational_Node
+    Node <|-- PrimaryNode
+    PrimaryNode <|-- InputNode
+    PrimaryNode <|-- OutputNode
+    Combinational_Node <|-- NAND
+    Combinational_Node <|-- AND
+    Combinational_Node <|-- MUX
+    Combinational_Node <|-- NOT
+    Combinational_Node <|-- NOR
+    Combinational_Node <|-- OR
+    Combinational_Node <|-- XOR
+    Combinational_Node <|-- ANDNOT
+    Combinational_Node <|-- ORNOT
+    Sequential_Node <|-- DFF_P
+    Sequential_Node <|-- DFF_N
+    Sequential_Node <|-- TFF_P
+    Sequential_Node <|-- TFF_N
+    Sequential_Node <|-- JKFF_P
+    Sequential_Node <|-- JKFF_N
+    Operation <|-- EvaluateOperation
+    Operation <|-- SetPortOperation
+    Operation <|-- ChangeStateOperation
+    Operation <|-- CommitOperation
+    Node "1" *-- "1" List : owns
+    List "1" *-- "0..*" ListNode : contains
+    ListNode "0..*" --> "1" Node : refers to
+    Operation "0..*" --> "1" Node : targets
+    SetPortOperation "0..*" --> "1" Sequential_Node : targets
+    ChangeStateOperation "0..*" --> "1" Sequential_Node : targets
+    OperationQueue "1" *-- "0..*" Operation : holds
+    Simulator "1" *-- "2" OperationQueue : manages
+    %%Simulator ..> Node : triggers evaluate on
+	Simulator "1" --o "*" Node : contains
+	Simulator ..> Parser : uses
+	Simulator ..> Synthesizer : uses

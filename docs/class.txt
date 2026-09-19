@@ -35,9 +35,6 @@ private:
 	ListNode *head = NULL;
 	
 public:
-	ListNode * get_head(){
-		return head;
-	}
 	void add_element(Node &, enum port p){
 		//traverse the list pointed to by head... and then add another listnode
 	}
@@ -205,7 +202,7 @@ Operation_Queue{
 	}
 	
 	void delete(Operation &op){
-		//if found delete the operation
+		//loop over if found delete the operation
 	}
 
 	Operation & dequeue(){
