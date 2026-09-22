@@ -1,3 +1,5 @@
+#pragma once
+
 enum class OperationType {
 	EVALUATE,
 	SET_PORT,

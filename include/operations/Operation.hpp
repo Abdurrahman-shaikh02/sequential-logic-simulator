@@ -11,6 +11,7 @@ class Operation {
 
 protected:
 	Operation(Node &target, Port p, Signal value);
+public:
 	bool operator==(const Operation &op);
 	virtual void run() = 0;
 };

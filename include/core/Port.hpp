@@ -1,3 +1,5 @@
+#pragma once
+
 enum class Port {
 	O,
 	A,
