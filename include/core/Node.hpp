@@ -9,9 +9,10 @@ private:
 	List connections;
 protected:
 	Signal result;
+	Node();
 public:
 	void add_connection(Node &node, Port p);
 	Signal get_result();
 	void commit();
-	void evaluate(Port p, Signal value);
+	virtual void evaluate(Port p, Signal value) = 0;
 };
