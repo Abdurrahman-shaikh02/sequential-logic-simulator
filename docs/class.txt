@@ -236,15 +236,15 @@ class Simulator {
 		//before calling this run function first call evaluate(O, value) on the proper nodes.
 		//ONLY THEN CALL run()
 
-		while(~(combinational_queue.isEmpty() && sequential_queue.isEmpty())){
-			while(~combination_queue.isEmpty()){
+		while(!(combinational_queue.isEmpty() && sequential_queue.isEmpty())){
+			while(!combination_queue.isEmpty()){
 				Operation x = combinational_queue.dequeue()
 				x.run();
 			}
 
 			sequential_queue.reorder();
 			
-			while(~sequential_queue.isEmpty()){
+			while(!sequential_queue.isEmpty()){
 				Operation x = sequential_queue.dequeue()
 				x.run();
 			}

@@ -5,7 +5,7 @@
 #include "core/Signal.hpp"
 #include "core/Port.hpp"
 
-class EvaluateOperation : private Operation {
+class EvaluateOperation : public Operation {
 public:
 	EvaluateOperation(Node &target, Port p, Signal value);
 	void run() override;

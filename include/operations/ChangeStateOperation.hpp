@@ -5,7 +5,7 @@
 #include "core/Signal.hpp"
 #include "core/Port.hpp"
 
-class ChangeStateOperation : private Operation {
+class ChangeStateOperation : public Operation {
 public:
 	ChangeStateOperation(Node &target, Port p, Signal value);
 	void run() override;

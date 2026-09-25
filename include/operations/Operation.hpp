@@ -5,13 +5,19 @@
 #include "core/Signal.hpp"
 
 class Operation {
+protected:
 	Node &target;
 	Port p;
 	Signal value;
 
-protected:
 	Operation(Node &target, Port p, Signal value);
 public:
 	bool operator==(const Operation &op);
 	virtual void run() = 0;
+	virtual ~Operation() = default;
+	
+	// helpful in operationqueue.cpp
+	Node& getTarget() const { 
+		return target; 
+	}
 };
