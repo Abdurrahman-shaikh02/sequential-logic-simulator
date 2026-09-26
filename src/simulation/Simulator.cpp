@@ -2,11 +2,11 @@
 #include <iostream>
 
 // initialization of static class members
-OperationQueue Simulator::combination_queue;
-OperationQueue Simulator::sequential_queue;
+OperationQueue Simulator::combinationalQueue;
+OperationQueue Simulator::sequentialQueue;
 std::vector<std::unique_ptr<Node>> Simulator::nodes;
-int Simulator::primary_input_count = 0;
-int Simulator::primary_output_count = 0;
+int Simulator::primaryInputCount = 0;
+int Simulator::primaryOutputCount = 0;
 
 int Simulator::parse(const std::string &path) {
     // replace with Parser class call when ready
@@ -22,11 +22,11 @@ std::string Simulator::synthesize(const std::string &path) {
 
 void Simulator::run() {
 
-    while (!combination_queue.isEmpty() || !sequential_queue.isEmpty()) {
+    while (!combinationalQueue.isEmpty() || !sequentialQueue.isEmpty()) {
         
         // Phase 1: Drain Combinational Queue (Gate evaluations & signal propagation)
-        while (!combination_queue.isEmpty()) {
-            std::unique_ptr<Operation> op = combination_queue.dequeue();
+        while (!combinationalQueue.isEmpty()) {
+            std::unique_ptr<Operation> op = combinationalQueue.dequeue();
             if (op) {
                 // just fyi : this is called as polymorphic execution
                 op->run(); 
@@ -34,22 +34,14 @@ void Simulator::run() {
         }
 
         // Phase 2: Timing check & reorder S-Queue (Prioritizes CHANGE_STATE over SET_PORT on FFs)
-        sequential_queue.reorder();
+        sequentialQueue.reorder();
 
         // Phase 3: Drain Sequential Queue (Flip-flop state calculations and commits)
-        while (!sequential_queue.isEmpty()) {
-            std::unique_ptr<Operation> op = sequential_queue.dequeue();
+        while (!sequentialQueue.isEmpty()) {
+            std::unique_ptr<Operation> op = sequentialQueue.dequeue();
             if (op) {
                 op->run();
             }
         }
     }
-}
-
-void Simulator::clear() {
-    combination_queue.clear();
-    sequential_queue.clear();
-    nodes.clear();
-    primary_input_count = 0;
-    primary_output_count = 0;
 }
