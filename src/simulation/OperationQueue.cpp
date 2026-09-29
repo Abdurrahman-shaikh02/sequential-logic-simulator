@@ -1,5 +1,7 @@
 #include <iostream>
 #include "simulation/OperationQueue.hpp"
+#include "operations/SetPortOperation.hpp"
+#include "operations/ChangeStateOperation.hpp"
 
 /* pushes an operation at the back of the queue
  * uses std::move(). See online, how it works :)
@@ -12,12 +14,12 @@
  * std::move() is also extremely fast i.e. O(1) TC
  */
 void OperationQueue::enqueue(std::unique_ptr<Operation> op) {
+    // needs a STRICTLY DYNAMICALLY allocated object of type Operation
     if(op) {
         q.push_back(std::move(op));
     }
 }
 
-// 
 std::unique_ptr<Operation> OperationQueue::dequeue() {
     if (q.empty()) 
         return nullptr;
@@ -27,14 +29,12 @@ std::unique_ptr<Operation> OperationQueue::dequeue() {
     return op;
 }
 
-bool OperationQueue::cancel(const Operation &op) {
+void OperationQueue::cancel(const Operation &op) {
     for (auto it = q.begin(); it != q.end(); ++it) {
         if (**it == op) { // Uses Operation::operator==
             q.erase(it);
-            return true;
         }
     }
-    return false;
 }
 
 /* goes in a loop and checks if 
