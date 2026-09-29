@@ -7,7 +7,9 @@
 class DFF_P : public SequentialNode {
 	Signal d;
 	Signal clk;
-	void evaluate(Port p, Signal value);
-	void setPort(Port p, Signal value);
-	void changeState();
+public:
+	DFF_P();
+	void evaluate(Port p, Signal value) override;
+	void setPort(Port p, Signal value) override;
+	void changeState() override;
 };

@@ -2,14 +2,14 @@
 
 Node::Node() : result(Signal::LOW) {}
 
-void Node::add_connection(Node &node, Port p) {
+void Node::addConnection(Node &node, Port p) {
 	connections.addElement(node, p);
 }
 
-Signal Node::get_result() {
+Signal Node::getResult() {
 	return result;
 }
 
-void Node::commit() {
-	connections.loopAndEvaluate(result);
+void Node::commit(Signal value) {
+	connections.loopAndEvaluate(value);
 }
