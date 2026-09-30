@@ -1,7 +1,13 @@
 #include "combinational/NOT.hpp"
+#include <iostream>
 
 void NOT::evaluate(Port p, Signal value) {
     if (p == Port::A) A = value;
-    result = (A == Signal::LOW) ? Signal::HIGH : Signal::LOW;
-    this->commit(result);
+    else std::cerr << "port does not exist on NOT gate\n";
+
+    Signal temp = (A == Signal::LOW) ? Signal::HIGH : Signal::LOW;
+    if(temp != result){
+        result = temp;
+        this->commit(result);
+    }
 }
