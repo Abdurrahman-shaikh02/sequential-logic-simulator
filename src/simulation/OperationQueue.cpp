@@ -59,8 +59,7 @@ void OperationQueue::reorder() {
             // check : same exact node? via memory addresses
             if(&setPortOp->getTarget() == &changeStateOp->getTarget()) {
                 if(!ok) {
-                    std::cerr << "[WARNING] Timing hazard detected: SET_PORT scheduled before "
-                              << "CHANGE_STATE on the same Flip-Flop! Reordering operations.\n";
+                    std::cerr << "[WARNING] Hold-time violation detected." << std::endl;
                     
                     ok = true;
                 }
