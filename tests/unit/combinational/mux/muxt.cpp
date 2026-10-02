@@ -7,21 +7,23 @@
 #include "core/Node.hpp"
 
 int main(){
-	// make all nodes
-	Simulator::nodes.push_back(std::make_unique<InputNode>());
-	Simulator::nodes.push_back(std::make_unique<InputNode>());
-	Simulator::nodes.push_back(std::make_unique<InputNode>());
-	Simulator::nodes.push_back(std::make_unique<InputNode>());
-	Simulator::nodes.push_back(std::make_unique<MUX>());
-	Simulator::nodes.push_back(std::make_unique<MUX>());
-	Simulator::nodes.push_back(std::make_unique<MUX>());
-	Simulator::nodes.push_back(std::make_unique<OutputNode>());
+	// make all nodes (4 inputs, 3 MUX gates, 1 output)
+	Simulator::nodes.push_back(std::make_unique<InputNode>()); // 0: data0
+	Simulator::nodes.push_back(std::make_unique<InputNode>()); // 1: data1
+	Simulator::nodes.push_back(std::make_unique<InputNode>()); // 2: data2
+	Simulator::nodes.push_back(std::make_unique<InputNode>()); // 3: select/data3
+	Simulator::nodes.push_back(std::make_unique<MUX>());       // 4: Gate 1
+	Simulator::nodes.push_back(std::make_unique<MUX>());       // 5: Gate 2
+	Simulator::nodes.push_back(std::make_unique<MUX>());       // 6: Gate 3 (Final MUX)
+	Simulator::nodes.push_back(std::make_unique<OutputNode>()); // 7: Output
 
-	// make all required connections
+	// wire connections properly incorporating data and select ports
 	Simulator::nodes[0]->addConnection(*Simulator::nodes[4], Port::A);
 	Simulator::nodes[1]->addConnection(*Simulator::nodes[4], Port::B);
-	Simulator::nodes[2]->addConnection(*Simulator::nodes[5], Port::A);
-	Simulator::nodes[3]->addConnection(*Simulator::nodes[5], Port::B);
+	Simulator::nodes[2]->addConnection(*Simulator::nodes[4], Port::SEL); // Select for Gate 4
+
+	// Feed remaining inputs into Gate 5 and Gate 6 hierarchy as needed
+	Simulator::nodes[3]->addConnection(*Simulator::nodes[5], Port::SEL); 
 	Simulator::nodes[4]->addConnection(*Simulator::nodes[6], Port::A);
 	Simulator::nodes[5]->addConnection(*Simulator::nodes[6], Port::B);
 	Simulator::nodes[6]->addConnection(*Simulator::nodes[7], Port::O);
@@ -40,7 +42,7 @@ int main(){
 		static_cast<InputNode *>(Simulator::nodes[2].get())->evaluate(Port::O, cc);
 		static_cast<InputNode *>(Simulator::nodes[3].get())->evaluate(Port::O, dd);
 
-		//simulate
+		// simulate
 		Simulator::run();
 
 		// examine outputs
