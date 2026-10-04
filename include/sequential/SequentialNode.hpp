@@ -5,6 +5,7 @@
 #include "core/Node.hpp"
 
 class SequentialNode : public Node {
+public:
 	virtual void setPort(Port p, Signal value) = 0;
 	virtual void changeState() = 0;
 };
