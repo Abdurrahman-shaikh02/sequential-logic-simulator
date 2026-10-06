@@ -1,0 +1,53 @@
+Add a field to Node -> commit flag
+
+Add a Simulator::initialize() method that will:
+- turn all input nodes to 0
+- set all commit flags to 1
+- run Simulator::run()
+
+
+Change Simulator::run()'s algorithm:
+call evaluates on ALL input nodes;
+while(combiq is not empty || seqq is not empty || atleast one node in the topological order has a commit flag set.){
+	while(combiq is not empty || atleast one node in the topological order has a commit flag set.){
+		while(combiq is not empty){
+			keep running operations in the combiq
+		}
+		commit next element from the topological order.
+	}
+
+	reorder the seqq
+
+	while(seqq is not empty){
+		keep running operations
+	}
+}
+
+
+####################################
+One suggestion on how to implement the topological order...
+Lets instead add a field called priority to Node
+Then assign priority based on the topological order...
+And then let the topological order "queue" to be a heap.
+
+So search in the heap for setting the commit flag... if found great... if not add that node with whatever priority.
+Time complexity ????
+
+OR maybe just keep pointers for faster lookup so
+####################################
+
+
+Changes to CombinationNodes:
+instead of calling commit set the evaluate flag instead. thats it
+
+
+Changes to SequentialNodes:
+We will be using commit only the first time during Simulator::initialize()
+It will be set to zero for the remainder of the simulation.
+Evaluate logic:
+if(commit is set)
+	then ANY evaluate method will ONLY set the internal value and return.
+
+Later on when commit is called as part of the topolgical evaluation, it will happen as follows:-
+	reset commit flag
+	and CALL commit function.
