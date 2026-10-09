@@ -1,4 +1,5 @@
 #include "simulation/Simulator.hpp"
+#include "synthesizer/Synthesizer.hpp"
 #include <iostream>
 
 // initialization of static class members
@@ -14,10 +15,9 @@ int Simulator::parse(const std::string &path) {
     return 0;
 }
 
+// returns the path of the generated netlist ("" on error), ready for parse()
 std::string Simulator::synthesize(const std::string &path) {
-    // replace with Synthesizer class call when ready
-    // e.g., Synthesizer syn; return syn.synthesize(path);
-    return "";
+    return Synthesizer::synthesize(path);
 }
 
 void Simulator::run() {
