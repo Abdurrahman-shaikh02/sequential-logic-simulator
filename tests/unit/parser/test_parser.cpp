@@ -3,8 +3,6 @@
 // Tests for Parser::parse(): netlist validation + graph creation.
 // Self-contained (no gtest). Each test writes a netlist to a temp file.
 //
-// !! ADAPT THIS: the only Node API assumption is in connectionsOf() below.
-// !! Change it to however your Node exposes its outgoing connections.
 
 #include <filesystem>
 #include <fstream>
@@ -27,14 +25,19 @@
 #include "primary/InputNode.hpp"
 #include "primary/OutputNode.hpp"
 
-// ASSUMPTION: adapt to your Node interface.
-// Must return the list of (consumer node, consumer port) that `n` drives,
-// i.e. what addConnection(consumer, port) stored.
+// Friend of Node and List (see core/Node.hpp, core/List.hpp): gives the tests
+// read-only access to a node's outgoing connections.
+struct ParserTestAccess {
+    static std::vector<std::pair<const Node*, Port>> connections(const Node& n) {
+        std::vector<std::pair<const Node*, Port>> out;
+        for (auto* c = n.connections.head; c; c = c->next)
+            out.push_back({&c->target, c->p});
+        return out;
+    }
+};
+
 static std::vector<std::pair<const Node*, Port>> connectionsOf(const Node& n) {
-    std::vector<std::pair<const Node*, Port>> out;
-    for (const auto& c : n.getConnections())          // <-- adapt
-        out.push_back({&c.node, c.port});             // <-- adapt
-    return out;
+    return ParserTestAccess::connections(n);
 }
 
 // Mini harness
