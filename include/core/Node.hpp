@@ -4,7 +4,10 @@
 #include "core/Signal.hpp"
 #include "core/Port.hpp"
 
+struct ParserTestAccess;
+
 class Node {
+	friend struct ParserTestAccess; // test-only read access to connections
 private:
 	List connections;
 protected:

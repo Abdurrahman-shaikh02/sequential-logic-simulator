@@ -4,8 +4,10 @@
 #include "core/Signal.hpp"
 
 class Node;
+struct ParserTestAccess;
 
 class List {
+	friend struct ParserTestAccess; // test-only read access to the list
 	class ListNode {
 	public:
 		Node &target;
@@ -21,5 +23,3 @@ public:
 	void addElement(Node &node, Port p);
 	void loopAndEvaluate(Signal value);
 };
-
-
