@@ -1,0 +1,82 @@
+# synthesized from docs/fsm_example/traffic_light_fsm.net
+# state encoding (Q1..Q0): Sg=00 Sy=01 Sr=10  (reset: Sg)
+
+# primary inputs / clock / reset
+traffic_light_fsm	en	-	-	pi	\en
+traffic_light_fsm	clk	-	-	pi	\clk
+traffic_light_fsm	reset	-	-	pi	\reset
+
+# state bit Q0: D = (next-state logic) AND NOT reset
+traffic_light_fsm	$not$0	$not	A	in	\reset
+traffic_light_fsm	$not$0	$not	Y	out	$not$0_Y
+traffic_light_fsm	$not$1	$not	A	in	$dff_p$q0_Q
+traffic_light_fsm	$not$1	$not	Y	out	$not$1_Y
+traffic_light_fsm	$not$2	$not	A	in	$dff_p$q1_Q
+traffic_light_fsm	$not$2	$not	Y	out	$not$2_Y
+traffic_light_fsm	$and$3	$and	A	in	$not$1_Y
+traffic_light_fsm	$and$3	$and	B	in	$not$2_Y
+traffic_light_fsm	$and$3	$and	Y	out	$and$3_Y
+traffic_light_fsm	$and$4	$and	A	in	$and$3_Y
+traffic_light_fsm	$and$4	$and	B	in	\en
+traffic_light_fsm	$and$4	$and	Y	out	$and$4_Y
+traffic_light_fsm	$and$5	$and	A	in	$dff_p$q0_Q
+traffic_light_fsm	$and$5	$and	B	in	$not$2_Y
+traffic_light_fsm	$and$5	$and	Y	out	$and$5_Y
+traffic_light_fsm	$not$6	$not	A	in	\en
+traffic_light_fsm	$not$6	$not	Y	out	$not$6_Y
+traffic_light_fsm	$and$7	$and	A	in	$and$5_Y
+traffic_light_fsm	$and$7	$and	B	in	$not$6_Y
+traffic_light_fsm	$and$7	$and	Y	out	$and$7_Y
+traffic_light_fsm	$or$8	$or	A	in	$and$4_Y
+traffic_light_fsm	$or$8	$or	B	in	$and$7_Y
+traffic_light_fsm	$or$8	$or	Y	out	$or$8_Y
+traffic_light_fsm	$and$9	$and	A	in	$or$8_Y
+traffic_light_fsm	$and$9	$and	B	in	$not$0_Y
+traffic_light_fsm	$and$9	$and	Y	out	$and$9_Y
+traffic_light_fsm	$dff_p$q0	$dff_p	D	in	$and$9_Y
+traffic_light_fsm	$dff_p$q0	$dff_p	CLK	in	\clk
+traffic_light_fsm	$dff_p$q0	$dff_p	Q	out	$dff_p$q0_Q
+
+# state bit Q1: D = (next-state logic) AND NOT reset
+traffic_light_fsm	$and$10	$and	A	in	$and$5_Y
+traffic_light_fsm	$and$10	$and	B	in	\en
+traffic_light_fsm	$and$10	$and	Y	out	$and$10_Y
+traffic_light_fsm	$and$11	$and	A	in	$not$1_Y
+traffic_light_fsm	$and$11	$and	B	in	$dff_p$q1_Q
+traffic_light_fsm	$and$11	$and	Y	out	$and$11_Y
+traffic_light_fsm	$and$12	$and	A	in	$and$11_Y
+traffic_light_fsm	$and$12	$and	B	in	$not$6_Y
+traffic_light_fsm	$and$12	$and	Y	out	$and$12_Y
+traffic_light_fsm	$or$13	$or	A	in	$and$10_Y
+traffic_light_fsm	$or$13	$or	B	in	$and$12_Y
+traffic_light_fsm	$or$13	$or	Y	out	$or$13_Y
+traffic_light_fsm	$and$14	$and	A	in	$or$13_Y
+traffic_light_fsm	$and$14	$and	B	in	$not$0_Y
+traffic_light_fsm	$and$14	$and	Y	out	$and$14_Y
+traffic_light_fsm	$dff_p$q1	$dff_p	D	in	$and$14_Y
+traffic_light_fsm	$dff_p$q1	$dff_p	CLK	in	\clk
+traffic_light_fsm	$dff_p$q1	$dff_p	Q	out	$dff_p$q1_Q
+
+# output R
+traffic_light_fsm	$and$15	$and	A	in	$and$11_Y
+traffic_light_fsm	$and$15	$and	B	in	\en
+traffic_light_fsm	$and$15	$and	Y	out	$and$15_Y
+traffic_light_fsm	$or$16	$or	A	in	$and$12_Y
+traffic_light_fsm	$or$16	$or	B	in	$and$15_Y
+traffic_light_fsm	$or$16	$or	Y	out	$or$16_Y
+traffic_light_fsm	R	-	-	po	$or$16_Y
+
+# output Y
+traffic_light_fsm	$or$17	$or	A	in	$and$7_Y
+traffic_light_fsm	$or$17	$or	B	in	$and$10_Y
+traffic_light_fsm	$or$17	$or	Y	out	$or$17_Y
+traffic_light_fsm	Y	-	-	po	$or$17_Y
+
+# output G
+traffic_light_fsm	$and$18	$and	A	in	$and$3_Y
+traffic_light_fsm	$and$18	$and	B	in	$not$6_Y
+traffic_light_fsm	$and$18	$and	Y	out	$and$18_Y
+traffic_light_fsm	$or$19	$or	A	in	$and$18_Y
+traffic_light_fsm	$or$19	$or	B	in	$and$4_Y
+traffic_light_fsm	$or$19	$or	Y	out	$or$19_Y
+traffic_light_fsm	G	-	-	po	$or$19_Y
