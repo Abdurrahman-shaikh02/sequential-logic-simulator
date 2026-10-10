@@ -1,45 +1,53 @@
-what is an fsm?
-Q: set of states         # finite m states
-A: set of input (0 or 1) # n distinct inputs
-q0: start state # reset state
-T: set of transitions
-O: set of outputs        # k distinct output lines
+Model of FSM:
+Q: set of states
+A: set of n inputs
+O: set of k outputs
+q0: start state ∈ Q
+δ: transition function
+    δ(q,a) = (q',o)
 
- F = (Q,E,q0,T,O)
-
-so proof is:
-
-transition => P( q , a1 a2 a3 a4...an ) = (q', o1 o2 o3 ... ok)
-
-each ai for i in (1 ,n) ai = 1 or 0
-#n = num inputs
-
-each oi for i in (1 ,k) oi = 1 or 0
-#k = num outputs
-
-representation of a simulation fsm?
-- D : num flipflops # p flipflops
-  A : input lines
-  O : output line
-  B : set of p terms
-
-  for each bi in B:
-    bi is set of terms for which Di th flip flop should be set to 1.
-
-    term = [(d1*d2*...dp * a1*a2*a3*...a4)]
-
-  IF P(q, a1a2a3...an) = (q', o1o2o3o4...on) => C(d1 d2 d3...dp, a1 a2 a3 a4 ... an) = (d1' d2' d3' ... dp', o1 o2 o3 o4 ... ok)
+a = a1, a2, a3...an
+o = a1, o2, o3...ok
+=> each ai and oi ∈ {0,1} 
 
 
-for each qi in Q:
-    let qi = i
-    i = 
+
+------------------------------------------------------------------------------------------------------------------------------------
+Model of sequential circuit
+A: n input lines
+O: k output lines
+D: D-flipflops, |D| = m (m flipflops)
+    Qi: output of ith flipflop
+    Di: input of ith flipflop
+d0 = reset state of circuit
+
+I: (I1, I2, I3 ... Im)
+    Ii ⊆ P -> Di = {t1 + t2 + t3... t | tj ∈ Ii} (Ii is the set of minterms ORed and connected to input of ith flipflop)
 
 
-0 0 0 0
-di = ()
+T: (T1, T2, T3 ... Tk)
+    Ti ⊆ P -> Oi = {t1 + t2 + t3... t | tj ∈ Ti} (Ti is the set of minterms ORed and connected to ith output line)
 
-i1 ---- 7 --- |
-i2 
-i3
-i4
+Δ(Q,a) = (Q',o)
+
+a = (same as defined in FSM)
+
+Q = Q1, Q2 ... Qn (current outputs of all flopflops)
+
+Q' = Q1' , Q2' ... Qn'
+Qi' = Ii(Q,a) => value of logical expression Ii evaluated at current values of Q's and inputs.
+
+o = o1, o2, ... ok
+oi = Ti(Q,a) => value of logical expression Ti evaluated at current values of Q's and inputs.
+
+
+------------------------------------------------------------------------------------------------------------------------------------
+Now the actual statement to prove:
+
+let e be the mapping:
+- e(q0) = d0
+- for all q,a if δ(q,a) = (q',o)  =>  Δ( e(q), a) = ( e(q'), o)
+
+For an FSM F = (Q,A,O,q0,δ) for all w ∈ ({0,1}^n)^*                                       (set of all possible strings of size n made of 0 or 1)
+                            if δ(q,w) = (q,o)
+                            (then)=> the output sequence produced by the constructed circuit is same.
