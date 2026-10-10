@@ -5,6 +5,5 @@ Operation::Operation(Node& target, Port p, Signal value)
 
 bool Operation::operator==(const Operation &op) {
     return (&this->target == &op.target) && 
-           (this->p == op.p) && 
-           (this->value == op.value);
+           (this->p == op.p);
 }
