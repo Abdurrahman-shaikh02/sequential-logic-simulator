@@ -5,8 +5,8 @@
 OperationQueue Simulator::combinationalQueue;
 OperationQueue Simulator::sequentialQueue;
 std::vector<std::unique_ptr<Node>> Simulator::nodes;
-int Simulator::primaryInputCount = 0;
-int Simulator::primaryOutputCount = 0;
+std::unordered_map<std::string, std::vector<Node*>> Simulator::primaryInputs;
+std::unordered_map<std::string, std::vector<Node*>> Simulator::primaryOutputs;
 
 int Simulator::parse(const std::string &path) {
     // replace with Parser class call when ready

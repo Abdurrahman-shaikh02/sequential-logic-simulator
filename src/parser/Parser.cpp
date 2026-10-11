@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <regex>
 
 #include "parser/Parser.hpp"
 #include "core/Node.hpp"
@@ -27,14 +28,12 @@
 #include "primary/InputNode.hpp"
 #include "primary/OutputNode.hpp"
 
-// To be modified slightly based on actual netlist syntax
 // Defines structures for mapping netlist descriptors to code
 // Each gate and wire should have a unique name -- circuit rejected otherwise
 
 namespace {
-    // Maps netlist ports to the Port class
     const std::unordered_map<std::string, Port> portNameTable = {
-        {"A", Port::A}, {"B", Port::B}, {"S", Port::S}, {"J", Port::J}, {"K", Port::K}, {"D", Port::D}, {"T", Port::T}, {"CLK", Port::CLK}, {"Y", Port::O}, {"Q", Port::O},
+        {"A", Port::A}, {"B", Port::B}, {"S", Port::S}, {"J", Port::J}, {"K", Port::K}, {"D", Port::D}, {"T", Port::T}, {"C", Port::CLK}, {"Y", Port::O}, {"Q", Port::O},
     };
 
     struct compTypeInfo {
@@ -42,23 +41,23 @@ namespace {
         std::function<std::unique_ptr<Node>()> create;
     };
 
-    // Check exact names of FFs in the netlist
+    // Map each netlist gate name to its lambda for component creation
     const std::unordered_map<std::string, compTypeInfo> compTypeTable = {
-        {"$and", {{"A","B","Y"}, [] { return std::make_unique<AND>(); }}},
-        {"$or", {{"A","B","Y"}, [] { return std::make_unique<OR>(); }}},
-        {"$nand", {{"A","B","Y"}, [] { return std::make_unique<NAND>(); }}},
-        {"$nor", {{"A","B","Y"}, [] { return std::make_unique<NOR>(); }}},
-        {"$xor", {{"A","B","Y"}, [] { return std::make_unique<XOR>(); }}},
-        {"$not", {{"A","Y"}, [] { return std::make_unique<NOT>(); }}},
-        {"$andnot", {{"A","B","Y"}, [] { return std::make_unique<ANDNOT>(); }}},
-        {"$ornot", {{"A","B","Y"}, [] { return std::make_unique<ORNOT>(); }}},
-        {"$mux", {{"A","B","S","Y"}, [] { return std::make_unique<MUX>(); }}},
-        {"$dff_p", {{"D","CLK","Q"}, [] { return std::make_unique<DFF_P>(); }}},
-        // {"$dff_n", {{"D","CLK","Q"}, [] { return std::make_unique<DFF_N>(); }}},
-        // {"$tff_p", {{"T","CLK","Q"}, [] { return std::make_unique<TFF_P>(); }}},
-        // {"$tff_n", {{"T","CLK","Q"},  [] { return std::make_unique<TFF_N>(); }}},
-        // {"$jkff_p", {{"J","K","CLK","Q"}, [] { return std::make_unique<JKFF_P>(); }}},
-        // {"$jkff_n", {{"J","K","CLK","Q"}, [] { return std::make_unique<JKFF_N>(); }}},
+        {"$_AND_", {{"A","B","Y"}, [] { return std::make_unique<AND>(); }}},
+        {"$_OR_", {{"A","B","Y"}, [] { return std::make_unique<OR>(); }}},
+        {"$_NAND_", {{"A","B","Y"}, [] { return std::make_unique<NAND>(); }}},
+        {"$_NOR_", {{"A","B","Y"}, [] { return std::make_unique<NOR>(); }}},
+        {"$_XOR_", {{"A","B","Y"}, [] { return std::make_unique<XOR>(); }}},
+        {"$_NOT_", {{"A","Y"}, [] { return std::make_unique<NOT>(); }}},
+        {"$_ANDNOT_", {{"A","B","Y"}, [] { return std::make_unique<ANDNOT>(); }}},
+        {"$_ORNOT_", {{"A","B","Y"}, [] { return std::make_unique<ORNOT>(); }}},
+        {"$_MUX_", {{"A","B","S","Y"}, [] { return std::make_unique<MUX>(); }}},
+        {"$_DFF_P_", {{"D","C","Q"}, [] { return std::make_unique<DFF_P>(); }}},
+        // {"$_DFF_N_", {{"D","C","Q"}, [] { return std::make_unique<DFF_N>(); }}},
+        // {"$_TFF_P_", {{"T","C","Q"}, [] { return std::make_unique<TFF_P>(); }}},
+        // {"$_TFF_N_", {{"T","C","Q"},  [] { return std::make_unique<TFF_N>(); }}},
+        // {"$_JKFF_P_", {{"J","K","C","Q"}, [] { return std::make_unique<JKFF_P>(); }}},
+        // {"$_JKFF_N_", {{"J","K","C","Q"}, [] { return std::make_unique<JKFF_N>(); }}},
     };
 
     // Structure created for validation of components
@@ -74,6 +73,50 @@ namespace {
         std::vector<std::pair<Node*, Port>> consumers;
     };
 
+    // Find wires that are part of a multibit wire
+    // Used if size has not been specified in the name initially
+    // Check if wire name is of the type 'name [digit]'  
+    bool parseIndexed(const std::string &name, std::string &base, int &index) {
+        static const std::regex re(R"(^(.*) \[(\d+)\]$)");
+        std::smatch m;
+
+        if (!std::regex_match(name, m, re)) 
+            return false;
+        base = m[1];
+        index = std::stoi(m[2]);
+        return true;
+    }
+
+    // Wire may be defined with a range as 'name [high:low]'
+    // Returns how many separate wires need to be created
+    bool parseRange(const std::string &name, std::string &base, int &high, int &low) {
+        static const std::regex re(R"(^(.*) \[(\d+):(\d+)\]$)");
+        std::smatch m;
+
+        if (!std::regex_match(name, m, re)) 
+            return false;
+        base = m[1];
+        high = std::stoi(m[2]);
+        low = std::stoi(m[3]);
+        return true;
+    }
+
+    struct primaryNode { 
+        std::string name, dir, baseWire;
+    };
+
+    // Check for constant input type in the netlist
+    // The wire can be connected to a single bit
+    bool isConstantLiteral(const std::string &name) {
+        static const std::regex re(R"(^1'[01x]$)");
+        return std::regex_match(name, re);
+    }
+
+    // Assign Signal value based on numeric netlist value
+    Signal constantValue(const std::string &name) {
+        return name.back() == '1' ? Signal::HIGH : Signal::LOW;
+    }
+
     // Remove comment (if any) from and tokenize netlist line
     std::vector<std::string> tokenize(const std::string &line) {
         auto pos = line.find('#');
@@ -83,16 +126,26 @@ namespace {
         std::string tok;
         while (iss >> tok) 
             tokens.push_back(tok);
+
+        // Allow wire name to contain spaces
+        if (tokens.size() > 6) {
+            std::string wireName = tokens[5];
+            for (size_t i = 6; i < tokens.size(); i++)
+                wireName += " " + tokens[i];
+            tokens.resize(5);
+            tokens.push_back(wireName);
+        }
         return tokens;
     }
 }
 
 // Reads netlist from file specified in path, creates components and validates them
+// Primary inputs/ouptuts are returned as <name, vector of Nodes> (can be multibit)
 // On error, writes to std error and returns -1 to caller
 // Creates graph connections between nodes, and performs cycle detection
 // Assigns priority to each node based on topological order
 
-int Parser::parse(const std::string &path, std::vector<std::unique_ptr<Node>> &nodes, int &primaryInputCount, int &primaryOutputCount) {
+int Parser::parse(const std::string &path, std::vector<std::unique_ptr<Node>> &nodes, std::unordered_map<std::string, std::vector<Node*>> &primaryInputs, std::unordered_map<std::string, std::vector<Node*>> &primaryOutputs) {
     std::ifstream file(path);
     if (!file.is_open()) {
         std::cerr << "cannot open file " << path << '\n';
@@ -101,6 +154,7 @@ int Parser::parse(const std::string &path, std::vector<std::unique_ptr<Node>> &n
 
     std::unordered_map<std::string, Component> components;
     std::unordered_map<std::string, Wire> wires;
+    std::vector<primaryNode> primaryNodes;
     std::string moduleName;
     std::string line;
 
@@ -123,40 +177,14 @@ int Parser::parse(const std::string &path, std::vector<std::unique_ptr<Node>> &n
             return -1;
         }
 
-        // Create a primary node if component is '-'
+        // Add a primary node to creation list if component is '-'
         if (compType == "-") {
             if (components.count(compName)) {
-                std::cerr << "duplicate primary component: " << compName << '\n';
+                std::cerr << "duplicate primary component name: " << compName << '\n';
                 return -1;
             }
-
-            std::unique_ptr<Node> nodeObj;
-            if (dir == "pi") {
-                nodeObj = std::make_unique<InputNode>();
-                primaryInputCount++;
-            } else if (dir == "po") {
-                nodeObj = std::make_unique<OutputNode>();
-                primaryOutputCount++;
-            } else {
-                std::cerr << "unknown primary port direction: " << dir << '\n';
-                return -1;
-            }
-
-            // Move component into Simulator::nodes
-            Node* nodePtr = nodeObj.get();
-            nodes.push_back(std::move(nodeObj));
-            components[compName] = {nodePtr, dir, {}};
-
-            Wire &w = wires[wireName];
-            if (dir == "pi") {
-                if (w.driver) {
-                    std::cerr << "multiple drivers for wire " << wireName << '\n';
-                    return -1;
-                }
-                w.driver = nodePtr;
-            } else {
-                w.consumers.push_back({nodePtr, Port::O});
-            }
+            components[compName] = {nullptr, dir, {}};
+            primaryNodes.push_back({compName, dir, wireName});
             continue;
         }
 
@@ -207,6 +235,15 @@ int Parser::parse(const std::string &path, std::vector<std::unique_ptr<Node>> &n
             }
             w.driver = comp.node;
         } else if (dir == "in") {
+            // Check if input is a constant value
+            // Call evalute on its connected port with the correct Signal
+            if (isConstantLiteral(wireName) && !w.driver) {
+                auto nodeObj = std::make_unique<InputNode>();
+                Node* raw = nodeObj.get();
+                nodes.push_back(std::move(nodeObj));
+                raw->evaluate(Port::O, constantValue(wireName));
+                w.driver = raw;
+            }
             w.consumers.push_back({comp.node, port});
         } else {
             std::cerr << "unknown direction: " << dir << '\n';
@@ -214,7 +251,80 @@ int Parser::parse(const std::string &path, std::vector<std::unique_ptr<Node>> &n
         }
     }
 
-    // Validate every component: all ports seen
+    // Creation of primary node objects from temporary list
+    for (auto &pnode : primaryNodes) {
+        std::string base; 
+        int high, low;
+        std::vector<std::pair<int, std::string>> indexed;
+
+        // If range was defined all wires need to be present in netlist
+        if (parseRange(pnode.baseWire, base, high, low)) {
+            for (int i = high; i >= low; i--) {
+                std::string wname = base + " [" + std::to_string(i) + "]";
+                if (!wires.count(wname)) {
+                    std::cerr << "expected wire " << wname << " for ranged port " << pnode.name << '\n';
+                    return -1;
+                }
+                indexed.push_back({i, wname});
+            }
+        } 
+
+        // Range not specified in wire
+        else {
+            for (auto &[wname, w] : wires) {
+                std::string b; int idx;
+                if (parseIndexed(wname, b, idx) && b == pnode.baseWire)
+                    indexed.push_back({idx, wname});
+            }
+        }
+
+        auto &target = (pnode.dir == "pi") ? primaryInputs[pnode.name] : primaryOutputs[pnode.name];
+
+        // Create an input or output node if the wire is not multibit
+        if (indexed.empty()) {
+            std::unique_ptr<Node> nodeObj = (pnode.dir == "pi") ? std::unique_ptr<Node>(std::make_unique<InputNode>()) : std::unique_ptr<Node>(std::make_unique<OutputNode>());
+            Node* raw = nodeObj.get();
+            nodes.push_back(std::move(nodeObj));
+            target.push_back(raw);
+
+            Wire &w = wires[pnode.baseWire];
+            if (pnode.dir == "pi") {
+                if (w.driver) { 
+                    std::cerr << "multiple drivers for wire " << pnode.baseWire << '\n'; 
+                    return -1; 
+                }
+                w.driver = raw;
+            } else {
+                w.consumers.push_back({raw, Port::O});
+            }
+        } 
+        
+        // Create a node for each bit of the indexed wire
+        else {
+            std::sort(indexed.begin(), indexed.end());
+
+            // Insert each bit of wire in sorted order
+            for (auto &[index, wname] : indexed) {
+                std::unique_ptr<Node> nodeObj = (pnode.dir == "pi") ? std::unique_ptr<Node>(std::make_unique<InputNode>()) : std::unique_ptr<Node>(std::make_unique<OutputNode>());
+                Node* raw = nodeObj.get();
+                nodes.push_back(std::move(nodeObj));
+                target.push_back(raw);
+
+                Wire &w = wires[wname];
+                if (pnode.dir == "pi") {
+                    if (w.driver) { 
+                        std::cerr << "multiple drivers for wire " << wname << '\n'; 
+                        return -1; 
+                    }
+                    w.driver = raw;
+                } else {
+                    w.consumers.push_back({raw, Port::O});
+                }
+            }
+        }
+    }
+
+    // Validate components: all ports seen
     for (auto &[name, comp] : components) {
         auto currType = compTypeTable.find(comp.type);
         if (currType == compTypeTable.end()) 
@@ -227,16 +337,15 @@ int Parser::parse(const std::string &path, std::vector<std::unique_ptr<Node>> &n
         }
     }
 
-    // Validate every wire: at least one driver and consumer
+    // Validate wires: at least one driver for each
+    // Warn if output is not being consumed
     for (auto &[name, w] : wires) {
         if (!w.driver) {
             std::cerr << "wire " << name << " has no driver\n";
             return -1;
         }
-        if (w.consumers.empty()) {
-            std::cerr << "wire " << name << " has no consumers\n";
-            return -1;
-        }
+        if (w.consumers.empty())
+            std::cerr << "warning: wire " << name << " has no consumers\n";
     }
 
     // Add other checks on components and wires if required

@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <unordered_map>
 
 #include "core/Node.hpp"
 #include "simulation/OperationQueue.hpp"
@@ -15,8 +16,8 @@ public:
 
     static std::vector<std::unique_ptr<Node>> nodes;
 
-    static int primaryInputCount;
-    static int primaryOutputCount;
+    static std::unordered_map<std::string, std::vector<Node*>> primaryInputs;
+    static std::unordered_map<std::string, std::vector<Node*>> primaryOutputs;
 
     // parsers and synthesizer entry points
     static int parse(const std::string &path);
