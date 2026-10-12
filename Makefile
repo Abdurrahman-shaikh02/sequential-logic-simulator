@@ -65,3 +65,17 @@ clean:
 
 
 .PHONY: test run clean
+
+# --------------------------------------------------
+# Worklet 3: Automated gate assertion tests
+# --------------------------------------------------
+
+WORKLET3_TEST = tests/worklet3/gate_assertions.exe
+
+$(WORKLET3_TEST): tests/worklet3/gate_assertions.cpp $(LIB_SRC)
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+test-worklet3: $(WORKLET3_TEST)
+	./$(WORKLET3_TEST)
+
+.PHONY: test-worklet3
