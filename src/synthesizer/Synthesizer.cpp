@@ -13,7 +13,7 @@
 
 // Converts an FSM table (docs/fsm.net) into a netlist the Parser accepts.
 // Algorithm: docs/synthesis_algorithm.txt
-//  - states are binary encoded, reset state = all zeros, one $dff_p per bit
+//  - states are binary encoded, reset state = all zeros, one $_DFF_P_ per bit
 //  - every FSM row becomes one minterm over the state bits and the inputs
 //  - each D input / output line is the OR of the minterms that set it to 1
 //  - gates have two inputs, so wider ANDs/ORs are built as chains
@@ -149,10 +149,11 @@ namespace {
         return true;
     }
 
-    // Emits netlist rows in the Parser's 6-column format:
+    // Emits netlist rows in the Parser's 6-column, Yosys write_table format:
     //   module  cell  type  port  direction  wire
-    // Generated cells are named $<type>$<n> and their outputs <cell>_<port>;
-    // '$' can't appear in FSM names, so these never collide with user signals.
+    // Generated cells are named $<gate>$<n> (e.g. $and$4 for a $_AND_) and their
+    // outputs <cell>_<port>; '$' can't appear in FSM names, so these never
+    // collide with user signals.
     class NetlistWriter {
         std::string module;
         std::ostringstream out;
@@ -170,8 +171,12 @@ namespace {
                 consumers.emplace(wire, 0);
         }
 
+        // "$_AND_" -> "$and$<n>"
         std::string freshCell(const std::string &type) {
-            return type + "$" + std::to_string(count++);
+            std::string name = "$";
+            for (char c : type.substr(2, type.size() - 3))
+                name += std::tolower(static_cast<unsigned char>(c));
+            return name + "$" + std::to_string(count++);
         }
 
     public:
@@ -198,9 +203,9 @@ namespace {
             if (it != inverted.end())
                 return it->second;
 
-            std::string cell = freshCell("$not"), y = cell + "_Y";
-            row(cell, "$not", "A", "in", a);
-            row(cell, "$not", "Y", "out", y);
+            std::string cell = freshCell("$_NOT_"), y = cell + "_Y";
+            row(cell, "$_NOT_", "A", "in", a);
+            row(cell, "$_NOT_", "Y", "out", y);
             return inverted[a] = y;
         }
 
@@ -223,7 +228,7 @@ namespace {
             std::string acc;
             for (auto &[wire, value] : term) {
                 std::string lit = value ? wire : notGate(wire);
-                acc = acc.empty() ? lit : gate("$and", acc, lit);
+                acc = acc.empty() ? lit : gate("$_AND_", acc, lit);
             }
             return acc;
         }
@@ -232,14 +237,14 @@ namespace {
         std::string orAll(const std::vector<std::string> &wires) {
             std::string acc;
             for (auto &w : wires)
-                acc = acc.empty() ? w : gate("$or", acc, w);
+                acc = acc.empty() ? w : gate("$_OR_", acc, w);
             return acc;
         }
 
         void dff(const std::string &cell, const std::string &d, const std::string &clk, const std::string &q) {
-            row(cell, "$dff_p", "D", "in", d);
-            row(cell, "$dff_p", "CLK", "in", clk);
-            row(cell, "$dff_p", "Q", "out", q);
+            row(cell, "$_DFF_P_", "D", "in", d);
+            row(cell, "$_DFF_P_", "C", "in", clk);
+            row(cell, "$_DFF_P_", "Q", "out", q);
         }
 
         // The Parser rejects wires nobody reads
@@ -257,7 +262,7 @@ namespace {
     };
 
     std::string stateWire(int bit) {
-        return "$dff_p$q" + std::to_string(bit) + "_Q";
+        return "$dff$q" + std::to_string(bit) + "_Q";
     }
 }
 
@@ -357,7 +362,7 @@ std::string Synthesizer::synthesize(const std::string &path) {
     std::string zero;
     auto constZero = [&] {
         if (zero.empty())
-            zero = net.gate("$and", "\\reset", net.notGate("\\reset"));
+            zero = net.gate("$_AND_", "\\reset", net.notGate("\\reset"));
         return zero;
     };
 
@@ -373,8 +378,8 @@ std::string Synthesizer::synthesize(const std::string &path) {
     for (int i = 0; i < bits; i++) {
         net.comment("state bit Q" + std::to_string(i) + ": D = (next-state logic) AND NOT reset");
         std::string d = dTerms[i].empty() ? constZero()
-                                          : net.gate("$and", sumOfProducts(dTerms[i]), net.notGate("\\reset"));
-        net.dff("$dff_p$q" + std::to_string(i), d, "\\clk", stateWire(i));
+                                          : net.gate("$_AND_", sumOfProducts(dTerms[i]), net.notGate("\\reset"));
+        net.dff("$dff$q" + std::to_string(i), d, "\\clk", stateWire(i));
     }
 
     for (size_t j = 0; j < fsm.outputs.size(); j++) {
