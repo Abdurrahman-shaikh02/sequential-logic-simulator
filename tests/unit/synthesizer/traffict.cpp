@@ -51,12 +51,12 @@ int main(){
 		// settle combinational logic (acyclic, so one pass per cell is enough)
 		for(size_t pass = 0; pass < cells.size(); pass++){
 			for(auto &[name, c] : cells){
-				if(c.type == "$dff_p")
+				if(c.type == "$_DFF_P_")
 					continue;
 				bool a = wire[c.port["A"]];
-				if(c.type == "$not") wire[c.port["Y"]] = !a;
-				else if(c.type == "$and") wire[c.port["Y"]] = a && wire[c.port["B"]];
-				else if(c.type == "$or") wire[c.port["Y"]] = a || wire[c.port["B"]];
+				if(c.type == "$_NOT_") wire[c.port["Y"]] = !a;
+				else if(c.type == "$_AND_") wire[c.port["Y"]] = a && wire[c.port["B"]];
+				else if(c.type == "$_OR_") wire[c.port["Y"]] = a || wire[c.port["B"]];
 			}
 		}
 
@@ -65,7 +65,7 @@ int main(){
 		// clock edge: every flip-flop loads D at once
 		std::map<std::string, bool> next;
 		for(auto &[name, c] : cells)
-			if(c.type == "$dff_p")
+			if(c.type == "$_DFF_P_")
 				next[c.port["Q"]] = wire[c.port["D"]];
 		for(auto &[q, v] : next)
 			wire[q] = v;
