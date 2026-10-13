@@ -43,26 +43,26 @@ Sr | 1 | Sg | 1 0 0
 
 ## Output: netlist
 
-The output follows the parser's netlist format: six columns `module cell type port direction wire`, with `#` comments.
+The output uses the Yosys `write_table` format the parser reads: six columns `module cell type port direction wire`, with `#` comments.
 
 ```
 # state encoding (Q1..Q0): Sg=00 Sy=01 Sr=10  (reset: Sg)
 traffic_light_fsm  en      -       -    pi   \en
 traffic_light_fsm  clk     -       -    pi   \clk
 traffic_light_fsm  reset   -       -    pi   \reset
-traffic_light_fsm  $not$0  $not    A    in   \reset
-traffic_light_fsm  $not$0  $not    Y    out  $not$0_Y
+traffic_light_fsm  $not$0  $_NOT_  A    in   \reset
+traffic_light_fsm  $not$0  $_NOT_  Y    out  $not$0_Y
 ...
-traffic_light_fsm  $dff_p$q0  $dff_p  D    in   $and$9_Y
-traffic_light_fsm  $dff_p$q0  $dff_p  CLK  in   \clk
-traffic_light_fsm  $dff_p$q0  $dff_p  Q    out  $dff_p$q0_Q
+traffic_light_fsm  $dff$q0  $_DFF_P_  D  in   $and$9_Y
+traffic_light_fsm  $dff$q0  $_DFF_P_  C  in   \clk
+traffic_light_fsm  $dff$q0  $_DFF_P_  Q  out  $dff$q0_Q
 ...
 traffic_light_fsm  G       -       -    po   $or$19_Y
 ```
 
 - Primary inputs are the FSM's inputs plus `clk` and `reset`. The primary outputs are the FSM's outputs.
-- Cells used: `$and`, `$or`, `$not` (ports `A B Y`) and `$dff_p` (ports `D CLK Q`).
-- Generated names contain `$` (`$and$4`, `$and$4_Y`), so they can never clash with FSM signal names.
+- Cells used: `$_AND_`, `$_OR_` (ports `A B Y`), `$_NOT_` (ports `A Y`) and `$_DFF_P_` (ports `D C Q`).
+- Generated cell and wire names contain `$` (`$and$4`, `$and$4_Y`, `$dff$q0_Q`), so they can never clash with FSM signal names.
 - The module name is the input file's name without its extension.
 
 ## How it works
@@ -88,7 +88,7 @@ Synthesis stops without writing a file when:
 - two rows have the same current state and input bits
 - a signal name is repeated, reserved, or not an identifier
 - the `reset:` line is missing
-- an input, or the state itself, never affects anything. The parser rejects wires with no reader, so the synthesizer reports this case instead of emitting a netlist that won't load.
+- an input, or the state itself, never affects anything (the FSM has no logic that reads it)
 
 When the next state or an output is never 1, it is driven by the constant `reset AND NOT reset`.
 
