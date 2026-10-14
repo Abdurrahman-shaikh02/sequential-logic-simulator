@@ -1,4 +1,5 @@
 #include "simulation/Simulator.hpp"
+#include "parser/Parser.hpp"
 #include <iostream>
 
 // initialization of static class members
@@ -9,9 +10,7 @@ std::unordered_map<std::string, std::vector<Node*>> Simulator::primaryInputs;
 std::unordered_map<std::string, std::vector<Node*>> Simulator::primaryOutputs;
 
 int Simulator::parse(const std::string &path) {
-    // replace with Parser class call when ready
-    // e.g., Parser p; return p.parse(path, nodes);
-    return 0;
+    return Parser::parse(path, nodes, primaryInputs, primaryOutputs);
 }
 
 std::string Simulator::synthesize(const std::string &path) {

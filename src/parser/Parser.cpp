@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <iostream>
 #include <regex>
+#include <queue>
 
 #include "parser/Parser.hpp"
 #include "core/Node.hpp"
@@ -136,6 +137,14 @@ namespace {
             tokens.push_back(wireName);
         }
         return tokens;
+    }
+
+    // Identify sequential gate types by checking if they have a C port
+    bool isSequential(const std::string &type) {
+        auto it = compTypeTable.find(type);
+        if (it == compTypeTable.end()) return false;
+        auto &ports = it->second.ports;
+        return std::find(ports.begin(), ports.end(), "C") != ports.end();
     }
 }
 
@@ -357,9 +366,89 @@ int Parser::parse(const std::string &path, std::vector<std::unique_ptr<Node>> &n
         }
     }
 
-    // Component graph gets created (nodes owned by Simulator)
-    // To be added: code for cycle detection and topo sorting
-    // Uses Wires class (before/after graph creation?)
+    // Map each gate node to its netlist type
+    std::unordered_map<Node*, std::string> nodeType;
+    for (auto &[name, comp] : components)
+        if (compTypeTable.count(comp.type))
+            nodeType[comp.node] = comp.type;
+
+    // Build in-degree for Kahn's algorithm excluding D/J/K/T ports
+    std::unordered_map<Node*, int> indeg;
+    std::unordered_map<Node*, Wire*> driverWire;
+    for (auto &n : nodes)
+        indeg[n.get()] = 0;
+
+    for (auto &[name, w] : wires) {
+        for (auto &[consumerNode, port] : w.consumers) {
+            auto it = nodeType.find(consumerNode);
+            bool seq = it != nodeType.end() && isSequential(it->second);
+            if (seq && port != Port::CLK) 
+                continue;
+            indeg[consumerNode]++;
+        }
+        if (w.driver)
+            driverWire[w.driver] = &w;
+    }
+
+    // Process zero-in-degree nodes then decrement downstream in-degree
+    std::queue<Node*> ready;
+    for (auto &n : nodes)
+        if (indeg[n.get()] == 0)
+            ready.push(n.get());
+
+    std::vector<Node*> order;
+    order.reserve(nodes.size());
+    while (!ready.empty()) {
+        Node *cur = ready.front();
+        ready.pop();
+        order.push_back(cur);
+
+        auto currWire = driverWire.find(cur);
+        if (currWire == driverWire.end()) 
+            continue;
+
+        for (auto &[consumerNode, port] : currWire->second->consumers) {
+            auto currType = nodeType.find(consumerNode);
+            bool seq = currType != nodeType.end() && isSequential(currType->second);
+            if (seq && port != Port::CLK) continue;
+            if (--indeg[consumerNode] == 0)
+                ready.push(consumerNode);
+        }
+    }
+
+    // Any leftover node is a part of a cycle
+    if (order.size() != nodes.size()) {
+        std::cerr << "cycle detected in circuit\n";
+        return -1;
+    }
+
+    // Reorder nodes into topological order and assign each its priority
+    std::unordered_map<Node*, std::unique_ptr<Node>> byPtr;
+    for (auto &n : nodes)
+        byPtr[n.get()] = std::move(n);
+
+    nodes.clear();
+    for (int i = 0; i < (int)order.size(); i++) {
+        order[i]->priority = i;
+        nodes.push_back(std::move(byPtr[order[i]]));
+    }
+
+    std::unordered_map<Node*, std::string> nameOf;
+    for (auto &[name, c] : components)
+        nameOf[c.node] = name;
+    for (auto &[name, bits] : primaryInputs)
+        for (size_t i = 0; i < bits.size(); i++)
+            nameOf[bits[i]] = name + (bits.size() > 1 ? "[" + std::to_string(i) + "]" : "");
+    for (auto &[name, bits] : primaryOutputs)
+        for (size_t i = 0; i < bits.size(); i++)
+            nameOf[bits[i]] = name + (bits.size() > 1 ? "[" + std::to_string(i) + "]" : "");
+
+    std::cerr << "topo order:\n";
+    for (auto &n : nodes) {
+        auto it = nameOf.find(n.get());
+        std::cerr << "  priority " << n->priority << ": "
+                   << (it != nameOf.end() ? it->second : "(constant/unnamed)") << '\n';
+    }
 
     return 0;
 }
