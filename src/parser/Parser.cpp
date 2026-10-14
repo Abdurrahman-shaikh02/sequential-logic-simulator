@@ -422,32 +422,14 @@ int Parser::parse(const std::string &path, std::vector<std::unique_ptr<Node>> &n
         return -1;
     }
 
-    // Reorder nodes into topological order and assign each its priority
-    std::unordered_map<Node*, std::unique_ptr<Node>> byPtr;
+    // Reorder nodes into topo order and assign priority
+    std::unordered_map<Node*, std::unique_ptr<Node>> ordered;
     for (auto &n : nodes)
-        byPtr[n.get()] = std::move(n);
-
+        ordered[n.get()] = std::move(n);
     nodes.clear();
     for (int i = 0; i < (int)order.size(); i++) {
         order[i]->priority = i;
-        nodes.push_back(std::move(byPtr[order[i]]));
-    }
-
-    std::unordered_map<Node*, std::string> nameOf;
-    for (auto &[name, c] : components)
-        nameOf[c.node] = name;
-    for (auto &[name, bits] : primaryInputs)
-        for (size_t i = 0; i < bits.size(); i++)
-            nameOf[bits[i]] = name + (bits.size() > 1 ? "[" + std::to_string(i) + "]" : "");
-    for (auto &[name, bits] : primaryOutputs)
-        for (size_t i = 0; i < bits.size(); i++)
-            nameOf[bits[i]] = name + (bits.size() > 1 ? "[" + std::to_string(i) + "]" : "");
-
-    std::cerr << "topo order:\n";
-    for (auto &n : nodes) {
-        auto it = nameOf.find(n.get());
-        std::cerr << "  priority " << n->priority << ": "
-                   << (it != nameOf.end() ? it->second : "(constant/unnamed)") << '\n';
+        nodes.push_back(std::move(ordered[order[i]]));
     }
 
     return 0;
