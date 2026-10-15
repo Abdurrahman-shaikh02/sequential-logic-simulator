@@ -73,6 +73,8 @@ WORKLET3_GATE_TEST = tests/worklet3/gate_assertions.exe
 WORKLET3_QUEUE_TEST = tests/worklet3/operation_queue_tests.exe
 WORKLET3_DFF_TEST = tests/worklet3/dff_assertions.exe
 WORKLET3_TRAFFIC_TEST = tests/worklet3/traffic_light_fsm_test.exe
+WORKLET3_DFF_WAVEFORM_TEST = tests/worklet3/dff_waveform_test_new.exe
+WORKLET3_INTEGRATION_TEST = tests/worklet3/parser_synthesizer_integration.exe
 
 $(WORKLET3_GATE_TEST): tests/worklet3/gate_assertions.cpp $(LIB_SRC)
 	$(CXX) $(CXXFLAGS) $^ -o $@
@@ -86,10 +88,18 @@ $(WORKLET3_DFF_TEST): tests/worklet3/dff_assertions.cpp $(LIB_SRC)
 $(WORKLET3_TRAFFIC_TEST): tests/worklet3/traffic_light_fsm_test.cpp $(LIB_SRC)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-test-worklet3: $(WORKLET3_GATE_TEST) $(WORKLET3_QUEUE_TEST) $(WORKLET3_DFF_TEST) $(WORKLET3_TRAFFIC_TEST)
+$(WORKLET3_DFF_WAVEFORM_TEST): tests/worklet3/dff_waveform_test.cpp $(LIB_SRC)
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+$(WORKLET3_INTEGRATION_TEST): tests/worklet3/parser_synthesizer_integration.cpp $(LIB_SRC)
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+test-worklet3: $(WORKLET3_GATE_TEST) $(WORKLET3_QUEUE_TEST) $(WORKLET3_DFF_TEST) $(WORKLET3_TRAFFIC_TEST) $(WORKLET3_DFF_WAVEFORM_TEST) $(WORKLET3_INTEGRATION_TEST)
 	./$(WORKLET3_GATE_TEST)
 	./$(WORKLET3_QUEUE_TEST)
 	./$(WORKLET3_DFF_TEST)
 	./$(WORKLET3_TRAFFIC_TEST)
+	./$(WORKLET3_DFF_WAVEFORM_TEST)
+	./$(WORKLET3_INTEGRATION_TEST)
 
 .PHONY: test-worklet3

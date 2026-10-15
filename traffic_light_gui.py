@@ -6,7 +6,18 @@ from pathlib import Path
 from tkinter import ttk, messagebox
 
 ROOT = Path(__file__).resolve().parent
-EXE = ROOT / "tests" / "worklet3" / "traffic_light_fsm_test.exe"
+TEST_DIR = ROOT / "tests" / "worklet3"
+
+TRAFFIC_EXE = TEST_DIR / "traffic_light_fsm_test.exe"
+
+TEST_EXES = {
+    "Gate Assertions": TEST_DIR / "gate_assertions.exe",
+    "Operation Queue": TEST_DIR / "operation_queue_tests.exe",
+    "DFF Assertions": TEST_DIR / "dff_assertions.exe",
+    "DFF Waveform": TEST_DIR / "dff_waveform_test_new.exe",
+    "Parser-Synthesizer Integration":
+        TEST_DIR / "parser_synthesizer_integration.exe",
+}
 
 DEFAULT_CYCLES = [
     (1, 1, 0, 0),
@@ -26,7 +37,7 @@ class TrafficLightGUI:
     def __init__(self, root):
         self.root = root
         self.root.title("Traffic-Light FSM Simulator | Worklet 3")
-        self.root.geometry("1200x850")
+        self.root.geometry("1200x900")
         self.root.minsize(850, 600)
 
         self.rows = []
@@ -43,7 +54,7 @@ class TrafficLightGUI:
         style.configure("Treeview", rowheight=25)
         style.configure("Treeview.Heading", font=("Segoe UI", 9, "bold"))
 
-        # Scrollable main area
+        # Scrollable main window
         outer = ttk.Frame(root)
         outer.pack(fill="both", expand=True)
 
@@ -54,7 +65,6 @@ class TrafficLightGUI:
             outer, orient="vertical", command=self.scroll_canvas.yview
         )
         self.scroll_canvas.configure(yscrollcommand=scrollbar.set)
-
         scrollbar.pack(side="right", fill="y")
         self.scroll_canvas.pack(side="left", fill="both", expand=True)
 
@@ -75,8 +85,6 @@ class TrafficLightGUI:
                 self.window_id, width=event.width
             ),
         )
-
-        # Mouse-wheel scrolling
         self.scroll_canvas.bind_all("<MouseWheel>", self.on_mousewheel)
 
         # Header
@@ -91,7 +99,7 @@ class TrafficLightGUI:
             text="Worklet 3 | C++ Sequential Logic Simulator",
         ).pack(anchor="w", pady=(2, 12))
 
-        # Traffic lights and cycle input area
+        # Traffic lights
         top = ttk.Frame(self.main)
         top.pack(fill="x", pady=5)
 
@@ -109,51 +117,43 @@ class TrafficLightGUI:
             panel.pack(side="left")
 
             canvas = tk.Canvas(
-                panel,
-                width=66,
-                height=66,
-                background="#20242b",
-                highlightthickness=0,
+                panel, width=66, height=66,
+                background="#20242b", highlightthickness=0,
             )
             canvas.pack()
-
             canvas.create_oval(
                 6, 6, 60, 60,
-                fill="#454950",
-                outline="#777777",
-                width=2,
+                fill="#454950", outline="#777777", width=2,
                 tags="lamp",
             )
-
-            ttk.Label(panel, text=name, font=("Segoe UI", 9, "bold")).pack(
-                pady=4
-            )
+            ttk.Label(
+                panel, text=name, font=("Segoe UI", 9, "bold")
+            ).pack(pady=4)
             self.lights[name] = (canvas, COLORS[name])
 
         self.state_label = ttk.Label(
-            light_box, text="Current state: RED", style="Section.TLabel"
+            light_box, text="Current state: RED",
+            style="Section.TLabel",
         )
         self.state_label.pack(pady=5)
 
+        # Cycle input controls
         setup = ttk.LabelFrame(top, text="Cycle Inputs", padding=10)
         setup.pack(side="left", fill="both", expand=True)
 
         controls = ttk.Frame(setup)
         controls.pack(fill="x", pady=(0, 5))
-
         ttk.Label(controls, text="Number of cycles:").pack(side="left")
 
         self.cycle_count = tk.StringVar(value="4")
         ttk.Spinbox(
-            controls,
-            from_=1,
-            to=100,
-            width=6,
+            controls, from_=1, to=100, width=6,
             textvariable=self.cycle_count,
         ).pack(side="left", padx=6)
 
         ttk.Button(
-            controls, text="Update Rows", command=self.rebuild_cycle_rows
+            controls, text="Update Rows",
+            command=self.rebuild_cycle_rows,
         ).pack(side="left", padx=4)
 
         ttk.Label(
@@ -164,16 +164,18 @@ class TrafficLightGUI:
         self.input_table = ttk.Frame(setup)
         self.input_table.pack(anchor="w")
 
-        # Buttons and status
+        # Simulation controls
         actions = ttk.Frame(self.main)
         actions.pack(fill="x", pady=10)
 
         ttk.Button(
-            actions, text="Run Simulation", command=self.run_simulation
+            actions, text="Run Simulation",
+            command=self.run_simulation,
         ).pack(side="left")
 
         ttk.Button(
-            actions, text="Reset View", command=self.reset_view
+            actions, text="Reset View",
+            command=self.reset_view,
         ).pack(side="left", padx=8)
 
         self.status = ttk.Label(
@@ -181,7 +183,7 @@ class TrafficLightGUI:
         )
         self.status.pack(side="left", padx=10)
 
-        # Results table
+        # Cycle results table
         results_box = ttk.LabelFrame(
             self.main, text="Cycle-by-Cycle Results", padding=8
         )
@@ -191,7 +193,6 @@ class TrafficLightGUI:
             "cycle", "previous", "en", "expected", "actual",
             "expected_out", "actual_out", "result",
         )
-
         table_frame = ttk.Frame(results_box)
         table_frame.pack(fill="x", expand=True)
 
@@ -209,10 +210,11 @@ class TrafficLightGUI:
             ("actual_out", "Actual R G Y", 115),
             ("result", "Result", 75),
         ]
-
         for key, title, width in headings:
             self.table.heading(key, text=title)
-            self.table.column(key, width=width, minwidth=45, anchor="center")
+            self.table.column(
+                key, width=width, minwidth=45, anchor="center"
+            )
 
         table_scroll = ttk.Scrollbar(
             table_frame, orient="horizontal", command=self.table.xview
@@ -220,37 +222,59 @@ class TrafficLightGUI:
         self.table.configure(xscrollcommand=table_scroll.set)
         self.table.pack(fill="x", expand=True)
         table_scroll.pack(fill="x")
-
         self.table.tag_configure("PASS", foreground="#16803c")
         self.table.tag_configure("FAIL", foreground="#c62828")
 
-        # Waveform
+        # Traffic-light waveform preview
         waveform_box = ttk.LabelFrame(
             self.main, text="Waveform Preview", padding=8
         )
         waveform_box.pack(fill="x", pady=5)
 
         self.wave = tk.Canvas(
-            waveform_box,
-            height=190,
-            background="#111827",
-            highlightthickness=0,
+            waveform_box, height=190,
+            background="#111827", highlightthickness=0,
         )
         self.wave.pack(fill="x", expand=True)
 
-        # C++ output
+        # Worklet 3 standalone test runner
+        test_box = ttk.LabelFrame(
+            self.main, text="Worklet 3 Test Runner", padding=8
+        )
+        test_box.pack(fill="x", pady=5)
+
+        ttk.Label(
+            test_box,
+            text="Run the standalone C++ tests and view their console output below.",
+        ).pack(anchor="w", pady=(0, 5))
+
+        test_buttons = ttk.Frame(test_box)
+        test_buttons.pack(fill="x")
+
+        for index, name in enumerate(TEST_EXES):
+            ttk.Button(
+                test_buttons,
+                text=f"Run {name}",
+                command=lambda test=name: self.run_worklet_test(test),
+            ).grid(
+                row=index // 3,
+                column=index % 3,
+                padx=5, pady=5, sticky="ew",
+            )
+
+        for col in range(3):
+            test_buttons.columnconfigure(col, weight=1)
+
+        # Output panel
         log_box = ttk.LabelFrame(
             self.main, text="C++ Assertions and Output", padding=8
         )
         log_box.pack(fill="both", expand=True, pady=5)
 
         self.log = tk.Text(
-            log_box,
-            height=10,
-            wrap="word",
+            log_box, height=10, wrap="word",
             font=("Consolas", 9),
-            background="#111827",
-            foreground="#e5e7eb",
+            background="#111827", foreground="#e5e7eb",
         )
         log_scroll = ttk.Scrollbar(
             log_box, orient="vertical", command=self.log.yview
@@ -281,38 +305,31 @@ class TrafficLightGUI:
             )
             return
 
-        # Preserve current values where possible
-        previous_values = []
-        for row in self.rows:
-            previous_values.append(tuple(var.get() for var in row))
+        previous_values = [
+            tuple(var.get() for var in row) for row in self.rows
+        ]
 
         for widget in self.input_table.winfo_children():
             widget.destroy()
 
-        headings = ["Cycle", "en", "R", "G", "Y"]
-        for col, heading in enumerate(headings):
+        for col, heading in enumerate(["Cycle", "en", "R", "G", "Y"]):
             ttk.Label(
-                self.input_table,
-                text=heading,
+                self.input_table, text=heading,
                 font=("Segoe UI", 9, "bold"),
             ).grid(row=0, column=col, padx=7, pady=3)
 
         self.rows = []
-
         for i in range(count):
-            defaults = (
-                previous_values[i]
-                if i < len(previous_values)
-                else tuple(str(v) for v in (
-                    DEFAULT_CYCLES[i]
-                    if i < len(DEFAULT_CYCLES)
-                    else (1, 0, 0, 0)
-                ))
-            )
+            if i < len(previous_values):
+                defaults = previous_values[i]
+            elif i < len(DEFAULT_CYCLES):
+                defaults = tuple(str(v) for v in DEFAULT_CYCLES[i])
+            else:
+                defaults = ("1", "0", "0", "0")
 
-            ttk.Label(self.input_table, text=str(i + 1)).grid(
-                row=i + 1, column=0, padx=7, pady=3
-            )
+            ttk.Label(
+                self.input_table, text=str(i + 1)
+            ).grid(row=i + 1, column=0, padx=7, pady=3)
 
             variables = []
             for col, value in enumerate(defaults, start=1):
@@ -328,10 +345,6 @@ class TrafficLightGUI:
 
             self.rows.append(variables)
 
-        self.scroll_canvas.configure(
-            scrollregion=self.scroll_canvas.bbox("all")
-        )
-
     def draw_lights(self, active_state):
         self.state_label.config(text=f"Current state: {active_state}")
 
@@ -345,6 +358,12 @@ class TrafficLightGUI:
                 tags="lamp",
             )
 
+    def show_output(self, title, output):
+        self.last_output = output
+        self.log.delete("1.0", "end")
+        self.log.insert("end", f"=== {title} ===\n\n{output}")
+        self.log.see("end")
+
     def reset_view(self):
         for item in self.table.get_children():
             self.table.delete(item)
@@ -355,11 +374,72 @@ class TrafficLightGUI:
         self.draw_waveform([])
         self.last_output = ""
 
-    def run_simulation(self):
-        if not EXE.exists():
+    def run_executable(self, executable, input_text=None, timeout=30):
+        return subprocess.run(
+            [str(executable)],
+            input=input_text,
+            text=True,
+            capture_output=True,
+            cwd=str(ROOT),
+            timeout=timeout,
+        )
+
+    def run_worklet_test(self, test_name):
+        executable = TEST_EXES[test_name]
+
+        if not executable.exists():
             messagebox.showerror(
                 "Executable not found",
-                "Build the C++ testbench first in MSYS2 UCRT64:\n\n"
+                f"Missing file:\n{executable}\n\n"
+                "Build the corresponding test in UCRT64 first.",
+            )
+            return
+
+        self.status.config(text=f"Running: {test_name}...")
+        self.root.update_idletasks()
+
+        try:
+            result = self.run_executable(executable)
+            output = result.stdout or ""
+
+            if result.stderr:
+                output += "\n--- STDERR ---\n" + result.stderr
+
+            if not output.strip():
+                output = "(The test produced no console output.)"
+
+            self.show_output(test_name, output)
+
+            if result.returncode == 0:
+                self.status.config(text=f"{test_name}: PASSED")
+            else:
+                self.status.config(
+                    text=f"{test_name}: FAILED (exit {result.returncode})"
+                )
+                messagebox.showwarning(
+                    "Test failed",
+                    f"{test_name} returned exit code {result.returncode}.\n"
+                    "Read the output panel for details.",
+                )
+
+        except subprocess.TimeoutExpired:
+            self.status.config(text=f"{test_name}: TIMED OUT")
+            messagebox.showerror(
+                "Timeout", f"{test_name} exceeded 30 seconds."
+            )
+        except OSError as exc:
+            self.status.config(text=f"{test_name}: Could not run")
+            messagebox.showerror(
+                "Could not run test",
+                f"{test_name} could not be launched.\n\n{exc}\n\n"
+                "Windows may be blocking this executable.",
+            )
+
+    def run_simulation(self):
+        if not TRAFFIC_EXE.exists():
+            messagebox.showerror(
+                "Executable not found",
+                "Build the C++ testbench in MSYS2 UCRT64:\n\n"
                 "make tests/worklet3/traffic_light_fsm_test.exe",
             )
             return
@@ -369,30 +449,22 @@ class TrafficLightGUI:
             test_inputs = []
 
             for row in self.rows:
-                values = [int(var.get()) for var in row]
-                en, red, green, yellow = values
+                en, red, green, yellow = [int(v.get()) for v in row]
                 input_lines.append(str(en))
                 input_lines.append(f"{red} {green} {yellow}")
-                test_inputs.append(values)
+                test_inputs.append((en, red, green, yellow))
 
-            result = subprocess.run(
-                [str(EXE)],
-                input="\n".join(input_lines) + "\n",
-                text=True,
-                capture_output=True,
-                cwd=str(ROOT),
+            result = self.run_executable(
+                TRAFFIC_EXE,
+                input_text="\n".join(input_lines) + "\n",
                 timeout=20,
             )
 
-            output = result.stdout
+            output = result.stdout or ""
             if result.stderr:
                 output += "\n" + result.stderr
 
-            self.last_output = output
-            self.log.delete("1.0", "end")
-            self.log.insert("end", output)
-            self.log.see("end")
-
+            self.show_output("Traffic-Light Simulation", output)
             self.update_results(output)
 
             states = re.findall(
@@ -407,18 +479,20 @@ class TrafficLightGUI:
             p = passed.group(1) if passed else "?"
             f = failed.group(1) if failed else "?"
 
-            self.status.config(
-                text=f"Finished | {p} passed | {f} failed"
-            )
+            self.status.config(text=f"Finished | {p} passed | {f} failed")
 
             if result.returncode != 0:
                 messagebox.showwarning(
                     "Testbench warning",
-                    f"C++ testbench exit code: {result.returncode}\n"
-                    "Check the C++ output panel.",
+                    f"Exit code: {result.returncode}\n"
+                    "Check the output panel.",
                 )
 
-        except (OSError, ValueError, subprocess.TimeoutExpired) as exc:
+        except subprocess.TimeoutExpired:
+            messagebox.showerror(
+                "Timeout", "Traffic-light simulation exceeded 20 seconds."
+            )
+        except (OSError, ValueError) as exc:
             messagebox.showerror("Simulation error", str(exc))
 
     def update_results(self, output):
@@ -454,8 +528,7 @@ class TrafficLightGUI:
             status = "PASS" if passed else "FAIL"
 
             self.table.insert(
-                "",
-                "end",
+                "", "end",
                 values=(
                     cycle, previous, en, expected, actual,
                     expected_out, actual_out, status,
@@ -467,9 +540,7 @@ class TrafficLightGUI:
         self.wave.delete("all")
 
         width = max(self.wave.winfo_width(), 650)
-        left = 55
-        top = 15
-        row_gap = 30
+        left, top, row_gap = 55, 15, 30
         signals = ["CLK", "en", "R", "G", "Y"]
 
         colors = {
@@ -502,10 +573,8 @@ class TrafficLightGUI:
 
         for index, name in enumerate(signals):
             ybase = top + index * row_gap + 16
-            high = ybase - 12
-            low = ybase + 1
-            x = left
-            previous_y = None
+            high, low = ybase - 12, ybase + 1
+            x, previous_y = left, None
 
             for en, red, green, yellow in rows:
                 values = {
@@ -529,7 +598,6 @@ class TrafficLightGUI:
                         x, current_y, x + slot, current_y,
                         fill=colors[name], width=2,
                     )
-
                     previous_y = current_y
                     x += slot
 
