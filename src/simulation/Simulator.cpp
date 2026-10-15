@@ -4,6 +4,7 @@
 // initialization of static class members
 OperationQueue Simulator::combinationalQueue;
 OperationQueue Simulator::sequentialQueue;
+TopologicalQueue Simulator::topologicalQueue;
 std::vector<std::unique_ptr<Node>> Simulator::nodes;
 int Simulator::primaryInputCount = 0;
 int Simulator::primaryOutputCount = 0;
@@ -20,23 +21,43 @@ std::string Simulator::synthesize(const std::string &path) {
     return "";
 }
 
-void Simulator::run() {
+void Simulator::initialize(){
+    /*   
+      - turn all input nodes to 0
+      - enqueue ALL the nodes in the topologicalQueue
+      - run Simulator::run()
+    */
+}
 
-    while (!combinationalQueue.isEmpty() || !sequentialQueue.isEmpty()) {
+// Expects that the evaluate() functions on the input nodes have already been called
+void Simulator::run() {
+    while (!(combinationalQueue.isEmpty() && sequentialQueue.isEmpty() && topologicalQueue.isEmpty())) {
         
-        // Phase 1: Drain Combinational Queue (Gate evaluations & signal propagation)
+        // Drain Combinational Queue (the InputNodes will be in the combinationalQueue)
         while (!combinationalQueue.isEmpty()) {
             std::unique_ptr<Operation> op = combinationalQueue.dequeue();
             if (op) {
-                // just fyi : this is called as polymorphic execution
                 op->run(); 
             }
         }
+        
+        while(!(combinationalQueue.isEmpty() && topologicalQueue.isEmpty())){
+            // make a commit
+            topologicalQueue.commitNext();
+            
+            // Drain Combinational Queue
+            while (!combinationalQueue.isEmpty()) {
+                std::unique_ptr<Operation> op = combinationalQueue.dequeue();
+                if (op) {
+                    op->run(); 
+                }
+            }
+        }
 
-        // Phase 2: Timing check & reorder S-Queue (Prioritizes CHANGE_STATE over SET_PORT on FFs)
+        // Timing check & reorder S-Queue (Prioritizes CHANGE_STATE over SET_PORT on FFs)
         sequentialQueue.reorder();
 
-        // Phase 3: Drain Sequential Queue (Flip-flop state calculations and commits)
+        // Drain Sequential Queue (Flip-flop state calculations and commits)
         while (!sequentialQueue.isEmpty()) {
             std::unique_ptr<Operation> op = sequentialQueue.dequeue();
             if (op) {
