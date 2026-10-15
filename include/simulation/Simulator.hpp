@@ -27,6 +27,10 @@ public:
     // Two-phase simulation driver
     static void run();
 
+    // runs all 2^n input combinations, prints the table, writes input/output files
+    static bool generateTruthTable(const std::string &inputPath,
+                                   const std::string &outputPath);
+
     // Reset simulation state
     //static void clear();
 };
