@@ -1,4 +1,5 @@
 #include "combinational/NOR.hpp"
+#include "simulation/Simulator.hpp"
 #include <iostream>
 
 void NOR::evaluate(Port p, Signal value) {
@@ -9,6 +10,6 @@ void NOR::evaluate(Port p, Signal value) {
     Signal temp = (A == Signal::HIGH || B == Signal::HIGH) ? Signal::LOW : Signal::HIGH;
     if(temp != result){
         result = temp;
-        this->commit(result);
+        Simulator::topologicalQueue.enqueue(this);
     }
 }

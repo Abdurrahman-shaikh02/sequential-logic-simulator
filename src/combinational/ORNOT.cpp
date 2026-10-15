@@ -1,4 +1,5 @@
 #include "combinational/ORNOT.hpp"
+#include "simulation/Simulator.hpp"
 #include <iostream>
 
 void ORNOT::evaluate(Port p, Signal value) {
@@ -9,6 +10,6 @@ void ORNOT::evaluate(Port p, Signal value) {
     Signal temp = (A == Signal::HIGH || B == Signal::LOW) ? Signal::HIGH : Signal::LOW;
     if(temp != result){
         result = temp;
-        this->commit(result);
+        Simulator::topologicalQueue.enqueue(this);
     }
 }

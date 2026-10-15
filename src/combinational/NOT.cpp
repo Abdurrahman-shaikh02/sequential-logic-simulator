@@ -1,4 +1,5 @@
 #include "combinational/NOT.hpp"
+#include "simulation/Simulator.hpp"
 #include <iostream>
 
 void NOT::evaluate(Port p, Signal value) {
@@ -8,6 +9,6 @@ void NOT::evaluate(Port p, Signal value) {
     Signal temp = (A == Signal::LOW) ? Signal::HIGH : Signal::LOW;
     if(temp != result){
         result = temp;
-        this->commit(result);
+        Simulator::topologicalQueue.enqueue(this);
     }
 }
