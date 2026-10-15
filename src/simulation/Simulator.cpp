@@ -1,44 +1,47 @@
+
 #include "simulation/Simulator.hpp"
+#include "parser/Parser.hpp"
+#include "synthesizer/Synthesizer.hpp"
+
 #include <iostream>
 
-// initialization of static class members
+// Initialization of static class members
 OperationQueue Simulator::combinationalQueue;
 OperationQueue Simulator::sequentialQueue;
+
 std::vector<std::unique_ptr<Node>> Simulator::nodes;
-int Simulator::primaryInputCount = 0;
-int Simulator::primaryOutputCount = 0;
+
+std::unordered_map<std::string, std::vector<Node*>> Simulator::primaryInputs;
+std::unordered_map<std::string, std::vector<Node*>> Simulator::primaryOutputs;
 
 int Simulator::parse(const std::string &path) {
-    // replace with Parser class call when ready
-    // e.g., Parser p; return p.parse(path, nodes);
-    return 0;
+    return Parser::parse(path, nodes, primaryInputs, primaryOutputs);
 }
 
 std::string Simulator::synthesize(const std::string &path) {
-    // replace with Synthesizer class call when ready
-    // e.g., Synthesizer syn; return syn.synthesize(path);
-    return "";
+    return Synthesizer::synthesize(path);
 }
 
 void Simulator::run() {
 
     while (!combinationalQueue.isEmpty() || !sequentialQueue.isEmpty()) {
-        
-        // Phase 1: Drain Combinational Queue (Gate evaluations & signal propagation)
+
+        // Phase 1: Drain Combinational Queue
         while (!combinationalQueue.isEmpty()) {
             std::unique_ptr<Operation> op = combinationalQueue.dequeue();
+
             if (op) {
-                // just fyi : this is called as polymorphic execution
-                op->run(); 
+                op->run();
             }
         }
 
-        // Phase 2: Timing check & reorder S-Queue (Prioritizes CHANGE_STATE over SET_PORT on FFs)
+        // Phase 2: Reorder Sequential Queue
         sequentialQueue.reorder();
 
-        // Phase 3: Drain Sequential Queue (Flip-flop state calculations and commits)
+        // Phase 3: Drain Sequential Queue
         while (!sequentialQueue.isEmpty()) {
             std::unique_ptr<Operation> op = sequentialQueue.dequeue();
+
             if (op) {
                 op->run();
             }

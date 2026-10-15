@@ -11,6 +11,7 @@ protected:
 	Signal result;
 	Node();
 public:
+	int priority = -1;
 	void addConnection(Node &node, Port p);
 	Signal getResult();
 	void commit(Signal value);
