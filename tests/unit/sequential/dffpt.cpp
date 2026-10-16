@@ -25,7 +25,12 @@ int main(){
 	Simulator::nodes[2]->addConnection(*Simulator::nodes[3], Port::O);
 
 	// initalize the circuit
-	Simulator::initialize();
+	Simulator::nodes[0]->evaluate(Port::O, Signal::LOW);
+	Simulator::nodes[1]->evaluate(Port::O, Signal::LOW);
+	for(auto& x : Simulator::nodes){
+		Simulator::topologicalQueue.enqueue(x.get());
+	}
+	Simulator::run();
 
 	int a = 0, b = 0;
 	while(scanf("%d %d", &a, &b) != EOF){

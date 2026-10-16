@@ -27,8 +27,19 @@ void Simulator::initialize(){
     /*   
       - turn all input nodes to 0
       - enqueue ALL the nodes in the topologicalQueue
-      - run Simulator::run()
+      - call run()
     */
+    for (auto& [name, nodes] : primaryInputs) {
+        for (Node* node : nodes) {
+            node->evaluate(Port::O, Signal::LOW);
+        }
+    }
+
+    for(auto& x : Simulator::nodes){
+        topologicalQueue.enqueue(x.get());
+    }
+
+    Simulator::run();
 }
 
 // Expects that the evaluate() functions on the input nodes have already been called

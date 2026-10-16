@@ -54,11 +54,11 @@ namespace {
         {"$_ORNOT_", {{"A","B","Y"}, [] { return std::make_unique<ORNOT>(); }}},
         {"$_MUX_", {{"A","B","S","Y"}, [] { return std::make_unique<MUX>(); }}},
         {"$_DFF_P_", {{"D","C","Q"}, [] { return std::make_unique<DFF_P>(); }}},
-        {"$_DFF_N_", {{"D","C","Q"}, [] { return std::make_unique<DFF_N>(); }}},
-        {"$_TFF_P_", {{"T","C","Q"}, [] { return std::make_unique<TFF_P>(); }}},
-        {"$_TFF_N_", {{"T","C","Q"},  [] { return std::make_unique<TFF_N>(); }}},
-        {"$_JKFF_P_", {{"J","K","C","Q"}, [] { return std::make_unique<JKFF_P>(); }}},
-        {"$_JKFF_N_", {{"J","K","C","Q"}, [] { return std::make_unique<JKFF_N>(); }}},
+        //{"$_DFF_N_", {{"D","C","Q"}, [] { return std::make_unique<DFF_N>(); }}},
+        //{"$_TFF_P_", {{"T","C","Q"}, [] { return std::make_unique<TFF_P>(); }}},
+        //{"$_TFF_N_", {{"T","C","Q"},  [] { return std::make_unique<TFF_N>(); }}},
+        //{"$_JKFF_P_", {{"J","K","C","Q"}, [] { return std::make_unique<JKFF_P>(); }}},
+        //{"$_JKFF_N_", {{"J","K","C","Q"}, [] { return std::make_unique<JKFF_N>(); }}},
     };
 
     // Structure created for validation of components
