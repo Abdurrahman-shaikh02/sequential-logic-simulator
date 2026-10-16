@@ -1,4 +1,7 @@
+#include "operations/CommitOperation.hpp"
+#include "simulation/Simulator.hpp"
 #include "combinational/AND.hpp"
+#include "simulation/Simulator.hpp"
 #include <iostream>
 
 void AND::evaluate(Port p, Signal value) {
@@ -9,6 +12,6 @@ void AND::evaluate(Port p, Signal value) {
     Signal temp = (A == Signal::HIGH && B == Signal::HIGH) ? Signal::HIGH : Signal::LOW;
     if(temp != result){
         result = temp;
-        this->commit(result);
+        Simulator::topologicalQueue.enqueue(this);
     }
 }

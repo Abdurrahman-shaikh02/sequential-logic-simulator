@@ -1,4 +1,7 @@
+#include "operations/CommitOperation.hpp"
+#include "simulation/Simulator.hpp"
 #include "combinational/MUX.hpp"
+#include "simulation/Simulator.hpp"
 #include <iostream>
 
 void MUX::evaluate(Port p, Signal value) {
@@ -10,6 +13,6 @@ void MUX::evaluate(Port p, Signal value) {
     Signal temp = (S == Signal::HIGH) ? B : A;
     if(temp != result){
         result = temp;
-        this->commit(result);
+        Simulator::topologicalQueue.enqueue(this);
     }
 }

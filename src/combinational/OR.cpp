@@ -1,4 +1,7 @@
+#include "operations/CommitOperation.hpp"
+#include "simulation/Simulator.hpp"
 #include "combinational/OR.hpp"
+#include "simulation/Simulator.hpp"
 #include <iostream>
 
 void OR::evaluate(Port p, Signal value) {
@@ -7,8 +10,8 @@ void OR::evaluate(Port p, Signal value) {
     else std::cerr << "port does not exist on OR gate\n";
 
     Signal temp = (A == Signal::HIGH || B == Signal::HIGH) ? Signal::HIGH : Signal::LOW;
-    if(temp != result){
+    if (temp != result) {
         result = temp;
-        this->commit(result);
+        Simulator::topologicalQueue.enqueue(this);
     }
 }

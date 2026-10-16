@@ -17,6 +17,16 @@ int main(){
 	Simulator::nodes.push_back(std::make_unique<XOR>());
 	Simulator::nodes.push_back(std::make_unique<OutputNode>());
 
+	// give topological priority manually
+	Simulator::nodes[0]->priority = 0;
+	Simulator::nodes[1]->priority = 1;
+	Simulator::nodes[2]->priority = 2;
+	Simulator::nodes[3]->priority = 3;
+	Simulator::nodes[4]->priority = 4;
+	Simulator::nodes[5]->priority = 5;
+	Simulator::nodes[6]->priority = 6;
+	Simulator::nodes[7]->priority = 7;
+	
 	// make all required connections
 	Simulator::nodes[0]->addConnection(*Simulator::nodes[4], Port::A);
 	Simulator::nodes[1]->addConnection(*Simulator::nodes[4], Port::B);
