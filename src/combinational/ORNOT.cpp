@@ -1,8 +1,17 @@
+#include "operations/CommitOperation.hpp"
+#include "simulation/Simulator.hpp"
 #include "combinational/ORNOT.hpp"
+#include "simulation/Simulator.hpp"
+#include <iostream>
 
 void ORNOT::evaluate(Port p, Signal value) {
     if (p == Port::A) A = value;
     else if (p == Port::B) B = value;
-    result = (A == Signal::HIGH || B == Signal::LOW) ? Signal::HIGH : Signal::LOW;
-    this->commit(result);
+    else std::cerr << "port does not exist on ORNOT gate\n";
+
+    Signal temp = (A == Signal::HIGH || B == Signal::LOW) ? Signal::HIGH : Signal::LOW;
+    if(temp != result){
+        result = temp;
+        Simulator::topologicalQueue.enqueue(this);
+    }
 }

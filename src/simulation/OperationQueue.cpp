@@ -23,7 +23,7 @@ void OperationQueue::enqueue(std::unique_ptr<Operation> op) {
 std::unique_ptr<Operation> OperationQueue::dequeue() {
     if (q.empty()) 
         return nullptr;
-    
+ 
     std::unique_ptr<Operation> op = std::move(q.front());
     q.pop_front();
     return op;
@@ -37,37 +37,43 @@ void OperationQueue::cancel(const Operation &op) {
     }
 }
 
-/* goes in a loop and checks if 
- * set_port appears before a change_state
- * for the exact same node. If so, give warning and swaps them
+/* goes in a loop and checks if set_port appears
+ *  before a change_state for the exact same node.
+ *  If so, give warning and swap them!
  */
 void OperationQueue::reorder() {
-    // ok represents if there is set_port before change_state on exact same node
-    bool ok = false;
+    // this represents if there is set_port before change_state on exact same node
+    bool hazardDetected = false;
 
     for(int i = 0; i < q.size(); i++) {
         auto* setPortOp = dynamic_cast<SetPortOperation*>(q[i].get());
-
         if(!setPortOp) 
             continue;
         
-        for(int j = i + 1; j < q.size(); j++) {
+        for(int j = 0; j < q.size(); j++) {
+            if(i == j)
+                continue;
+
             auto* changeStateOp = dynamic_cast<ChangeStateOperation*>(q[j].get());
-            if (!changeStateOp) 
+            if (!changeStateOp)
                 continue;
 
             // check : same exact node? via memory addresses
             if(&setPortOp->getTarget() == &changeStateOp->getTarget()) {
-                if(!ok) {
-                    std::cerr << "[WARNING] Timing hazard detected: SET_PORT scheduled before "
-                              << "CHANGE_STATE on the same Flip-Flop! Reordering operations.\n";
-                    
-                    ok = true;
+                
+                // report warning if both operations co-exists in queue for the exact same node!
+                if(!hazardDetected) {
+                    std::cerr << "[WARNING] Hold-time violation detected." << std::endl;
+                    hazardDetected = true;
                 }
 
-                // swap so CHANGE_STATE executes first
-                std::swap(q[i], q[j]);
-                break;
+                // change_state 'must' appears before set_port i.e. i < j
+                // swap so CHANGE_STATE executes first 
+                if(i < j) {
+                    std::swap(q[i], q[j]);
+                    i--; // reavulate index i after swap
+                    break;
+                }
             }
         }
     }

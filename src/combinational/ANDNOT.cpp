@@ -1,8 +1,17 @@
+#include "operations/CommitOperation.hpp"
+#include "simulation/Simulator.hpp"
 #include "combinational/ANDNOT.hpp"
+#include "simulation/Simulator.hpp"
+#include <iostream>
 
 void ANDNOT::evaluate(Port p, Signal value) {
     if (p == Port::A) A = value;
     else if (p == Port::B) B = value;
-    result = (A == Signal::HIGH && B == Signal::LOW) ? Signal::HIGH : Signal::LOW;
-    this->commit(result);
+    else std::cerr << "port does not exist on ANDNOT gate\n";
+
+    Signal temp = (A == Signal::HIGH && B == Signal::LOW) ? Signal::HIGH : Signal::LOW;
+    if(temp != result){
+        result = temp;
+        Simulator::topologicalQueue.enqueue(this);
+    }
 }

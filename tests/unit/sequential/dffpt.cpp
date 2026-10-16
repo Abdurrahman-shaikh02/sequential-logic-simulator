@@ -13,10 +13,24 @@ int main(){
 	Simulator::nodes.push_back(std::make_unique<DFF_P>());
 	Simulator::nodes.push_back(std::make_unique<OutputNode>());
 
+	// give topological priority manually
+	Simulator::nodes[0]->priority = 0;
+	Simulator::nodes[1]->priority = 1;
+	Simulator::nodes[2]->priority = 2;
+	Simulator::nodes[3]->priority = 3;
+	
 	// make all required connections
 	Simulator::nodes[0]->addConnection(*Simulator::nodes[2], Port::D);
 	Simulator::nodes[1]->addConnection(*Simulator::nodes[2], Port::CLK);
-	Simulator::nodes[2]->addConnection(*Simulator::nodes[3], Port::CLK);
+	Simulator::nodes[2]->addConnection(*Simulator::nodes[3], Port::O);
+
+	// initalize the circuit
+	Simulator::nodes[0]->evaluate(Port::O, Signal::LOW);
+	Simulator::nodes[1]->evaluate(Port::O, Signal::LOW);
+	for(auto& x : Simulator::nodes){
+		Simulator::topologicalQueue.enqueue(x.get());
+	}
+	Simulator::run();
 
 	int a = 0, b = 0;
 	while(scanf("%d %d", &a, &b) != EOF){

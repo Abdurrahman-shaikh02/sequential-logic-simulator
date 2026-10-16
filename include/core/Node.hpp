@@ -4,13 +4,19 @@
 #include "core/Signal.hpp"
 #include "core/Port.hpp"
 
+struct ParserTestAccess;
+
 class Node {
+	friend struct ParserTestAccess; // test-only read access to connections
 private:
 	List connections;
 protected:
 	Signal result;
+	bool initialized;	// for sequential node's evaluate() if not initialized just set internal values!
 	Node();
 public:
+	int priority = -1;
+
 	void addConnection(Node &node, Port p);
 	Signal getResult();
 	void commit(Signal value);

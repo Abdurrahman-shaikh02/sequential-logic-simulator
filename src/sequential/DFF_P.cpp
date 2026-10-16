@@ -14,14 +14,20 @@ DFF_P::DFF_P() : d(Signal::LOW), clk(Signal::LOW) {}
 void DFF_P::evaluate(Port p, Signal value) {
     switch (p) {
         case Port::D: {
-                          SetPortOperation pending(*this, p, value);
-                          Simulator::sequentialQueue.cancel(pending);
-                          Simulator::sequentialQueue.enqueue(std::make_unique<SetPortOperation>(*this, p, value));
+                          if (!initialized) {
+                              d = value;        // just set the internal value if the node is invalid
+                          } else {
+                              SetPortOperation pending(*this, p, value);
+                              Simulator::sequentialQueue.cancel(pending);
+                              Simulator::sequentialQueue.enqueue(std::make_unique<SetPortOperation>(*this, p, value));
+                          }
                           break;
                       }
 
         case Port::CLK: {
-                            if (clk == Signal::LOW && value == Signal::HIGH) {
+                            if (!initialized) {
+                                clk = value;
+                            } else if (clk == Signal::LOW && value == Signal::HIGH) {
                                 ChangeStateOperation pending(*this, p, value);
                                 Simulator::sequentialQueue.cancel(pending);
                                 Simulator::sequentialQueue.enqueue(std::make_unique<ChangeStateOperation>(*this, p, value));
@@ -32,8 +38,8 @@ void DFF_P::evaluate(Port p, Signal value) {
                         }
 
         default:
-                        std::cerr << "port does not exist on this D flip-flop\n";
-                        break;
+            std::cerr << "port does not exist on this D flip-flop\n";
+            break;
     }
 }
 
@@ -44,7 +50,8 @@ void DFF_P::setPort(Port p, Signal value) {
 }
 
 void DFF_P::changeState() {
-    result = d;
     clk = Signal::HIGH;
+    if(result == d) return;
+    result = d;
     Simulator::sequentialQueue.enqueue(std::make_unique<CommitOperation>(*this, Port::O, result));
 }
