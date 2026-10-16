@@ -54,11 +54,11 @@ namespace {
         {"$_ORNOT_", {{"A","B","Y"}, [] { return std::make_unique<ORNOT>(); }}},
         {"$_MUX_", {{"A","B","S","Y"}, [] { return std::make_unique<MUX>(); }}},
         {"$_DFF_P_", {{"D","C","Q"}, [] { return std::make_unique<DFF_P>(); }}},
-        // {"$_DFF_N_", {{"D","C","Q"}, [] { return std::make_unique<DFF_N>(); }}},
-        // {"$_TFF_P_", {{"T","C","Q"}, [] { return std::make_unique<TFF_P>(); }}},
-        // {"$_TFF_N_", {{"T","C","Q"},  [] { return std::make_unique<TFF_N>(); }}},
-        // {"$_JKFF_P_", {{"J","K","C","Q"}, [] { return std::make_unique<JKFF_P>(); }}},
-        // {"$_JKFF_N_", {{"J","K","C","Q"}, [] { return std::make_unique<JKFF_N>(); }}},
+        {"$_DFF_N_", {{"D","C","Q"}, [] { return std::make_unique<DFF_N>(); }}},
+        {"$_TFF_P_", {{"T","C","Q"}, [] { return std::make_unique<TFF_P>(); }}},
+        {"$_TFF_N_", {{"T","C","Q"},  [] { return std::make_unique<TFF_N>(); }}},
+        {"$_JKFF_P_", {{"J","K","C","Q"}, [] { return std::make_unique<JKFF_P>(); }}},
+        {"$_JKFF_N_", {{"J","K","C","Q"}, [] { return std::make_unique<JKFF_N>(); }}},
     };
 
     // Structure created for validation of components
@@ -224,7 +224,10 @@ int Parser::parse(const std::string &path, std::vector<std::unique_ptr<Node>> &n
             Node* nodePtr = nodeObj.get();
             nodes.push_back(std::move(nodeObj));
             currName = components.emplace(compName, Component{nodePtr, compType, {}}).first;
-        } else if (currName->second.type != compType) {
+        } 
+        
+        // Check if fetched component was defined with a different node type
+        else if (currName->second.type != compType) {
             std::cerr << "component " << compName << " redefined with different type\n";
             return -1;
         }
@@ -238,14 +241,20 @@ int Parser::parse(const std::string &path, std::vector<std::unique_ptr<Node>> &n
 
         Wire &w = wires[wireName];
         if (dir == "out") {
+            // Check if ouptut is going to a wire defined as constant
+            if (isConstantLiteral(wireName)) {
+                std::cerr << wireName << "cannot drive constant value\n";
+                return -1;
+            }
+
+            // Check if multiple drivers are being defined for the wire
             if (w.driver) {
                 std::cerr << "multiple drivers for wire " << wireName << '\n';
                 return -1;
             }
             w.driver = comp.node;
         } else if (dir == "in") {
-            // Check if input is a constant value
-            // Call evalute on its connected port with the correct Signal
+            // If input is a constant value, call evalute on it with the correct Signal
             if (isConstantLiteral(wireName) && !w.driver) {
                 auto nodeObj = std::make_unique<InputNode>();
                 Node* raw = nodeObj.get();
@@ -255,7 +264,7 @@ int Parser::parse(const std::string &path, std::vector<std::unique_ptr<Node>> &n
             }
             w.consumers.push_back({comp.node, port});
         } else {
-            std::cerr << "unknown direction: " << dir << '\n';
+            std::cerr << "unknown direction " << dir << "for wire: " << wireName << '\n';
             return -1;
         }
     }
@@ -372,7 +381,8 @@ int Parser::parse(const std::string &path, std::vector<std::unique_ptr<Node>> &n
         if (compTypeTable.count(comp.type))
             nodeType[comp.node] = comp.type;
 
-    // Build in-degree for Kahn's algorithm excluding D/J/K/T ports
+    // Compute in-degree for Kahn's algorithm excluding D/J/K/T ports
+    // Store which wire each node drives to find its connected nodes
     std::unordered_map<Node*, int> indeg;
     std::unordered_map<Node*, Wire*> driverWire;
     for (auto &n : nodes)
@@ -386,8 +396,7 @@ int Parser::parse(const std::string &path, std::vector<std::unique_ptr<Node>> &n
                 continue;
             indeg[consumerNode]++;
         }
-        if (w.driver)
-            driverWire[w.driver] = &w;
+        driverWire[w.driver] = &w;
     }
 
     // Process zero-in-degree nodes then decrement downstream in-degree
