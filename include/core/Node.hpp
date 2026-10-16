@@ -12,10 +12,11 @@ private:
 	List connections;
 protected:
 	Signal result;
+	bool initialized;	// for sequential node's evaluate() if not initialized just set internal values!
 	Node();
 public:
 	int priority = -1;
-	
+
 	void addConnection(Node &node, Port p);
 	Signal getResult();
 	void commit(Signal value);

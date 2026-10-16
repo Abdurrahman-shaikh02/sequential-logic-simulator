@@ -1,6 +1,7 @@
 #include "operations/CommitOperation.hpp"
 #include "simulation/Simulator.hpp"
 #include "combinational/XOR.hpp"
+#include "simulation/Simulator.hpp"
 #include <iostream>
 
 void XOR::evaluate(Port p, Signal value) {
@@ -11,6 +12,6 @@ void XOR::evaluate(Port p, Signal value) {
     Signal temp = (A != B) ? Signal::HIGH : Signal::LOW;
     if (temp != result) {
         result = temp;
-        Simulator::combinationalQueue.enqueue(std::make_unique<CommitOperation>(*this, Port::O, result));
+        Simulator::topologicalQueue.enqueue(this);
     }
 }

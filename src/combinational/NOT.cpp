@@ -1,6 +1,7 @@
 #include "operations/CommitOperation.hpp"
 #include "simulation/Simulator.hpp"
 #include "combinational/NOT.hpp"
+#include "simulation/Simulator.hpp"
 #include <iostream>
 
 void NOT::evaluate(Port p, Signal value) {
@@ -12,7 +13,6 @@ void NOT::evaluate(Port p, Signal value) {
     
     if (temp != result) {
         result = temp;
-        // Enqueue the commit operation instead of calling commit() directly
-        Simulator::combinationalQueue.enqueue(std::make_unique<CommitOperation>(*this, Port::O, result));
+        Simulator::topologicalQueue.enqueue(this);
     }
 }
