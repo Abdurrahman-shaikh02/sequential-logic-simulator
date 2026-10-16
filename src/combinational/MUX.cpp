@@ -1,3 +1,5 @@
+#include "operations/CommitOperation.hpp"
+#include "simulation/Simulator.hpp"
 #include "combinational/MUX.hpp"
 #include "simulation/Simulator.hpp"
 #include <iostream>

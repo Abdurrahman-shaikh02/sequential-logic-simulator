@@ -1,3 +1,5 @@
+#include "operations/CommitOperation.hpp"
+#include "simulation/Simulator.hpp"
 #include "combinational/NAND.hpp"
 #include "simulation/Simulator.hpp"
 #include <iostream>

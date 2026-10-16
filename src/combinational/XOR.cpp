@@ -1,3 +1,5 @@
+#include "operations/CommitOperation.hpp"
+#include "simulation/Simulator.hpp"
 #include "combinational/XOR.hpp"
 #include "simulation/Simulator.hpp"
 #include <iostream>
@@ -8,7 +10,7 @@ void XOR::evaluate(Port p, Signal value) {
     else std::cerr << "port does not exist on XOR gate\n";
 
     Signal temp = (A != B) ? Signal::HIGH : Signal::LOW;
-    if(temp != result){
+    if (temp != result) {
         result = temp;
         Simulator::topologicalQueue.enqueue(this);
     }

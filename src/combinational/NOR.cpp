@@ -1,3 +1,5 @@
+#include "operations/CommitOperation.hpp"
+#include "simulation/Simulator.hpp"
 #include "combinational/NOR.hpp"
 #include "simulation/Simulator.hpp"
 #include <iostream>
@@ -8,7 +10,7 @@ void NOR::evaluate(Port p, Signal value) {
     else std::cerr << "port does not exist on NOR gate\n";
 
     Signal temp = (A == Signal::HIGH || B == Signal::HIGH) ? Signal::LOW : Signal::HIGH;
-    if(temp != result){
+    if (temp != result) {
         result = temp;
         Simulator::topologicalQueue.enqueue(this);
     }
