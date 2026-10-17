@@ -1,267 +1,299 @@
 classDiagram
 direction LR
-    class Port {
-	    O
-	    A
-	    B
-	    S
-	    J
-	    K
-	    D
-	    T
-	    CLK
+
+    class Signal:::lightRed {
+        LOW
+        HIGH
     }
 
-    class Node {
-	    -List connections
-	    #int out
-	    +add_connection(Node &n, Port p)
-	    +get_out() int
-	    +commit(int val)
-	    +evaluate(Port p, int val)*
+    class Port:::lightRed {
+        O
+        A
+        B
+        S
+        J
+        K
+        D
+        T
+        CLK
     }
 
-    class List {
-	    -ListNode head
-	    +add_element(Node n, Port p)
-	    +loop_and_evaluate(int val)
+    class Node:::lightBlue {
+        <<abstract>>
+        -List connections
+        #Signal result
+        #bool initialized
+        +int priority
+        +addConnection(Node& node, Port p) void
+        +getResult() Signal
+        +commit(Signal value) void
+        +evaluate(Port p, Signal value)* void
     }
 
-    class ListNode {
-	    -Node n
-	    -Port p
-	    -ListNode next
+    class List:::lightBlue {
+        -ListNode* head
+        +List()
+        +addElement(Node& node, Port p) void
+        +loopAndEvaluate(Signal value) void
     }
 
-    class Combinational_Node {
+    class ListNode:::lightBlue {
+        +Node& target
+        +Port p
+        +ListNode* next
+        +ListNode(Node& target, Port p, ListNode* next)
     }
 
-    class NAND {
-	    -int A
-	    -int B
-	    +evaluate(Port p, int val)
+    class CombinationalNode:::lightBlue {
+        <<abstract>>
     }
 
-    class AND {
-	    -int A
-	    -int B
-	    +evaluate(Port p, int val)
+    class NAND:::lightBlue {
+        -Signal A
+        -Signal B
+        +evaluate(Port p, Signal value) void
     }
 
-    class MUX {
-	    -int A
-	    -int B
-	    -int S
-	    +evaluate(Port p, int val)
+    class AND:::lightBlue {
+        -Signal A
+        -Signal B
+        +evaluate(Port p, Signal value) void
     }
 
-    class NOT {
-	    -int A
-	    +evaluate(Port p, int val)
+    class MUX:::lightBlue {
+        -Signal A
+        -Signal B
+        -Signal S
+        +evaluate(Port p, Signal value) void
     }
 
-    class NOR {
-	    -int A
-	    -int B
-	    +evaluate(Port p, int val)
+    class NOT:::lightBlue {
+        -Signal A
+        +evaluate(Port p, Signal value) void
     }
 
-    class OR {
-	    -int A
-	    -int B
-	    +evaluate(Port p, int val)
+    class NOR:::lightBlue {
+        -Signal A
+        -Signal B
+        +evaluate(Port p, Signal value) void
     }
 
-    class XOR {
-	    -int A
-	    -int B
-	    +evaluate(Port p, int val)
+    class OR:::lightBlue {
+        -Signal A
+        -Signal B
+        +evaluate(Port p, Signal value) void
     }
 
-    class ANDNOT {
-	    -int A
-	    -int B
-	    +evaluate(Port p, int val)
+    class XOR:::lightBlue {
+        -Signal A
+        -Signal B
+        +evaluate(Port p, Signal value) void
     }
 
-    class ORNOT {
-	    -int A
-	    -int B
-	    +evaluate(Port p, int val)
+    class ANDNOT:::lightBlue {
+        -Signal A
+        -Signal B
+        +evaluate(Port p, Signal value) void
     }
 
-    class DFF_P {
-	    -int D
-	    -int CLK
-	    +evaluate(Port p, int val)
-	    +set_port(Port p, int val)
-	    +change_state()
+    class ORNOT:::lightBlue {
+        -Signal A
+        -Signal B
+        +evaluate(Port p, Signal value) void
     }
 
-    class DFF_N {
-	    -int D
-	    -int CLK
-	    +evaluate(Port p, int val)
-	    +set_port(Port p, int val)
-	    +change_state()
+    class SequentialNode:::lightRed {
+        <<abstract>>
+        +setPort(Port p, Signal value)* void
+        +changeState()* void
     }
 
-    class TFF_P {
-	    -int T
-	    -int CLK
-	    +evaluate(Port p, int val)
-	    +set_port(Port p, int val)
-	    +change_state()
+    class DFF_P:::lightRed {
+        -Signal d
+        -Signal clk
+        +DFF_P()
+        +evaluate(Port p, Signal value) void
+        +setPort(Port p, Signal value) void
+        +changeState() void
     }
 
-    class TFF_N {
-	    -int T
-	    -int CLK
-	    +evaluate(Port p, int val)
-	    +set_port(Port p, int val)
-	    +change_state()
+    class DFF_N:::lightRed {
+        -Signal d
+        -Signal clk
+        +evaluate(Port p, Signal value) void
+        +setPort(Port p, Signal value) void
+        +changeState() void
     }
 
-    class JKFF_P {
-	    -int J
-	    -int K
-	    -int CLK
-	    +evaluate(Port p, int val)
-	    +set_port(Port p, int val)
-	    +change_state()
+    class TFF_P:::lightRed {
+        -Signal t
+        -Signal clk
+        +evaluate(Port p, Signal value) void
+        +setPort(Port p, Signal value) void
+        +changeState() void
     }
 
-    class JKFF_N {
-	    -int J
-	    -int K
-	    -int CLK
-	    +evaluate(Port p, int val)
-	    +set_port(Port p, int val)
-	    +change_state()
+    class TFF_N:::lightRed {
+        -Signal t
+        -Signal clk
+        +evaluate(Port p, Signal value) void
+        +setPort(Port p, Signal value) void
+        +changeState() void
     }
 
-    class PrimaryNode {
+    class JKFF_P:::lightRed {
+        -Signal j
+        -Signal k
+        -Signal clk
+        +evaluate(Port p, Signal value) void
+        +setPort(Port p, Signal value) void
+        +changeState() void
     }
 
-    class InputNode {
-	    +evaluate(Port p, int val)
+    class JKFF_N:::lightRed {
+        -Signal j
+        -Signal k
+        -Signal clk
+        +evaluate(Port p, Signal value) void
+        +setPort(Port p, Signal value) void
+        +changeState() void
     }
 
-    class OutputNode {
-	    +evaluate(Port p, int val)
+    class PrimaryNode:::lightBlue {
+        <<abstract>>
     }
 
-    class OperationType {
-	    EVALUATE
-	    SET_PORT
-	    CHANGE_STATE
-	    COMMIT
+    class InputNode:::lightBlue {
+        +evaluate(Port p, Signal value) void
     }
 
-    class Operation {
-	    -Node &target
-	    -Port p
-	    -int value
-	    -enum OperationType type
-		#Operation(Node &target, port p, int value)
-	    +isEqual(Operation op) bool
-	    +run()*
+    class OutputNode:::lightBlue {
+        +evaluate(Port p, Signal value) void
     }
 
-    class EvaluateOperation {
-		+EvaluateOperation(Node &target, port p, int value)
-	    +run()
+    class OperationType:::lightRed {
+        <<enumeration>>
+        EVALUATE
+        SET_PORT
+        CHANGE_STATE
+        COMMIT
     }
 
-    class SetPortOperation {
-		+SetPortOperation(Node &target, port p, int value)
-	    +run()
+    class Operation:::lightRed {
+        <<abstract>>
+        #Node& target
+        #Port p
+        #Signal value
+        #Operation(Node& target, Port p, Signal value)
+        +operator==(const Operation& op) bool
+        +run()* void
+        +getTarget() Node&
     }
 
-    class ChangeStateOperation {
-		+ChangeStateOperation(Node &target, port p, int value)
-	    +run()
+    class EvaluateOperation:::lightRed {
+        +EvaluateOperation(Node& target, Port p, Signal value)
+        +run() void
     }
 
-    class CommitOperation {
-		+CommitOperation(Node &target, port p, int value)
-	    +run()
+    class SetPortOperation:::lightRed {
+        +SetPortOperation(Node& target, Port p, Signal value)
+        +run() void
     }
 
-    class OperationQueue {
-	    -Operation[] q
-	    +enqueue(Operation op)
-	    +dequeue() Operation
-	    +delete(Operation op)
-	    +isEmpty() bool
-	    +reorder()
+    class ChangeStateOperation:::lightRed {
+        +ChangeStateOperation(Node& target, Port p, Signal value)
+        +run() void
     }
 
-    class Simulator {
-	    +OperationQueue combQueue$
-	    +OperationQueue seqQueue$
-	    +Node[] nodes $
-	    +int primaryInputCount$
-	    +int primaryOutputCount$
-	    +parse(String path) int $
-	    +synthesize(String path) String $
-	    +run()$
+    class CommitOperation:::lightRed {
+        +CommitOperation(Node& target, Port p, Signal value)
+        +run() void
     }
 
-    class Parser {
-	    +parse(String path) int $
+    class OperationQueue:::lightRed {
+        -deque of unique_ptr~Operation~ q
+        +enqueue(unique_ptr~Operation~ op) void
+        +dequeue() unique_ptr~Operation~
+        +cancel(const Operation& op) void
+        +isEmpty() bool
+        +clear() void
+        +reorder() void
     }
 
-    class Synthesizer {
-	    +synthesize(String path) String $
+    class TopologicalQueue:::lightBlue {
+        -set of Node* queue
+        +enqueue(Node* node) void
+        +isEmpty() bool
+        +commitNext() void
     }
 
-    class Sequential_Node {
-	    +set_port(Port p, int val)*
-	    +change_state()*
+    class Simulator:::lightGreen {
+        +OperationQueue combinationalQueue$
+        +OperationQueue sequentialQueue$
+        +TopologicalQueue topologicalQueue$
+        +vector of unique_ptr~Node~ nodes$
+        +unordered_map from string to vector of Node* primaryInputs$
+        +unordered_map from string to vector of Node* primaryOutputs$
+        +parse(string path) int$
+        +synthesize(string path) string$
+        +initialize() void$
+        +run() void$
+        +generateTruthTable(string inputPath, string outputPath) bool$
     }
 
-	<<enumeration>> Port
-	<<abstract>> Node
-	<<abstract>> Combinational_Node
-	<<abstract>> PrimaryNode
-	<<enumeration>> OperationType
-	<<abstract>> Operation
-	<<abstract>> Sequential_Node
+    class Parser:::lightBlue {
+        +parse(string path, nodes, primaryInputs, primaryOutputs) int$
+    }
 
-    Node <|-- Sequential_Node
-    Node <|-- Combinational_Node
+    class Synthesizer:::lightRed {
+        +synthesize(string path) string$
+    }
+
+    Node *-- List : owns connections
+    List *-- ListNode : links
+    ListNode --> Node : targets
+
+    Node <|-- SequentialNode
+    Node <|-- CombinationalNode
     Node <|-- PrimaryNode
+
+    CombinationalNode <|-- NAND
+    CombinationalNode <|-- AND
+    CombinationalNode <|-- MUX
+    CombinationalNode <|-- NOT
+    CombinationalNode <|-- NOR
+    CombinationalNode <|-- OR
+    CombinationalNode <|-- XOR
+    CombinationalNode <|-- ANDNOT
+    CombinationalNode <|-- ORNOT
+
+    SequentialNode <|-- DFF_P
+    SequentialNode <|-- DFF_N
+    SequentialNode <|-- TFF_P
+    SequentialNode <|-- TFF_N
+    SequentialNode <|-- JKFF_P
+    SequentialNode <|-- JKFF_N
     PrimaryNode <|-- InputNode
     PrimaryNode <|-- OutputNode
-    Combinational_Node <|-- NAND
-    Combinational_Node <|-- AND
-    Combinational_Node <|-- MUX
-    Combinational_Node <|-- NOT
-    Combinational_Node <|-- NOR
-    Combinational_Node <|-- OR
-    Combinational_Node <|-- XOR
-    Combinational_Node <|-- ANDNOT
-    Combinational_Node <|-- ORNOT
-    Sequential_Node <|-- DFF_P
-    Sequential_Node <|-- DFF_N
-    Sequential_Node <|-- TFF_P
-    Sequential_Node <|-- TFF_N
-    Sequential_Node <|-- JKFF_P
-    Sequential_Node <|-- JKFF_N
+
     Operation <|-- EvaluateOperation
     Operation <|-- SetPortOperation
     Operation <|-- ChangeStateOperation
     Operation <|-- CommitOperation
-    Node "1" *-- "1" List : owns
-    List "1" *-- "0..*" ListNode : contains
-    ListNode "0..*" --> "1" Node : refers to
-    Operation "0..*" --> "1" Node : targets
-    SetPortOperation "0..*" --> "1" Sequential_Node : targets
-    ChangeStateOperation "0..*" --> "1" Sequential_Node : targets
-    OperationQueue "1" *-- "0..*" Operation : holds
-    Simulator "1" *-- "2" OperationQueue : manages
-    %%Simulator ..> Node : triggers evaluate on
-	Simulator "1" --o "*" Node : contains
-	Simulator ..> Parser : uses
-	Simulator ..> Synthesizer : uses
+    Operation --> Node : targets
+    SetPortOperation ..> SequentialNode : dispatches to
+    ChangeStateOperation ..> SequentialNode : dispatches to
+    OperationQueue *-- Operation : owns queued operations
+
+    TopologicalQueue --> Node : schedules commits for
+    Simulator *-- OperationQueue : owns two queues
+    Simulator *-- TopologicalQueue : owns
+    Simulator *-- Node : owns nodes
+    Simulator o--> Node : indexes primary inputs and outputs
+    Simulator ..> Parser : uses
+    Simulator ..> Synthesizer : uses
+
+    %% Color definitions matching UML standards
+    classDef lightRed fill:#ffcccc,stroke:#cc0000,stroke-width:1px;
+    classDef lightBlue fill:#e6f2ff,stroke:#0066cc,stroke-width:1px;
+    classDef lightGreen fill:#e6f9e6,stroke:#009933,stroke-width:1px;
