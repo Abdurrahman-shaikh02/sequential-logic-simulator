@@ -1,4 +1,4 @@
-# synthesized from docs/fsm_example/traffic_light_fsm.net
+# synthesized from traffic_light_fsm.net
 # state encoding (Q1..Q0): Sg=00 Sy=01 Sr=10  (reset: Sg)
 
 # primary inputs / clock / reset

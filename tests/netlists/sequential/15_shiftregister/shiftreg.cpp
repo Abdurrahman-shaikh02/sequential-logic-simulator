@@ -11,6 +11,7 @@ int main(){
 	Simulator::initialize();
 
 	int a = 0, b = 0;
+	std::cout << "serial_in clk\n";
 	while(scanf("%d %d", &a, &b) != EOF){
 		Signal aa = Signal::LOW, bb = Signal::LOW, cc = Signal::LOW, dd = Signal::LOW;
 		aa = (a == 0) ? Signal::LOW : Signal::HIGH;
@@ -24,10 +25,12 @@ int main(){
 		Simulator::run();
 
 		// examine outputs
+		std::cout << "state -> ";
 		std::cout << static_cast<int>(Simulator::primaryOutputs["q"][0]->getResult()) << " "
 			<< static_cast<int>(Simulator::primaryOutputs["q"][1]->getResult()) << " "
 			<< static_cast<int>(Simulator::primaryOutputs["q"][2]->getResult()) << " "
 			<< static_cast<int>(Simulator::primaryOutputs["q"][3]->getResult()) << " "
 			<< std::endl;
+		std::cout << "serial_in clk\n";
 	}
 }
