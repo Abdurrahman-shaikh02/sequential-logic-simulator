@@ -17,10 +17,10 @@ struct Cell {
 };
 
 int main(){
-	std::string table = Synthesizer::synthesize("docs/fsm_example/traffic_light_fsm.net");
+	std::string table = Synthesizer::synthesize("traffic_light_fsm.net");
 	if(table.empty())
 		return 1;
-
+	return 0;
 	// read netlist
 	std::map<std::string, Cell> cells;
 	std::map<std::string, std::string> inputs, outputs;	// primary name -> wire

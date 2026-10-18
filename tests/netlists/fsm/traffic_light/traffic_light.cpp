@@ -7,10 +7,12 @@
 #include "core/Node.hpp"
 
 int main(){
-	Simulator::parse("./traffic_light_netlist.net");
+	Simulator::parse("./traffic_light_fsm.table");
 	Simulator::initialize();
 
 	int en = 0, clk = 0, reset = 0;
+
+	std::cout << "en clk reset\n";
 	while(scanf("%d %d %d", &en, &clk, &reset) != EOF){
 		Signal aa = Signal::LOW, bb = Signal::LOW, cc = Signal::LOW;
 		aa = (en == 0) ? Signal::LOW : Signal::HIGH;
@@ -26,8 +28,10 @@ int main(){
 		Simulator::run();
 
 		// examine outputs
+		std::cout << "R Y G -> ";
 		std::cout << static_cast<int>(Simulator::primaryOutputs["R"][0]->getResult()) << " "
 			<< static_cast<int>(Simulator::primaryOutputs["Y"][0]->getResult()) << " "
 			<< static_cast<int>(Simulator::primaryOutputs["G"][0]->getResult()) << std::endl;
+		std::cout << "en clk reset\n";
 	}
 }
