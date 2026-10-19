@@ -194,6 +194,26 @@ TEST(netlists, dff) {
     }
 }
 
+// Switches on once include/sequential/DFF_N.hpp is non-empty (see the Makefile);
+// $_DFF_N_ must also be uncommented in Parser.cpp's compTypeTable.
+#ifdef HDLSIM_HAVE_DFF_N
+TEST(netlists, dff_negedge) {
+    NetlistSim sim(netlist("dffn"));
+    Capture err(std::cerr);
+    uint64_t q = 0;
+    for (int step = 0; step < 300; step++) {
+        uint64_t d = randomBit();
+        NetlistSim::set("d", d);
+        NetlistSim::set("clk", 1);
+        INFO("step " << step);
+        REQUIRE_EQ(NetlistSim::get("q"), q);   // rising edge: nothing
+        NetlistSim::set("clk", 0);
+        q = d;
+        REQUIRE_EQ(NetlistSim::get("q"), q);
+    }
+}
+#endif
+
 TEST(netlists, shift_register) {
     NetlistSim sim(netlist("shiftregister"));
     REQUIRE_EQ(NetlistSim::width("q"), 4);
@@ -242,6 +262,29 @@ TEST(netlists, up_down_counter) {
         count = (up ? count + 1 : count - 1) & 0xF;
         INFO("step " << step << " up=" << up);
         REQUIRE_EQ(NetlistSim::get("q"), count);
+    }
+}
+
+TEST(netlists, ring_counter_without_initial_value_stays_zero) {
+    // what the netlist actually describes: four DFFs in a loop, all starting at 0
+    NetlistSim sim(netlist("ringcounter"));
+    for (int cycle = 0; cycle <= 8; cycle++) {
+        INFO("cycle " << cycle);
+        REQUIRE_EQ(NetlistSim::get("q"), 0u);
+        NetlistSim::clock();
+    }
+}
+
+TEST_XFAIL(netlists, ring_counter,
+           "write_table drops the `reg [3:0] state = 4'b0001` initial value, so every DFF starts "
+           "at 0 and the ring never leaves 0000") {
+    // 0001 -> 0010 -> 0100 -> 1000 -> 0001
+    NetlistSim sim(netlist("ringcounter"));
+    REQUIRE_EQ(NetlistSim::get("q"), 1u);
+    for (int cycle = 1; cycle <= 12; cycle++) {
+        NetlistSim::clock();
+        INFO("cycle " << cycle);
+        REQUIRE_EQ(NetlistSim::get("q"), 1ULL << (cycle % 4));
     }
 }
 
