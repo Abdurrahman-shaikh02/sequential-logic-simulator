@@ -1,0 +1,97 @@
+test_comparator	a	-	-	pi	\a
+test_comparator	b	-	-	pi	\b
+test_comparator	eq	-	-	po	\eq
+test_comparator	gt	-	-	po	\gt
+test_comparator	lt	-	-	po	\lt
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$108	$_OR_	A	in	\lt
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$108	$_OR_	B	in	$techmap$gt$test.v:34$2.$auto$rtlil.cc:3270:ReduceAnd$97
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$108	$_OR_	Y	out	$techmap$gt$test.v:34$2.$auto$rtlil.cc:3315:Or$99
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$180	$_AND_	A	in	\a [2]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$180	$_AND_	B	in	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.BB [2]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$180	$_AND_	Y	out	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.fa.X [2]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$182	$_XOR_	A	in	\a [0]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$182	$_XOR_	B	in	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.BB [0]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$182	$_XOR_	Y	out	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.P [0]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$183	$_XOR_	A	in	\a [1]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$183	$_XOR_	B	in	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.BB [1]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$183	$_XOR_	Y	out	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.P [1]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$184	$_XOR_	A	in	\a [2]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$184	$_XOR_	B	in	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.BB [2]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$184	$_XOR_	Y	out	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.P [2]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$187	$_OR_	A	in	$techmap$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.lcu.$or$/usr/local/bin/../share/yosys/techmap.v:240$137_Y
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$187	$_OR_	B	in	$techmap$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:240$139_Y
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$187	$_OR_	Y	out	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.CO [3]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$188	$_AND_	A	in	$auto$simplemap.cc:148:simplemap_reduce$109 [1]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$188	$_AND_	B	in	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.CO [1]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$188	$_AND_	Y	out	$techmap$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:240$139_Y
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$189	$_AND_	A	in	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.P [3]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$189	$_AND_	B	in	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.P [2]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$189	$_AND_	Y	out	$auto$simplemap.cc:148:simplemap_reduce$109 [1]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$190	$_OR_	A	in	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.fa.X [3]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$190	$_OR_	B	in	$techmap$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:240$136_Y
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$190	$_OR_	Y	out	$techmap$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.lcu.$or$/usr/local/bin/../share/yosys/techmap.v:240$137_Y
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$191	$_AND_	A	in	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.P [3]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$191	$_AND_	B	in	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.fa.X [2]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$191	$_AND_	Y	out	$techmap$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:240$136_Y
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$209	$_AND_	A	in	\a [0]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$209	$_AND_	B	in	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.BB [0]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$209	$_AND_	Y	out	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.fa.X [0]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$210	$_AND_	A	in	\a [1]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$210	$_AND_	B	in	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.BB [1]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$210	$_AND_	Y	out	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.fa.X [1]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$212	$_AND_	A	in	\a [3]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$212	$_AND_	B	in	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.BB [3]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$212	$_AND_	Y	out	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.fa.X [3]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$216	$_XOR_	A	in	\a [3]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$216	$_XOR_	B	in	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.BB [3]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$216	$_XOR_	Y	out	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.P [3]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$224	$_OR_	A	in	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.fa.X [1]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$224	$_OR_	B	in	$techmap$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:240$133_Y
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$224	$_OR_	Y	out	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.CO [1]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$225	$_AND_	A	in	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.P [1]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$225	$_AND_	B	in	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.CO [0]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$225	$_AND_	Y	out	$techmap$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.lcu.$and$/usr/local/bin/../share/yosys/techmap.v:240$133_Y
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$226	$_OR_	A	in	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.fa.X [0]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$226	$_OR_	B	in	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.P [0]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$226	$_OR_	Y	out	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.CO [0]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$6	$_XOR_	A	in	\a [0]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$6	$_XOR_	B	in	\b [0]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$6	$_XOR_	Y	out	$auto$simplemap.cc:271:simplemap_eqne$4 [0]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$7	$_XOR_	A	in	\a [1]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$7	$_XOR_	B	in	\b [1]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$7	$_XOR_	Y	out	$auto$simplemap.cc:271:simplemap_eqne$4 [1]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$8	$_XOR_	A	in	\a [2]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$8	$_XOR_	B	in	\b [2]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$8	$_XOR_	Y	out	$auto$simplemap.cc:271:simplemap_eqne$4 [2]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$9	$_XOR_	A	in	\a [3]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$9	$_XOR_	B	in	\b [3]
+test_comparator	$auto$simplemap.cc:106:simplemap_bitop$9	$_XOR_	Y	out	$auto$simplemap.cc:271:simplemap_eqne$4 [3]
+test_comparator	$auto$simplemap.cc:157:simplemap_reduce$110	$_AND_	A	in	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.P [0]
+test_comparator	$auto$simplemap.cc:157:simplemap_reduce$110	$_AND_	B	in	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.P [1]
+test_comparator	$auto$simplemap.cc:157:simplemap_reduce$110	$_AND_	Y	out	$auto$simplemap.cc:148:simplemap_reduce$109 [0]
+test_comparator	$auto$simplemap.cc:157:simplemap_reduce$113	$_AND_	A	in	$auto$simplemap.cc:148:simplemap_reduce$109 [0]
+test_comparator	$auto$simplemap.cc:157:simplemap_reduce$113	$_AND_	B	in	$auto$simplemap.cc:148:simplemap_reduce$109 [1]
+test_comparator	$auto$simplemap.cc:157:simplemap_reduce$113	$_AND_	Y	out	$techmap$gt$test.v:34$2.$auto$rtlil.cc:3270:ReduceAnd$97
+test_comparator	$auto$simplemap.cc:157:simplemap_reduce$13	$_OR_	A	in	$auto$simplemap.cc:271:simplemap_eqne$4 [0]
+test_comparator	$auto$simplemap.cc:157:simplemap_reduce$13	$_OR_	B	in	$auto$simplemap.cc:271:simplemap_eqne$4 [1]
+test_comparator	$auto$simplemap.cc:157:simplemap_reduce$13	$_OR_	Y	out	$auto$simplemap.cc:148:simplemap_reduce$12 [0]
+test_comparator	$auto$simplemap.cc:157:simplemap_reduce$14	$_OR_	A	in	$auto$simplemap.cc:271:simplemap_eqne$4 [2]
+test_comparator	$auto$simplemap.cc:157:simplemap_reduce$14	$_OR_	B	in	$auto$simplemap.cc:271:simplemap_eqne$4 [3]
+test_comparator	$auto$simplemap.cc:157:simplemap_reduce$14	$_OR_	Y	out	$auto$simplemap.cc:148:simplemap_reduce$12 [1]
+test_comparator	$auto$simplemap.cc:157:simplemap_reduce$16	$_OR_	A	in	$auto$simplemap.cc:148:simplemap_reduce$12 [0]
+test_comparator	$auto$simplemap.cc:157:simplemap_reduce$16	$_OR_	B	in	$auto$simplemap.cc:148:simplemap_reduce$12 [1]
+test_comparator	$auto$simplemap.cc:157:simplemap_reduce$16	$_OR_	Y	out	$auto$simplemap.cc:277:simplemap_eqne$10
+test_comparator	$auto$simplemap.cc:227:simplemap_lognot$18	$_NOT_	A	in	$auto$simplemap.cc:277:simplemap_eqne$10
+test_comparator	$auto$simplemap.cc:227:simplemap_lognot$18	$_NOT_	Y	out	\eq
+test_comparator	$auto$simplemap.cc:46:simplemap_not$114	$_NOT_	A	in	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.CO [3]
+test_comparator	$auto$simplemap.cc:46:simplemap_not$114	$_NOT_	Y	out	\lt
+test_comparator	$auto$simplemap.cc:46:simplemap_not$118	$_NOT_	A	in	$techmap$gt$test.v:34$2.$auto$rtlil.cc:3315:Or$99
+test_comparator	$auto$simplemap.cc:46:simplemap_not$118	$_NOT_	Y	out	\gt
+test_comparator	$auto$simplemap.cc:46:simplemap_not$149	$_NOT_	A	in	\b [0]
+test_comparator	$auto$simplemap.cc:46:simplemap_not$149	$_NOT_	Y	out	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.BB [0]
+test_comparator	$auto$simplemap.cc:46:simplemap_not$150	$_NOT_	A	in	\b [1]
+test_comparator	$auto$simplemap.cc:46:simplemap_not$150	$_NOT_	Y	out	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.BB [1]
+test_comparator	$auto$simplemap.cc:46:simplemap_not$151	$_NOT_	A	in	\b [2]
+test_comparator	$auto$simplemap.cc:46:simplemap_not$151	$_NOT_	Y	out	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.BB [2]
+test_comparator	$auto$simplemap.cc:46:simplemap_not$165	$_NOT_	A	in	\b [3]
+test_comparator	$auto$simplemap.cc:46:simplemap_not$165	$_NOT_	Y	out	$techmap$gt$test.v:34$2.$auto$alumacc.cc:548:replace_alu$91.BB [3]

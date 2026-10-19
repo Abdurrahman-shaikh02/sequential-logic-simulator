@@ -1,119 +1,76 @@
-// tests/unit/parser/test_parser.cpp
+// Parser::parse(): netlist validation, graph creation, topological priorities.
 //
-// Tests for Parser::parse(): netlist validation + graph creation.
-// Self-contained (no gtest). Each test writes a netlist to a temp file.
-//
-// Netlist format covered (6 columns, whitespace separated):
+// Netlist format (6 columns, whitespace separated):
 //   module  component  type  port  dir  wire
 // Gate types use the "$_AND_" style names, the clock port is "C", wires may be
 // multibit ("a [3:0]" / "a [2]"), and inputs may be constants (1'0, 1'1, 1'x).
 
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <memory>
-#include <sstream>
-#include <string>
-#include <unordered_map>
-#include <vector>
-#include <functional>
-#include <utility>
+#include <algorithm>
+#include <map>
+#include <set>
 
-#include "parser/Parser.hpp"
-#include "core/Node.hpp"
-#include "core/Port.hpp"
-#include "core/Signal.hpp"
+#include "support/helpers.hpp"
+
 #include "combinational/AND.hpp"
-#include "combinational/NOT.hpp"
 #include "combinational/MUX.hpp"
+#include "combinational/NOT.hpp"
 #include "combinational/OR.hpp"
+#include "parser/Parser.hpp"
 #include "sequential/DFF_P.hpp"
-#include "primary/InputNode.hpp"
-#include "primary/OutputNode.hpp"
 
-// Friend of Node and List (see core/Node.hpp, core/List.hpp): gives the tests
-// read-only access to a node's outgoing connections.
-struct ParserTestAccess {
-    static std::vector<std::pair<const Node*, Port>> connections(const Node& n) {
-        std::vector<std::pair<const Node*, Port>> out;
-        for (auto* c = n.connections.head; c; c = c->next)
-            out.push_back({&c->target, c->p});
-        return out;
-    }
-};
+using namespace hdltest;
 
-static std::vector<std::pair<const Node*, Port>> connectionsOf(const Node& n) {
-    return ParserTestAccess::connections(n);
-}
+namespace {
 
-// Mini harness
-static int g_failed = 0, g_checks = 0;
-#define CHECK(cond) do { ++g_checks; if (!(cond)) { ++g_failed; \
-    std::cerr << "    CHECK FAILED " << __FILE__ << ":" << __LINE__ << "  " #cond "\n"; } } while (0)
-
-struct TestCase { std::string name; std::function<void()> fn; };
-static std::vector<TestCase>& registry() { static std::vector<TestCase> r; return r; }
-struct Reg { Reg(const char* n, std::function<void()> f) { registry().push_back({n, std::move(f)}); } };
-#define TEST(name) static void name(); static Reg reg_##name(#name, name); static void name()
-
-// Helpers
-namespace fs = std::filesystem;
-using NodeMap = std::unordered_map<std::string, std::vector<Node*>>;
+using NodeMap = std::unordered_map<std::string, std::vector<Node *>>;
 
 // Joins fields with tabs -> one netlist row (module comp type port dir wire)
-static std::string row(const std::string& mod, const std::string& comp, const std::string& type,
-                       const std::string& port, const std::string& dir, const std::string& wire) {
+std::string row(const std::string &mod, const std::string &comp, const std::string &type,
+                const std::string &port, const std::string &dir, const std::string &wire) {
     return mod + "\t" + comp + "\t" + type + "\t" + port + "\t" + dir + "\t" + wire + "\n";
-}
-
-static std::string writeNetlist(const std::string& testName, const std::string& content) {
-    fs::path p = fs::temp_directory_path() / ("parser_test_" + testName + ".net");
-    std::ofstream(p) << content;
-    return p.string();
 }
 
 struct Result {
     int rc = 0;
     std::vector<std::unique_ptr<Node>> nodes;
-    NodeMap pi, po;           // primary inputs / outputs by netlist name
-    std::string err;          // everything the parser wrote to std::cerr
+    NodeMap pi, po;    // primary inputs / outputs by netlist name
+    std::string err;   // everything the parser wrote to std::cerr
 };
 
-// Runs the parser and captures std::cerr so messages can be asserted.
-static Result run(const std::string& testName, const std::string& content) {
+Result parseFile(const std::string &path) {
     Result r;
-    std::string path = writeNetlist(testName, content);
-    std::ostringstream cap;
-    auto* old = std::cerr.rdbuf(cap.rdbuf());
+    Capture cap(std::cerr);
     r.rc = Parser::parse(path, r.nodes, r.pi, r.po);
-    std::cerr.rdbuf(old);
     r.err = cap.str();
-    fs::remove(path);
     return r;
 }
 
-static bool errHas(const Result& r, const std::string& s) { return r.err.find(s) != std::string::npos; }
+// Writes the netlist to a temp file and parses it
+Result run(const std::string &testName, const std::string &content) {
+    TempDir dir;
+    return parseFile(dir.write(testName + ".table", content));
+}
+
+bool errHas(const Result &r, const std::string &s) { return r.err.find(s) != std::string::npos; }
 
 template <class T>
-static std::vector<T*> nodesOfType(const Result& r) {
-    std::vector<T*> v;
-    for (auto& n : r.nodes) if (auto* p = dynamic_cast<T*>(n.get())) v.push_back(p);
+std::vector<T *> nodesOfType(const Result &r) {
+    std::vector<T *> v;
+    for (auto &n : r.nodes)
+        if (auto *p = dynamic_cast<T *>(n.get())) v.push_back(p);
     return v;
 }
 
 // Primary node vector for a name (empty if the name is absent)
-static std::vector<Node*> vec(const NodeMap& m, const std::string& name) {
+std::vector<Node *> vec(const NodeMap &m, const std::string &name) {
     auto it = m.find(name);
-    return it == m.end() ? std::vector<Node*>{} : it->second;
+    return it == m.end() ? std::vector<Node *>{} : it->second;
 }
 
-static bool drives(const Node& from, const Node* to, Port p) {
-    for (auto& [n, port] : connectionsOf(from)) if (n == to && port == p) return true;
-    return false;
-}
+}  // namespace
 
 // Reusable netlist fragment: y = a & b
-static const std::string AND_NETLIST =
+const std::string AND_NETLIST =
     row("test", "a", "-", "-", "pi", "\\a") +
     row("test", "b", "-", "-", "pi", "\\b") +
     row("test", "y", "-", "-", "po", "$and$test.v:2$1_Y") +
@@ -125,7 +82,7 @@ static const std::string AND_NETLIST =
 // POSITIVE: parsing + graph creation
 // ===========================================================================
 
-TEST(and_gate_counts_and_node_types) {
+TEST(parser, and_gate_counts_and_node_types) {
     auto r = run("and_ok", AND_NETLIST);
     CHECK(r.rc == 0);
     CHECK(r.nodes.size() == 4);
@@ -140,7 +97,7 @@ TEST(and_gate_counts_and_node_types) {
     CHECK(r.err.empty());
 }
 
-TEST(primary_maps_hold_right_node_types) {
+TEST(parser, primary_maps_hold_right_node_types) {
     auto r = run("pi_po_types", AND_NETLIST);
     CHECK(r.rc == 0);
     auto a = vec(r.pi, "a"), y = vec(r.po, "y");
@@ -152,7 +109,7 @@ TEST(primary_maps_hold_right_node_types) {
     CHECK(r.pi.count("y") == 0);
 }
 
-TEST(and_gate_graph_connections) {
+TEST(parser, and_gate_graph_connections) {
     auto r = run("and_graph", AND_NETLIST);
     CHECK(r.rc == 0);
     auto a = vec(r.pi, "a"), b = vec(r.pi, "b"), y = vec(r.po, "y");
@@ -170,7 +127,7 @@ TEST(and_gate_graph_connections) {
     CHECK(connectionsOf(*y[0]).empty());
 }
 
-TEST(comments_and_blank_lines_ignored) {
+TEST(parser, comments_and_blank_lines_ignored) {
     std::string nl =
         "# full-line comment\n"
         "\n"
@@ -185,7 +142,7 @@ TEST(comments_and_blank_lines_ignored) {
     CHECK(r.pi.size() == 1 && r.po.size() == 1);
 }
 
-TEST(extra_whitespace_between_columns_ok) {
+TEST(parser, extra_whitespace_between_columns_ok) {
     std::string nl =
         "test    a   -   -   pi   w1\n"
         "test    y   -   -   po   w2\n"
@@ -195,7 +152,7 @@ TEST(extra_whitespace_between_columns_ok) {
     CHECK(r.rc == 0);
 }
 
-TEST(not_gate_single_input) {
+TEST(parser, not_gate_single_input) {
     std::string nl =
         row("t", "a", "-", "-", "pi", "w1") +
         row("t", "y", "-", "-", "po", "w2") +
@@ -209,7 +166,7 @@ TEST(not_gate_single_input) {
     else CHECK(false);
 }
 
-TEST(mux_three_inputs_ports_mapped) {
+TEST(parser, mux_three_inputs_ports_mapped) {
     std::string nl =
         row("t", "a", "-", "-", "pi", "wa") +
         row("t", "b", "-", "-", "pi", "wb") +
@@ -230,7 +187,7 @@ TEST(mux_three_inputs_ports_mapped) {
     } else CHECK(false);
 }
 
-TEST(dff_p_ports_D_C_Q) {
+TEST(parser, dff_p_ports_D_C_Q) {
     // netlist clock port is "C"; it is mapped to Port::CLK
     std::string nl =
         row("t", "d",   "-", "-", "pi", "wd") +
@@ -250,7 +207,7 @@ TEST(dff_p_ports_D_C_Q) {
     } else CHECK(false);
 }
 
-TEST(fanout_one_wire_two_consumers) {
+TEST(parser, fanout_one_wire_two_consumers) {
     std::string nl =
         row("t", "a", "-", "-", "pi", "wa") +
         row("t", "b", "-", "-", "pi", "wb") +
@@ -275,7 +232,7 @@ TEST(fanout_one_wire_two_consumers) {
     } else CHECK(false);
 }
 
-TEST(chained_gates_and_then_not) {
+TEST(parser, chained_gates_and_then_not) {
     std::string nl =
         row("t", "a", "-", "-", "pi", "wa") +
         row("t", "b", "-", "-", "pi", "wb") +
@@ -296,7 +253,7 @@ TEST(chained_gates_and_then_not) {
     } else CHECK(false);
 }
 
-TEST(port_rows_in_any_order_same_gate) {
+TEST(parser, port_rows_in_any_order_same_gate) {
     std::string nl =
         row("t", "a", "-", "-", "pi", "wa") +
         row("t", "b", "-", "-", "pi", "wb") +
@@ -309,7 +266,7 @@ TEST(port_rows_in_any_order_same_gate) {
     CHECK(nodesOfType<AND>(r).size() == 1);
 }
 
-TEST(two_gate_instances_chained) {
+TEST(parser, two_gate_instances_chained) {
     std::string nl =
         row("t", "a", "-", "-", "pi", "wa") +
         row("t", "y", "-", "-", "po", "wy") +
@@ -328,7 +285,7 @@ TEST(two_gate_instances_chained) {
 // Warnings (not errors): the parser now only warns about unused wires
 // ---------------------------------------------------------------------------
 
-TEST(warn_primary_input_with_no_consumers) {
+TEST(parser, warn_primary_input_with_no_consumers) {
     auto r = run("pi_unused", row("t", "a", "-", "-", "pi", "dangling"));
     CHECK(r.rc == 0);
     CHECK(errHas(r, "warning"));
@@ -336,7 +293,7 @@ TEST(warn_primary_input_with_no_consumers) {
     CHECK(vec(r.pi, "a").size() == 1);
 }
 
-TEST(warn_gate_output_unconnected) {
+TEST(parser, warn_gate_output_unconnected) {
     std::string nl =
         row("t", "a", "-", "-", "pi", "wa") +
         row("t", "g", "$_NOT_", "A", "in", "wa") +
@@ -354,7 +311,7 @@ TEST(warn_gate_output_unconnected) {
 // ---------------------------------------------------------------------------
 
 // n_i = NOT(a [i]) -> y [i], for i in 0..width-1
-static std::string notBank(int width, const std::string& piWire, const std::string& poWire) {
+std::string notBank(int width, const std::string& piWire, const std::string& poWire) {
     std::string nl = row("t", "a", "-", "-", "pi", piWire) +
                      row("t", "y", "-", "-", "po", poWire);
     for (int i = 0; i < width; i++) {
@@ -365,7 +322,7 @@ static std::string notBank(int width, const std::string& piWire, const std::stri
     return nl;
 }
 
-static void checkBank(const Result& r, int width) {
+void checkBank(const Result& r, int width) {
     auto a = vec(r.pi, "a"), y = vec(r.po, "y");
     auto nots = nodesOfType<NOT>(r);
     CHECK((int)a.size() == width);
@@ -381,34 +338,34 @@ static void checkBank(const Result& r, int width) {
     }
 }
 
-TEST(multibit_range_input_and_output) {
+TEST(parser, multibit_range_input_and_output) {
     auto r = run("range4", notBank(4, "a [3:0]", "y [3:0]"));
     CHECK(r.rc == 0);
     CHECK(r.pi.size() == 1 && r.po.size() == 1);   // one entry per name, not per bit
     checkBank(r, 4);
 }
 
-TEST(multibit_inferred_from_indexed_wires) {
+TEST(parser, multibit_inferred_from_indexed_wires) {
     // port wire is just "a"/"y"; width inferred from "a [i]" / "y [i]" wires
     auto r = run("inferred4", notBank(4, "a", "y"));
     CHECK(r.rc == 0);
     checkBank(r, 4);
 }
 
-TEST(multibit_two_bit_range) {
+TEST(parser, multibit_two_bit_range) {
     auto r = run("range2", notBank(2, "a [1:0]", "y [1:0]"));
     CHECK(r.rc == 0);
     checkBank(r, 2);
 }
 
-TEST(multibit_node_types) {
+TEST(parser, multibit_node_types) {
     auto r = run("range_types", notBank(3, "a [2:0]", "y [2:0]"));
     CHECK(r.rc == 0);
     for (auto* n : vec(r.pi, "a")) CHECK(dynamic_cast<InputNode*>(n) != nullptr);
     for (auto* n : vec(r.po, "y")) CHECK(dynamic_cast<OutputNode*>(n) != nullptr);
 }
 
-TEST(multibit_single_bit_and_bus_together) {
+TEST(parser, multibit_single_bit_and_bus_together) {
     // 1-bit "en" next to a 2-bit bus "a"
     std::string nl =
         row("t", "en", "-", "-", "pi", "en") +
@@ -429,7 +386,7 @@ TEST(multibit_single_bit_and_bus_together) {
     if (!en.empty()) CHECK(connectionsOf(*en[0]).size() == 2);   // enable fans out to both ANDs
 }
 
-TEST(multibit_range_missing_wire_is_error) {
+TEST(parser, multibit_range_missing_wire_is_error) {
     // a [3:0] declared but only bits 0 and 1 are ever used
     std::string nl =
         row("t", "a", "-", "-", "pi", "a [3:0]") +
@@ -448,7 +405,7 @@ TEST(multibit_range_missing_wire_is_error) {
 // ---------------------------------------------------------------------------
 
 // y = <constWire> & a
-static std::string constAnd(const std::string& constWire) {
+std::string constAnd(const std::string& constWire) {
     return row("t", "a", "-", "-", "pi", "wa") +
            row("t", "y", "-", "-", "po", "wy") +
            row("t", "g", "$_AND_", "A", "in", constWire) +
@@ -457,7 +414,7 @@ static std::string constAnd(const std::string& constWire) {
 }
 
 // the InputNode that is not a registered primary input
-static Node* constantNode(const Result& r) {
+Node* constantNode(const Result& r) {
     for (auto* in : nodesOfType<InputNode>(r)) {
         bool primary = false;
         for (auto& [name, v] : r.pi) for (auto* n : v) if (n == in) primary = true;
@@ -466,7 +423,7 @@ static Node* constantNode(const Result& r) {
     return nullptr;
 }
 
-TEST(constant_one_creates_driver_node_with_high) {
+TEST(parser, constant_one_creates_driver_node_with_high) {
     auto r = run("const1", constAnd("1'1"));
     CHECK(r.rc == 0);
     CHECK(r.nodes.size() == 4);                         // and + const + a + y
@@ -479,7 +436,7 @@ TEST(constant_one_creates_driver_node_with_high) {
     } else CHECK(false);
 }
 
-TEST(constant_zero_is_low) {
+TEST(parser, constant_zero_is_low) {
     auto r = run("const0", constAnd("1'0"));
     CHECK(r.rc == 0);
     Node* c = constantNode(r);
@@ -490,7 +447,7 @@ TEST(constant_zero_is_low) {
     } else CHECK(false);
 }
 
-TEST(constant_x_is_treated_as_low) {
+TEST(parser, constant_x_is_treated_as_low) {
     auto r = run("constx", constAnd("1'x"));
     CHECK(r.rc == 0);
     Node* c = constantNode(r);
@@ -498,7 +455,7 @@ TEST(constant_x_is_treated_as_low) {
     else CHECK(false);
 }
 
-TEST(constant_shared_between_two_gates_is_one_node) {
+TEST(parser, constant_shared_between_two_gates_is_one_node) {
     std::string nl =
         row("t", "a", "-", "-", "pi", "wa") +
         row("t", "y1", "-", "-", "po", "w1") +
@@ -517,7 +474,7 @@ TEST(constant_shared_between_two_gates_is_one_node) {
     else CHECK(false);
 }
 
-TEST(constant_one_and_zero_are_separate_nodes) {
+TEST(parser, constant_one_and_zero_are_separate_nodes) {
     std::string nl =
         row("t", "y", "-", "-", "po", "wy") +
         row("t", "g", "$_AND_", "A", "in", "1'1") +
@@ -535,22 +492,29 @@ TEST(constant_one_and_zero_are_separate_nodes) {
 // NEGATIVE: every error path in Parser::parse()
 // ===========================================================================
 
-TEST(err_file_not_found) {
-    Result r;
-    std::ostringstream cap; auto* old = std::cerr.rdbuf(cap.rdbuf());
-    r.rc = Parser::parse("/nonexistent/dir/nope.net", r.nodes, r.pi, r.po);
-    std::cerr.rdbuf(old);
-    CHECK(r.rc == -1);
-    CHECK(cap.str().find("cannot open file") != std::string::npos);
+TEST(parser, err_file_not_found) {
+    auto r = parseFile("/nonexistent/dir/nope.net");
+    CHECK_EQ(r.rc, -1);
+    CHECK_CONTAINS(r.err, "cannot open file");
 }
 
-TEST(err_too_few_columns) {
+TEST(parser, err_gate_output_drives_constant) {
+    std::string nl =
+        row("t", "a", "-", "-", "pi", "wa") +
+        row("t", "g", "$_NOT_", "A", "in", "wa") +
+        row("t", "g", "$_NOT_", "Y", "out", "1'1");
+    auto r = run("drive_const", nl);
+    CHECK_EQ(r.rc, -1);
+    CHECK_CONTAINS(r.err, "cannot drive constant value");
+}
+
+TEST(parser, err_too_few_columns) {
     auto r = run("cols_few", "test\ta\t-\t-\tpi\n");
     CHECK(r.rc == -1);
     CHECK(errHas(r, "expected 6 columns"));
 }
 
-TEST(extra_columns_are_joined_into_wire_name) {
+TEST(parser, extra_columns_are_joined_into_wire_name) {
     // >6 tokens: tokens 6.. are merged into the wire name ("w extra").
     // As a primary output it has no driver, so parsing fails for that reason,
     // not because of the column count.
@@ -561,7 +525,7 @@ TEST(extra_columns_are_joined_into_wire_name) {
     CHECK(errHas(r, "has no driver"));
 }
 
-TEST(err_multiple_top_modules) {
+TEST(parser, err_multiple_top_modules) {
     std::string nl =
         row("modA", "a", "-", "-", "pi", "w") +
         row("modB", "b", "-", "-", "pi", "w2");
@@ -570,7 +534,7 @@ TEST(err_multiple_top_modules) {
     CHECK(errHas(r, "multiple top-level modules"));
 }
 
-TEST(err_duplicate_primary_component) {
+TEST(parser, err_duplicate_primary_component) {
     std::string nl =
         row("t", "a", "-", "-", "pi", "w1") +
         row("t", "a", "-", "-", "pi", "w2");
@@ -579,7 +543,7 @@ TEST(err_duplicate_primary_component) {
     CHECK(errHas(r, "duplicate primary component"));
 }
 
-TEST(err_gate_name_clashes_with_primary_name) {
+TEST(parser, err_gate_name_clashes_with_primary_name) {
     std::string nl =
         row("t", "a", "-", "-", "pi", "w1") +
         row("t", "a", "$_NOT_", "A", "in", "w1");
@@ -588,20 +552,20 @@ TEST(err_gate_name_clashes_with_primary_name) {
     CHECK(errHas(r, "redefined with different type"));
 }
 
-TEST(err_unknown_component_type) {
+TEST(parser, err_unknown_component_type) {
     auto r = run("bad_type", row("t", "g", "$_FOO_", "A", "in", "w"));
     CHECK(r.rc == -1);
     CHECK(errHas(r, "unknown component type"));
 }
 
-TEST(err_legacy_gate_names_rejected) {
+TEST(parser, err_legacy_gate_names_rejected) {
     // old-style names ($and, $not, ...) are no longer accepted
     auto r = run("legacy_type", row("t", "g", "$and", "A", "in", "w"));
     CHECK(r.rc == -1);
     CHECK(errHas(r, "unknown component type"));
 }
 
-TEST(err_unsupported_ff_types_currently_commented_out) {
+TEST(parser, err_unsupported_ff_types_currently_commented_out) {
     // $_DFF_N_ / $_TFF_*_ / $_JKFF_*_ are commented out in compTypeTable.
     // Delete/adjust these checks when you enable them.
     const char* types[] = {"$_DFF_N_", "$_TFF_P_", "$_TFF_N_", "$_JKFF_P_", "$_JKFF_N_"};
@@ -612,27 +576,27 @@ TEST(err_unsupported_ff_types_currently_commented_out) {
     }
 }
 
-TEST(err_unknown_port_name) {
+TEST(parser, err_unknown_port_name) {
     auto r = run("bad_port", row("t", "g", "$_AND_", "Z", "in", "w"));
     CHECK(r.rc == -1);
     CHECK(errHas(r, "unknown port name"));
 }
 
-TEST(err_legacy_clock_port_name_rejected) {
+TEST(parser, err_legacy_clock_port_name_rejected) {
     // the clock port is now "C"; "CLK" is not a valid netlist port name
     auto r = run("legacy_clk", row("t", "ff", "$_DFF_P_", "CLK", "in", "w"));
     CHECK(r.rc == -1);
     CHECK(errHas(r, "unknown port name"));
 }
 
-TEST(err_port_not_valid_for_gate_type) {
+TEST(parser, err_port_not_valid_for_gate_type) {
     // $_NOT_ has no B port
     auto r = run("port_not_on_gate", row("t", "g", "$_NOT_", "B", "in", "w"));
     CHECK(r.rc == -1);
     CHECK(errHas(r, "does not exist on"));
 }
 
-TEST(err_component_redefined_with_different_type) {
+TEST(parser, err_component_redefined_with_different_type) {
     std::string nl =
         row("t", "g", "$_AND_", "A", "in", "w1") +
         row("t", "g", "$_OR_",  "B", "in", "w2");
@@ -641,7 +605,7 @@ TEST(err_component_redefined_with_different_type) {
     CHECK(errHas(r, "redefined with different type"));
 }
 
-TEST(err_port_redefined_on_component) {
+TEST(parser, err_port_redefined_on_component) {
     std::string nl =
         row("t", "g", "$_AND_", "A", "in", "w1") +
         row("t", "g", "$_AND_", "A", "in", "w2");
@@ -650,13 +614,13 @@ TEST(err_port_redefined_on_component) {
     CHECK(errHas(r, "redefined on component"));
 }
 
-TEST(err_unknown_gate_direction) {
+TEST(parser, err_unknown_gate_direction) {
     auto r = run("bad_dir", row("t", "g", "$_AND_", "A", "sideways", "w"));
     CHECK(r.rc == -1);
     CHECK(errHas(r, "unknown direction"));
 }
 
-TEST(err_multiple_drivers_two_primary_inputs) {
+TEST(parser, err_multiple_drivers_two_primary_inputs) {
     std::string nl =
         row("t", "a", "-", "-", "pi", "w") +
         row("t", "b", "-", "-", "pi", "w");
@@ -665,7 +629,7 @@ TEST(err_multiple_drivers_two_primary_inputs) {
     CHECK(errHas(r, "multiple drivers"));
 }
 
-TEST(err_multiple_drivers_two_gate_outputs) {
+TEST(parser, err_multiple_drivers_two_gate_outputs) {
     std::string nl =
         row("t", "g1", "$_NOT_", "Y", "out", "w") +
         row("t", "g2", "$_NOT_", "Y", "out", "w");
@@ -674,7 +638,7 @@ TEST(err_multiple_drivers_two_gate_outputs) {
     CHECK(errHas(r, "multiple drivers"));
 }
 
-TEST(err_multiple_drivers_pi_and_gate_output) {
+TEST(parser, err_multiple_drivers_pi_and_gate_output) {
     std::string nl =
         row("t", "a", "-", "-", "pi", "w") +
         row("t", "g", "$_NOT_", "Y", "out", "w");
@@ -683,7 +647,7 @@ TEST(err_multiple_drivers_pi_and_gate_output) {
     CHECK(errHas(r, "multiple drivers"));
 }
 
-TEST(err_multiple_drivers_on_a_multibit_wire) {
+TEST(parser, err_multiple_drivers_on_a_multibit_wire) {
     // bit "a [0]" is driven by the bus input and also by a gate output
     std::string nl =
         row("t", "a", "-", "-", "pi", "a [1:0]") +
@@ -696,7 +660,7 @@ TEST(err_multiple_drivers_on_a_multibit_wire) {
     CHECK(errHas(r, "multiple drivers"));
 }
 
-TEST(err_missing_port_on_instance) {
+TEST(parser, err_missing_port_on_instance) {
     // $_AND_ with only A and Y -> B missing
     std::string nl =
         row("t", "a", "-", "-", "pi", "wa") +
@@ -708,7 +672,7 @@ TEST(err_missing_port_on_instance) {
     CHECK(errHas(r, "missing on instance"));
 }
 
-TEST(err_dff_missing_clock) {
+TEST(parser, err_dff_missing_clock) {
     std::string nl =
         row("t", "d", "-", "-", "pi", "wd") +
         row("t", "q", "-", "-", "po", "wq") +
@@ -719,13 +683,13 @@ TEST(err_dff_missing_clock) {
     CHECK(errHas(r, "port C missing"));
 }
 
-TEST(err_wire_has_no_driver) {
+TEST(parser, err_wire_has_no_driver) {
     auto r = run("no_driver", row("t", "y", "-", "-", "po", "floating"));
     CHECK(r.rc == -1);
     CHECK(errHas(r, "has no driver"));
 }
 
-TEST(err_gate_input_wire_has_no_driver) {
+TEST(parser, err_gate_input_wire_has_no_driver) {
     std::string nl =
         row("t", "y", "-", "-", "po", "wy") +
         row("t", "g", "$_NOT_", "A", "in", "nobody_drives_me") +
@@ -740,7 +704,7 @@ TEST(err_gate_input_wire_has_no_driver) {
 // Current behaviours worth knowing about (pin them so changes are deliberate)
 // ---------------------------------------------------------------------------
 
-TEST(unknown_primary_direction_is_currently_accepted_as_output) {
+TEST(parser, unknown_primary_direction_is_currently_accepted_as_output) {
     // The old "unknown primary port direction" error is gone: any direction other
     // than "pi" is treated as an output. If you want it rejected again, change
     // rc to -1 here and add the check back in Parser.cpp.
@@ -752,7 +716,7 @@ TEST(unknown_primary_direction_is_currently_accepted_as_output) {
     CHECK(vec(r.po, "y").size() == 1);
 }
 
-TEST(empty_file_current_behaviour) {
+TEST(parser, empty_file_current_behaviour) {
     auto r = run("empty", "");
     CHECK(r.rc == 0);
     CHECK(r.nodes.empty());
@@ -769,17 +733,18 @@ TEST(empty_file_current_behaviour) {
 // Parser::parse() does not handle this yet: those lines have 2-3 tokens, so the
 // "expected 6 columns" check rejects the whole file. Pins the CURRENT behaviour;
 // flip to rc == 0 once FSM blocks are supported.
-TEST(fsm_block_currently_rejected) {
+TEST(parser, fsm_block_currently_rejected) {
     std::string nl = AND_NETLIST + "\n$fsm start\n.s S1\n.f S2\n\n$fsm end\n";
     auto r = run("fsm_block", nl);
     CHECK(r.rc == -1);
     CHECK(errHas(r, "expected 6 columns"));
 }
 
-// PENDING: cycle detection / topological sort is not implemented yet.
-// Build with -DRUN_PENDING_TESTS once it is.
-#ifdef RUN_PENDING_TESTS
-TEST(pending_combinational_loop_rejected) {
+// ---------------------------------------------------------------------------
+// Cycle detection
+// ---------------------------------------------------------------------------
+
+TEST(parser, combinational_loop_rejected) {
     // n1 -> n2 -> n1 with no flip-flop in the loop
     std::string nl =
         row("t", "y", "-", "-", "po", "w1") +
@@ -792,7 +757,7 @@ TEST(pending_combinational_loop_rejected) {
     CHECK(errHas(r, "cycle"));
 }
 
-TEST(pending_loop_through_dff_allowed) {
+TEST(parser, loop_through_dff_allowed) {
     // Q -> NOT -> D : legal sequential feedback (toggle flip-flop)
     std::string nl =
         row("t", "clk", "-", "-", "pi", "wc") +
@@ -805,15 +770,170 @@ TEST(pending_loop_through_dff_allowed) {
     auto r = run("dff_loop", nl);
     CHECK(r.rc == 0);
 }
-#endif
 
-int main() {
-    for (auto& t : registry()) {
-        int before = g_failed;
-        t.fn();
-        std::cout << (g_failed == before ? "[ PASS ] " : "[ FAIL ] ") << t.name << "\n";
+TEST(parser, combinational_loop_through_mux_rejected) {
+    std::string nl =
+        row("t", "s", "-", "-", "pi", "ws") +
+        row("t", "a", "-", "-", "pi", "wa") +
+        row("t", "y", "-", "-", "po", "wy") +
+        row("t", "m", "$_MUX_", "A", "in", "wa") +
+        row("t", "m", "$_MUX_", "B", "in", "wy") +   // output fed back into B
+        row("t", "m", "$_MUX_", "S", "in", "ws") +
+        row("t", "m", "$_MUX_", "Y", "out", "wy");
+    auto r = run("mux_loop", nl);
+    CHECK_EQ(r.rc, -1);
+    CHECK_CONTAINS(r.err, "cycle");
+}
+
+TEST(parser, clock_derived_from_own_output_is_a_cycle) {
+    // Q -> NOT -> C: the clock pin is a combinational input, so this loop is rejected
+    std::string nl =
+        row("t", "d", "-", "-", "pi", "wd") +
+        row("t", "q", "-", "-", "po", "wq") +
+        row("t", "ff", "$_DFF_P_", "D", "in", "wd") +
+        row("t", "ff", "$_DFF_P_", "C", "in", "wn") +
+        row("t", "ff", "$_DFF_P_", "Q", "out", "wq") +
+        row("t", "n", "$_NOT_", "A", "in", "wq") +
+        row("t", "n", "$_NOT_", "Y", "out", "wn");
+    auto r = run("clk_loop", nl);
+    CHECK_EQ(r.rc, -1);
+    CHECK_CONTAINS(r.err, "cycle");
+}
+
+TEST(parser, ring_of_flip_flops_allowed) {
+    // q0 -> ff1.D, q1 -> ff0.D: a pure sequential loop
+    std::string nl =
+        row("t", "clk", "-", "-", "pi", "wc") +
+        row("t", "q", "-", "-", "po", "q0") +
+        row("t", "f0", "$_DFF_P_", "D", "in", "q1") +
+        row("t", "f0", "$_DFF_P_", "C", "in", "wc") +
+        row("t", "f0", "$_DFF_P_", "Q", "out", "q0") +
+        row("t", "f1", "$_DFF_P_", "D", "in", "q0") +
+        row("t", "f1", "$_DFF_P_", "C", "in", "wc") +
+        row("t", "f1", "$_DFF_P_", "Q", "out", "q1");
+    auto r = run("ff_ring", nl);
+    CHECK_EQ(r.rc, 0);
+    CHECK_EQ(nodesOfType<DFF_P>(r).size(), 2u);
+}
+
+// ---------------------------------------------------------------------------
+// Topological priorities (what the simulator's commit order relies on)
+// ---------------------------------------------------------------------------
+
+namespace {
+
+// Every node's priority is its index in `nodes`, and every combinational edge
+// (anything except a flip-flop's data input) goes from lower to higher priority.
+void checkTopologicalOrder(const Result &r) {
+    for (size_t i = 0; i < r.nodes.size(); i++) {
+        INFO("node index " << i);
+        CHECK_EQ(r.nodes[i]->priority, static_cast<int>(i));
     }
-    std::cout << "\n" << registry().size() << " tests, " << g_checks << " checks, "
-              << g_failed << " failed\n";
-    return g_failed ? 1 : 0;
+    for (auto &n : r.nodes) {
+        for (auto &[to, port] : connectionsOf(*n)) {
+            bool ffData = dynamic_cast<const SequentialNode *>(to) && port != Port::CLK;
+            if (ffData) continue;
+            INFO("edge priority " << n->priority << " -> " << to->priority << " on " << port);
+            CHECK_LT(n->priority, to->priority);
+        }
+    }
+}
+
+const std::vector<std::string> &fixtureNetlists() {
+    static const std::vector<std::string> names = {
+        "and", "boolean", "mux", "mux4", "mux8", "mux16", "decode2-4", "encoder", "comparator",
+        "adder", "subtractor", "alu", "arbitrarycombinational", "dffp", "shiftregister",
+        "parallelregister", "binaryupcounter", "updowncounter", "trafficlight",
+        "sequencedetector", "vendingmachine"};
+    return names;
+}
+
+}  // namespace
+
+TEST(parser, priorities_follow_topological_order_on_small_netlist) {
+    std::string nl =
+        row("t", "a", "-", "-", "pi", "wa") +
+        row("t", "b", "-", "-", "pi", "wb") +
+        row("t", "y", "-", "-", "po", "wy") +
+        // listed consumer-first so file order is not topological order
+        row("t", "g2", "$_NOT_", "A", "in", "wm") +
+        row("t", "g2", "$_NOT_", "Y", "out", "wy") +
+        row("t", "g1", "$_AND_", "A", "in", "wa") +
+        row("t", "g1", "$_AND_", "B", "in", "wb") +
+        row("t", "g1", "$_AND_", "Y", "out", "wm");
+    auto r = run("topo", nl);
+    REQUIRE_EQ(r.rc, 0);
+    checkTopologicalOrder(r);
+}
+
+TEST(parser, priorities_follow_topological_order_with_feedback) {
+    std::string nl =
+        row("t", "clk", "-", "-", "pi", "wc") +
+        row("t", "q",   "-", "-", "po", "wq") +
+        row("t", "n",  "$_NOT_", "A", "in", "wq") +
+        row("t", "n",  "$_NOT_", "Y", "out", "wd") +
+        row("t", "ff", "$_DFF_P_", "D", "in",  "wd") +
+        row("t", "ff", "$_DFF_P_", "C", "in",  "wc") +
+        row("t", "ff", "$_DFF_P_", "Q", "out", "wq");
+    auto r = run("topo_ff", nl);
+    REQUIRE_EQ(r.rc, 0);
+    checkTopologicalOrder(r);
+}
+
+TEST(parser, every_fixture_netlist_parses_cleanly) {
+    for (auto &name : fixtureNetlists()) {
+        INFO("fixture " << name);
+        auto r = parseFile(fixture("netlists/" + name + "/netlist.table"));
+        CHECK_EQ(r.rc, 0);
+        CHECK(!r.nodes.empty());
+        CHECK(!r.pi.empty());
+        CHECK(!r.po.empty());
+        // the parser only warns about unused wires; any other output is unexpected
+        std::istringstream lines(r.err);
+        for (std::string l; std::getline(lines, l);)
+            CHECK_CONTAINS(l, "warning");
+    }
+}
+
+TEST(parser, every_fixture_netlist_is_topologically_ordered) {
+    for (auto &name : fixtureNetlists()) {
+        INFO("fixture " << name);
+        auto r = parseFile(fixture("netlists/" + name + "/netlist.table"));
+        REQUIRE_EQ(r.rc, 0);
+        checkTopologicalOrder(r);
+    }
+}
+
+TEST(parser, yosys_bus_widths_are_inferred) {
+    auto r = parseFile(fixture("netlists/adder/netlist.table"));
+    REQUIRE_EQ(r.rc, 0);
+    CHECK_EQ(vec(r.pi, "a").size(), 4u);
+    CHECK_EQ(vec(r.pi, "b").size(), 4u);
+    CHECK_EQ(vec(r.po, "y").size(), 4u);   // declared as a [3:0] range on the po row
+}
+
+TEST(parser, output_bus_driven_directly_by_input_bus) {
+    // boolean fixture: y_buf = a, so the po bus reads the pi bus wires directly
+    auto r = parseFile(fixture("netlists/boolean/netlist.table"));
+    REQUIRE_EQ(r.rc, 0);
+    auto a = vec(r.pi, "a"), buf = vec(r.po, "y_buf");
+    REQUIRE_EQ(a.size(), 4u);
+    REQUIRE_EQ(buf.size(), 4u);
+    for (int i = 0; i < 4; i++) {
+        INFO("bit " << i);
+        CHECK(drives(*a[i], buf[i], Port::O));
+    }
+}
+
+TEST(parser, appends_to_existing_node_list) {
+    // parse() does not clear its output vectors; Simulator::clear() is needed
+    // before loading a second netlist
+    auto r = run("first", AND_NETLIST);
+    REQUIRE_EQ(r.rc, 0);
+    size_t before = r.nodes.size();
+    TempDir dir;
+    Capture cap(std::cerr);
+    CHECK_EQ(Parser::parse(dir.write("second.table", AND_NETLIST), r.nodes, r.pi, r.po), 0);
+    CHECK_EQ(r.nodes.size(), 2 * before);
+    CHECK_EQ(vec(r.pi, "a").size(), 2u);
 }

@@ -35,6 +35,6 @@ public:
     static bool generateTruthTable(const std::string &inputPath,
                                    const std::string &outputPath);
 
-    // Reset simulation state
-    //static void clear();
+    // Reset simulation state: empties all queues and drops every node
+    static void clear();
 };
