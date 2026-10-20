@@ -23,4 +23,6 @@ public:
     bool isEmpty() const;
 
     void commitNext();
+
+    void clear();
 };

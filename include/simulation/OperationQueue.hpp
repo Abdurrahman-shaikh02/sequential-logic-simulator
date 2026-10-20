@@ -7,7 +7,7 @@
 
 class OperationQueue {
 private:
-	// why deque? it allows iteration, swapping(reorder) and cancel operations easily!
+	// why deque? it allows iteration and swapping (reorder) easily!
 	std::deque<std::unique_ptr<Operation>> q;
 public:
 	OperationQueue() = default;
@@ -16,8 +16,6 @@ public:
 
 	std::unique_ptr<Operation> dequeue();
 	
-	void cancel(const Operation &op);
-
 	bool isEmpty() const {
 		return q.empty();
 	}

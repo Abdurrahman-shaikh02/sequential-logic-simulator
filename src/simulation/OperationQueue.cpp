@@ -29,14 +29,6 @@ std::unique_ptr<Operation> OperationQueue::dequeue() {
     return op;
 }
 
-void OperationQueue::cancel(const Operation &op) {
-    for (auto it = q.begin(); it != q.end(); ++it) {
-        if (**it == op) { // Uses Operation::operator==
-            q.erase(it);
-        }
-    }
-}
-
 /* goes in a loop and checks if set_port appears
  *  before a change_state for the exact same node.
  *  If so, give warning and swap them!
@@ -45,12 +37,12 @@ void OperationQueue::reorder() {
     // this represents if there is set_port before change_state on exact same node
     bool hazardDetected = false;
 
-    for(int i = 0; i < q.size(); i++) {
+    for(std::deque<std::unique_ptr<Operation> >::size_type i = 0; i < q.size(); i++) {
         auto* setPortOp = dynamic_cast<SetPortOperation*>(q[i].get());
         if(!setPortOp) 
             continue;
         
-        for(int j = 0; j < q.size(); j++) {
+        for(std::deque<std::unique_ptr<Operation> >::size_type j = 0; j < q.size(); j++) {
             if(i == j)
                 continue;
 

@@ -1,14 +1,31 @@
 test_ring_counter	clk	-	-	pi	\clk
-test_ring_counter	q	-	-	po	\state
-test_ring_counter	$auto$ff.cc:337:slice$4	$_DFF_P_	C	in	\clk
-test_ring_counter	$auto$ff.cc:337:slice$4	$_DFF_P_	D	in	\state [3]
-test_ring_counter	$auto$ff.cc:337:slice$4	$_DFF_P_	Q	out	\state [0]
-test_ring_counter	$auto$ff.cc:337:slice$5	$_DFF_P_	C	in	\clk
-test_ring_counter	$auto$ff.cc:337:slice$5	$_DFF_P_	D	in	\state [0]
-test_ring_counter	$auto$ff.cc:337:slice$5	$_DFF_P_	Q	out	\state [1]
+test_ring_counter	q	-	-	po	\q
+test_ring_counter	rst	-	-	pi	\rst
 test_ring_counter	$auto$ff.cc:337:slice$6	$_DFF_P_	C	in	\clk
-test_ring_counter	$auto$ff.cc:337:slice$6	$_DFF_P_	D	in	\state [1]
-test_ring_counter	$auto$ff.cc:337:slice$6	$_DFF_P_	Q	out	\state [2]
+test_ring_counter	$auto$ff.cc:337:slice$6	$_DFF_P_	D	in	$procmux$3_Y [0]
+test_ring_counter	$auto$ff.cc:337:slice$6	$_DFF_P_	Q	out	\q [0]
 test_ring_counter	$auto$ff.cc:337:slice$7	$_DFF_P_	C	in	\clk
-test_ring_counter	$auto$ff.cc:337:slice$7	$_DFF_P_	D	in	\state [2]
-test_ring_counter	$auto$ff.cc:337:slice$7	$_DFF_P_	Q	out	\state [3]
+test_ring_counter	$auto$ff.cc:337:slice$7	$_DFF_P_	D	in	$procmux$3_Y [1]
+test_ring_counter	$auto$ff.cc:337:slice$7	$_DFF_P_	Q	out	\q [1]
+test_ring_counter	$auto$ff.cc:337:slice$8	$_DFF_P_	C	in	\clk
+test_ring_counter	$auto$ff.cc:337:slice$8	$_DFF_P_	D	in	$procmux$3_Y [2]
+test_ring_counter	$auto$ff.cc:337:slice$8	$_DFF_P_	Q	out	\q [2]
+test_ring_counter	$auto$ff.cc:337:slice$9	$_DFF_P_	C	in	\clk
+test_ring_counter	$auto$ff.cc:337:slice$9	$_DFF_P_	D	in	$procmux$3_Y [3]
+test_ring_counter	$auto$ff.cc:337:slice$9	$_DFF_P_	Q	out	\q [3]
+test_ring_counter	$auto$simplemap.cc:298:simplemap_mux$10	$_MUX_	A	in	\q [3]
+test_ring_counter	$auto$simplemap.cc:298:simplemap_mux$10	$_MUX_	B	in	1'1
+test_ring_counter	$auto$simplemap.cc:298:simplemap_mux$10	$_MUX_	S	in	\rst
+test_ring_counter	$auto$simplemap.cc:298:simplemap_mux$10	$_MUX_	Y	out	$procmux$3_Y [0]
+test_ring_counter	$auto$simplemap.cc:298:simplemap_mux$11	$_MUX_	A	in	\q [0]
+test_ring_counter	$auto$simplemap.cc:298:simplemap_mux$11	$_MUX_	B	in	1'0
+test_ring_counter	$auto$simplemap.cc:298:simplemap_mux$11	$_MUX_	S	in	\rst
+test_ring_counter	$auto$simplemap.cc:298:simplemap_mux$11	$_MUX_	Y	out	$procmux$3_Y [1]
+test_ring_counter	$auto$simplemap.cc:298:simplemap_mux$12	$_MUX_	A	in	\q [1]
+test_ring_counter	$auto$simplemap.cc:298:simplemap_mux$12	$_MUX_	B	in	1'0
+test_ring_counter	$auto$simplemap.cc:298:simplemap_mux$12	$_MUX_	S	in	\rst
+test_ring_counter	$auto$simplemap.cc:298:simplemap_mux$12	$_MUX_	Y	out	$procmux$3_Y [2]
+test_ring_counter	$auto$simplemap.cc:298:simplemap_mux$13	$_MUX_	A	in	\q [2]
+test_ring_counter	$auto$simplemap.cc:298:simplemap_mux$13	$_MUX_	B	in	1'0
+test_ring_counter	$auto$simplemap.cc:298:simplemap_mux$13	$_MUX_	S	in	\rst
+test_ring_counter	$auto$simplemap.cc:298:simplemap_mux$13	$_MUX_	Y	out	$procmux$3_Y [3]

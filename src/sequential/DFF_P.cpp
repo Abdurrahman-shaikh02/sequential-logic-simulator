@@ -17,8 +17,6 @@ void DFF_P::evaluate(Port p, Signal value) {
                           if (!initialized) {
                               d = value;        // just set the internal value if the node is invalid
                           } else {
-                              SetPortOperation pending(*this, p, value);
-                              Simulator::sequentialQueue.cancel(pending);       //NOTE: remove
                               Simulator::sequentialQueue.enqueue(std::make_unique<SetPortOperation>(*this, p, value));
                           }
                           break;
@@ -28,8 +26,6 @@ void DFF_P::evaluate(Port p, Signal value) {
                             if (!initialized) {
                                 clk = value;
                             } else if (clk == Signal::LOW && value == Signal::HIGH) {
-                                ChangeStateOperation pending(*this, p, value);
-                                Simulator::sequentialQueue.cancel(pending);
                                 Simulator::sequentialQueue.enqueue(std::make_unique<ChangeStateOperation>(*this, p, value));
                             } else {
                                 clk = value;

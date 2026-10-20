@@ -23,6 +23,15 @@ std::string Simulator::synthesize(const std::string &path) {
     return Synthesizer::synthesize(path);
 }
 
+void Simulator::clear() {
+    combinationalQueue.clear();
+    sequentialQueue.clear();
+    topologicalQueue.clear();
+    primaryInputs.clear();
+    primaryOutputs.clear();
+    nodes.clear();
+}
+
 void Simulator::initialize(){
     /*   
       - turn all input nodes to 0
