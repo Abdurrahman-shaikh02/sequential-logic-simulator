@@ -207,10 +207,7 @@ TEST(synthesizer, fsm_without_inputs) {
     CHECK_EQ(s.err, "");
 }
 
-TEST_XFAIL(synthesizer, fsm_without_outputs,
-           "docs/synthesizer.md says outputs: may be empty, but a row 'A | 1 | B |' is split "
-           "with std::getline(.., '|'), which drops the trailing empty field, so it has 3 "
-           "fields and is rejected") {
+TEST(synthesizer, fsm_without_outputs) {
     std::string fsm = "inputs: x\noutputs:\nreset: A\nA | 1 | B |\nB | 1 | A |\n";
     TempDir dir;
     auto s = synth(dir, fsm);

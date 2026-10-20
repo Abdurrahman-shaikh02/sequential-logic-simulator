@@ -111,6 +111,8 @@ namespace {
                 std::string f;
                 while (std::getline(iss, f, '|'))
                     fields.push_back(f);
+                if (line.back() == '|')         // getline drops a trailing empty field
+                    fields.push_back("");
                 if (fields.size() != 4)
                     return error(path, lineNo, "expected 'current | inputs | next | outputs'");
 
