@@ -31,9 +31,8 @@ public:
     // Two-phase simulation driver
     static void run();
 
-    // runs all 2^n input combinations, prints the table, writes input/output files
-    static bool generateTruthTable(const std::string &inputPath,
-                                   const std::string &outputPath);
+    // Runs 2^n input combinations and writes output to a file
+    static bool generateTruthTable(const std::string &path);
 
     // Reset simulation state: empties all queues and drops every node
     static void clear();

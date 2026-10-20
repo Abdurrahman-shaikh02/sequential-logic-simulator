@@ -7,6 +7,7 @@
 #include <iostream>
 #include <regex>
 #include <queue>
+#include <limits>
 
 #include "parser/Parser.hpp"
 #include "core/Node.hpp"
@@ -192,6 +193,15 @@ int Parser::parse(const std::string &path, std::vector<std::unique_ptr<Node>> &n
                 std::cerr << "duplicate primary component name: " << compName << '\n';
                 return -1;
             }
+            if (dir != "pi" && dir != "po") {
+                std::cerr << "unknown direction " << dir << " for primary node " << compName << '\n';
+                return -1;
+            }
+            if (portName != "-") {
+                std::cerr << "port defined on primary component " << compName << '\n';
+                return -1;
+            }
+
             components[compName] = {nullptr, dir, {}};
             primaryNodes.push_back({compName, dir, wireName});
             continue;
@@ -238,6 +248,12 @@ int Parser::parse(const std::string &path, std::vector<std::unique_ptr<Node>> &n
             return -1;
         }
         comp.seenPorts.push_back(portName);
+
+        // Only the output ports of gates should have direction "out"
+        if ((dir == "out") != (port == Port::O)) {
+            std::cerr << "port " << portName << " has wrong direction on " << compName << '\n';
+            return -1;
+        }
 
         Wire &w = wires[wireName];
         if (dir == "out") {
@@ -366,7 +382,11 @@ int Parser::parse(const std::string &path, std::vector<std::unique_ptr<Node>> &n
             std::cerr << "warning: wire " << name << " has no consumers\n";
     }
 
-    // Add other checks on components and wires if required
+    // Check if number of nodes is greater than the allowed priority limit
+    if (nodes.size() > static_cast<size_t>(std::numeric_limits<int>::max())) {
+        std::cerr << "too many nodes: " << nodes.size() << " exceeds the maximum priority\n";
+        return -1;
+    }
 
     // Create graph by adding wire output nodes to input node's list
     for (auto &[name, w] : wires) {
