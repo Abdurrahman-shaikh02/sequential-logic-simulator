@@ -1,0 +1,118 @@
+test_sequence_detector	clk	-	-	pi	\clk
+test_sequence_detector	detected	-	-	po	$logic_and$test.v:40$3_Y
+test_sequence_detector	din	-	-	pi	\din
+test_sequence_detector	$auto$ff.cc:337:slice$19	$_DFF_P_	C	in	\clk
+test_sequence_detector	$auto$ff.cc:337:slice$19	$_DFF_P_	D	in	$procmux$8_Y [0]
+test_sequence_detector	$auto$ff.cc:337:slice$19	$_DFF_P_	Q	out	\state [0]
+test_sequence_detector	$auto$ff.cc:337:slice$20	$_DFF_P_	C	in	\clk
+test_sequence_detector	$auto$ff.cc:337:slice$20	$_DFF_P_	D	in	$procmux$8_Y [1]
+test_sequence_detector	$auto$ff.cc:337:slice$20	$_DFF_P_	Q	out	\state [1]
+test_sequence_detector	$auto$simplemap.cc:106:simplemap_bitop$28	$_XOR_	A	in	\state [0]
+test_sequence_detector	$auto$simplemap.cc:106:simplemap_bitop$28	$_XOR_	B	in	1'1
+test_sequence_detector	$auto$simplemap.cc:106:simplemap_bitop$28	$_XOR_	Y	out	$auto$simplemap.cc:271:simplemap_eqne$26 [0]
+test_sequence_detector	$auto$simplemap.cc:106:simplemap_bitop$29	$_XOR_	A	in	\state [1]
+test_sequence_detector	$auto$simplemap.cc:106:simplemap_bitop$29	$_XOR_	B	in	1'0
+test_sequence_detector	$auto$simplemap.cc:106:simplemap_bitop$29	$_XOR_	Y	out	$auto$simplemap.cc:271:simplemap_eqne$26 [1]
+test_sequence_detector	$auto$simplemap.cc:106:simplemap_bitop$66	$_XOR_	A	in	\state [0]
+test_sequence_detector	$auto$simplemap.cc:106:simplemap_bitop$66	$_XOR_	B	in	1'0
+test_sequence_detector	$auto$simplemap.cc:106:simplemap_bitop$66	$_XOR_	Y	out	$auto$simplemap.cc:271:simplemap_eqne$64 [0]
+test_sequence_detector	$auto$simplemap.cc:106:simplemap_bitop$67	$_XOR_	A	in	\state [1]
+test_sequence_detector	$auto$simplemap.cc:106:simplemap_bitop$67	$_XOR_	B	in	1'1
+test_sequence_detector	$auto$simplemap.cc:106:simplemap_bitop$67	$_XOR_	Y	out	$auto$simplemap.cc:271:simplemap_eqne$64 [1]
+test_sequence_detector	$auto$simplemap.cc:106:simplemap_bitop$79	$_XOR_	A	in	\state [0]
+test_sequence_detector	$auto$simplemap.cc:106:simplemap_bitop$79	$_XOR_	B	in	1'0
+test_sequence_detector	$auto$simplemap.cc:106:simplemap_bitop$79	$_XOR_	Y	out	$auto$simplemap.cc:271:simplemap_eqne$77 [0]
+test_sequence_detector	$auto$simplemap.cc:106:simplemap_bitop$80	$_XOR_	A	in	\state [1]
+test_sequence_detector	$auto$simplemap.cc:106:simplemap_bitop$80	$_XOR_	B	in	1'1
+test_sequence_detector	$auto$simplemap.cc:106:simplemap_bitop$80	$_XOR_	Y	out	$auto$simplemap.cc:271:simplemap_eqne$77 [1]
+test_sequence_detector	$auto$simplemap.cc:157:simplemap_reduce$33	$_OR_	A	in	$auto$simplemap.cc:271:simplemap_eqne$26 [0]
+test_sequence_detector	$auto$simplemap.cc:157:simplemap_reduce$33	$_OR_	B	in	$auto$simplemap.cc:271:simplemap_eqne$26 [1]
+test_sequence_detector	$auto$simplemap.cc:157:simplemap_reduce$33	$_OR_	Y	out	$auto$simplemap.cc:277:simplemap_eqne$30
+test_sequence_detector	$auto$simplemap.cc:157:simplemap_reduce$71	$_OR_	A	in	$auto$simplemap.cc:271:simplemap_eqne$64 [0]
+test_sequence_detector	$auto$simplemap.cc:157:simplemap_reduce$71	$_OR_	B	in	$auto$simplemap.cc:271:simplemap_eqne$64 [1]
+test_sequence_detector	$auto$simplemap.cc:157:simplemap_reduce$71	$_OR_	Y	out	$auto$simplemap.cc:277:simplemap_eqne$68
+test_sequence_detector	$auto$simplemap.cc:157:simplemap_reduce$84	$_OR_	A	in	$auto$simplemap.cc:271:simplemap_eqne$77 [0]
+test_sequence_detector	$auto$simplemap.cc:157:simplemap_reduce$84	$_OR_	B	in	$auto$simplemap.cc:271:simplemap_eqne$77 [1]
+test_sequence_detector	$auto$simplemap.cc:157:simplemap_reduce$84	$_OR_	Y	out	$auto$simplemap.cc:277:simplemap_eqne$81
+test_sequence_detector	$auto$simplemap.cc:198:logic_reduce$22	$_OR_	A	in	\state [0]
+test_sequence_detector	$auto$simplemap.cc:198:logic_reduce$22	$_OR_	B	in	\state [1]
+test_sequence_detector	$auto$simplemap.cc:198:logic_reduce$22	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$21
+test_sequence_detector	$auto$simplemap.cc:198:logic_reduce$39	$_OR_	A	in	$procmux$9_CMP
+test_sequence_detector	$auto$simplemap.cc:198:logic_reduce$39	$_OR_	B	in	$procmux$13_CMP
+test_sequence_detector	$auto$simplemap.cc:198:logic_reduce$39	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$38
+test_sequence_detector	$auto$simplemap.cc:198:logic_reduce$41	$_OR_	A	in	$auto$simplemap.cc:189:logic_reduce$38
+test_sequence_detector	$auto$simplemap.cc:198:logic_reduce$41	$_OR_	B	in	$procmux$17_CMP
+test_sequence_detector	$auto$simplemap.cc:198:logic_reduce$41	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$40
+test_sequence_detector	$auto$simplemap.cc:198:logic_reduce$49	$_OR_	A	in	$auto$simplemap.cc:465:simplemap_pmux$43
+test_sequence_detector	$auto$simplemap.cc:198:logic_reduce$49	$_OR_	B	in	$auto$simplemap.cc:465:simplemap_pmux$45
+test_sequence_detector	$auto$simplemap.cc:198:logic_reduce$49	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$48
+test_sequence_detector	$auto$simplemap.cc:198:logic_reduce$51	$_OR_	A	in	$auto$simplemap.cc:189:logic_reduce$48
+test_sequence_detector	$auto$simplemap.cc:198:logic_reduce$51	$_OR_	B	in	$auto$simplemap.cc:465:simplemap_pmux$47
+test_sequence_detector	$auto$simplemap.cc:198:logic_reduce$51	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$50
+test_sequence_detector	$auto$simplemap.cc:198:logic_reduce$60	$_OR_	A	in	$auto$simplemap.cc:465:simplemap_pmux$54
+test_sequence_detector	$auto$simplemap.cc:198:logic_reduce$60	$_OR_	B	in	$auto$simplemap.cc:465:simplemap_pmux$56
+test_sequence_detector	$auto$simplemap.cc:198:logic_reduce$60	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$59
+test_sequence_detector	$auto$simplemap.cc:198:logic_reduce$62	$_OR_	A	in	$auto$simplemap.cc:189:logic_reduce$59
+test_sequence_detector	$auto$simplemap.cc:198:logic_reduce$62	$_OR_	B	in	$auto$simplemap.cc:465:simplemap_pmux$58
+test_sequence_detector	$auto$simplemap.cc:198:logic_reduce$62	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$61
+test_sequence_detector	$auto$simplemap.cc:227:simplemap_lognot$23	$_NOT_	A	in	$auto$simplemap.cc:189:logic_reduce$21
+test_sequence_detector	$auto$simplemap.cc:227:simplemap_lognot$23	$_NOT_	Y	out	$procmux$17_CMP
+test_sequence_detector	$auto$simplemap.cc:227:simplemap_lognot$35	$_NOT_	A	in	$auto$simplemap.cc:277:simplemap_eqne$30
+test_sequence_detector	$auto$simplemap.cc:227:simplemap_lognot$35	$_NOT_	Y	out	$procmux$13_CMP
+test_sequence_detector	$auto$simplemap.cc:227:simplemap_lognot$73	$_NOT_	A	in	$auto$simplemap.cc:277:simplemap_eqne$68
+test_sequence_detector	$auto$simplemap.cc:227:simplemap_lognot$73	$_NOT_	Y	out	$procmux$9_CMP
+test_sequence_detector	$auto$simplemap.cc:227:simplemap_lognot$86	$_NOT_	A	in	$auto$simplemap.cc:277:simplemap_eqne$81
+test_sequence_detector	$auto$simplemap.cc:227:simplemap_lognot$86	$_NOT_	Y	out	$eq$test.v:40$2_Y
+test_sequence_detector	$auto$simplemap.cc:256:simplemap_logbin$76	$_AND_	A	in	$eq$test.v:40$2_Y
+test_sequence_detector	$auto$simplemap.cc:256:simplemap_logbin$76	$_AND_	B	in	\din
+test_sequence_detector	$auto$simplemap.cc:256:simplemap_logbin$76	$_AND_	Y	out	$logic_and$test.v:40$3_Y
+test_sequence_detector	$auto$simplemap.cc:298:simplemap_mux$24	$_MUX_	A	in	1'0
+test_sequence_detector	$auto$simplemap.cc:298:simplemap_mux$24	$_MUX_	B	in	1'1
+test_sequence_detector	$auto$simplemap.cc:298:simplemap_mux$24	$_MUX_	S	in	\din
+test_sequence_detector	$auto$simplemap.cc:298:simplemap_mux$24	$_MUX_	Y	out	$procmux$15_Y [0]
+test_sequence_detector	$auto$simplemap.cc:298:simplemap_mux$25	$_MUX_	A	in	1'0
+test_sequence_detector	$auto$simplemap.cc:298:simplemap_mux$25	$_MUX_	B	in	1'0
+test_sequence_detector	$auto$simplemap.cc:298:simplemap_mux$25	$_MUX_	S	in	\din
+test_sequence_detector	$auto$simplemap.cc:298:simplemap_mux$25	$_MUX_	Y	out	$procmux$15_Y [1]
+test_sequence_detector	$auto$simplemap.cc:298:simplemap_mux$36	$_MUX_	A	in	1'0
+test_sequence_detector	$auto$simplemap.cc:298:simplemap_mux$36	$_MUX_	B	in	1'1
+test_sequence_detector	$auto$simplemap.cc:298:simplemap_mux$36	$_MUX_	S	in	\din
+test_sequence_detector	$auto$simplemap.cc:298:simplemap_mux$36	$_MUX_	Y	out	$procmux$11_Y [0]
+test_sequence_detector	$auto$simplemap.cc:298:simplemap_mux$37	$_MUX_	A	in	1'1
+test_sequence_detector	$auto$simplemap.cc:298:simplemap_mux$37	$_MUX_	B	in	1'0
+test_sequence_detector	$auto$simplemap.cc:298:simplemap_mux$37	$_MUX_	S	in	\din
+test_sequence_detector	$auto$simplemap.cc:298:simplemap_mux$37	$_MUX_	Y	out	$procmux$11_Y [1]
+test_sequence_detector	$auto$simplemap.cc:298:simplemap_mux$74	$_MUX_	A	in	1'0
+test_sequence_detector	$auto$simplemap.cc:298:simplemap_mux$74	$_MUX_	B	in	1'1
+test_sequence_detector	$auto$simplemap.cc:298:simplemap_mux$74	$_MUX_	S	in	\din
+test_sequence_detector	$auto$simplemap.cc:298:simplemap_mux$74	$_MUX_	Y	out	$procmux$6_Y [0]
+test_sequence_detector	$auto$simplemap.cc:298:simplemap_mux$75	$_MUX_	A	in	1'0
+test_sequence_detector	$auto$simplemap.cc:298:simplemap_mux$75	$_MUX_	B	in	1'0
+test_sequence_detector	$auto$simplemap.cc:298:simplemap_mux$75	$_MUX_	S	in	\din
+test_sequence_detector	$auto$simplemap.cc:298:simplemap_mux$75	$_MUX_	Y	out	$procmux$6_Y [1]
+test_sequence_detector	$auto$simplemap.cc:460:simplemap_pmux$42	$_AND_	A	in	$procmux$6_Y [0]
+test_sequence_detector	$auto$simplemap.cc:460:simplemap_pmux$42	$_AND_	B	in	$procmux$9_CMP
+test_sequence_detector	$auto$simplemap.cc:460:simplemap_pmux$42	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$43
+test_sequence_detector	$auto$simplemap.cc:460:simplemap_pmux$44	$_AND_	A	in	$procmux$11_Y [0]
+test_sequence_detector	$auto$simplemap.cc:460:simplemap_pmux$44	$_AND_	B	in	$procmux$13_CMP
+test_sequence_detector	$auto$simplemap.cc:460:simplemap_pmux$44	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$45
+test_sequence_detector	$auto$simplemap.cc:460:simplemap_pmux$46	$_AND_	A	in	$procmux$15_Y [0]
+test_sequence_detector	$auto$simplemap.cc:460:simplemap_pmux$46	$_AND_	B	in	$procmux$17_CMP
+test_sequence_detector	$auto$simplemap.cc:460:simplemap_pmux$46	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$47
+test_sequence_detector	$auto$simplemap.cc:460:simplemap_pmux$53	$_AND_	A	in	$procmux$6_Y [1]
+test_sequence_detector	$auto$simplemap.cc:460:simplemap_pmux$53	$_AND_	B	in	$procmux$9_CMP
+test_sequence_detector	$auto$simplemap.cc:460:simplemap_pmux$53	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$54
+test_sequence_detector	$auto$simplemap.cc:460:simplemap_pmux$55	$_AND_	A	in	$procmux$11_Y [1]
+test_sequence_detector	$auto$simplemap.cc:460:simplemap_pmux$55	$_AND_	B	in	$procmux$13_CMP
+test_sequence_detector	$auto$simplemap.cc:460:simplemap_pmux$55	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$56
+test_sequence_detector	$auto$simplemap.cc:460:simplemap_pmux$57	$_AND_	A	in	$procmux$15_Y [1]
+test_sequence_detector	$auto$simplemap.cc:460:simplemap_pmux$57	$_AND_	B	in	$procmux$17_CMP
+test_sequence_detector	$auto$simplemap.cc:460:simplemap_pmux$57	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$58
+test_sequence_detector	$auto$simplemap.cc:474:simplemap_pmux$52	$_MUX_	A	in	1'0
+test_sequence_detector	$auto$simplemap.cc:474:simplemap_pmux$52	$_MUX_	B	in	$auto$simplemap.cc:189:logic_reduce$50
+test_sequence_detector	$auto$simplemap.cc:474:simplemap_pmux$52	$_MUX_	S	in	$auto$simplemap.cc:189:logic_reduce$40
+test_sequence_detector	$auto$simplemap.cc:474:simplemap_pmux$52	$_MUX_	Y	out	$procmux$8_Y [0]
+test_sequence_detector	$auto$simplemap.cc:474:simplemap_pmux$63	$_MUX_	A	in	1'0
+test_sequence_detector	$auto$simplemap.cc:474:simplemap_pmux$63	$_MUX_	B	in	$auto$simplemap.cc:189:logic_reduce$61
+test_sequence_detector	$auto$simplemap.cc:474:simplemap_pmux$63	$_MUX_	S	in	$auto$simplemap.cc:189:logic_reduce$40
+test_sequence_detector	$auto$simplemap.cc:474:simplemap_pmux$63	$_MUX_	Y	out	$procmux$8_Y [1]

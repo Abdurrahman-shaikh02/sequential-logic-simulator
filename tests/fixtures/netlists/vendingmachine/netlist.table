@@ -1,0 +1,115 @@
+test_vending_machine	clk	-	-	pi	\clk
+test_vending_machine	coin10	-	-	pi	\coin10
+test_vending_machine	coin5	-	-	pi	\coin5
+test_vending_machine	vend	-	-	po	$logic_or$test.v:47$7_Y
+test_vending_machine	$auto$ff.cc:337:slice$25	$_DFF_P_	C	in	\clk
+test_vending_machine	$auto$ff.cc:337:slice$25	$_DFF_P_	D	in	$procmux$15_Y [0]
+test_vending_machine	$auto$ff.cc:337:slice$25	$_DFF_P_	Q	out	\state [0]
+test_vending_machine	$auto$ff.cc:337:slice$26	$_DFF_P_	C	in	\clk
+test_vending_machine	$auto$ff.cc:337:slice$26	$_DFF_P_	D	in	$procmux$15_Y [1]
+test_vending_machine	$auto$ff.cc:337:slice$26	$_DFF_P_	Q	out	\state [1]
+test_vending_machine	$auto$simplemap.cc:106:simplemap_bitop$52	$_XOR_	A	in	\state [0]
+test_vending_machine	$auto$simplemap.cc:106:simplemap_bitop$52	$_XOR_	B	in	1'1
+test_vending_machine	$auto$simplemap.cc:106:simplemap_bitop$52	$_XOR_	Y	out	$auto$simplemap.cc:271:simplemap_eqne$50 [0]
+test_vending_machine	$auto$simplemap.cc:106:simplemap_bitop$53	$_XOR_	A	in	\state [1]
+test_vending_machine	$auto$simplemap.cc:106:simplemap_bitop$53	$_XOR_	B	in	1'0
+test_vending_machine	$auto$simplemap.cc:106:simplemap_bitop$53	$_XOR_	Y	out	$auto$simplemap.cc:271:simplemap_eqne$50 [1]
+test_vending_machine	$auto$simplemap.cc:106:simplemap_bitop$69	$_XOR_	A	in	\state [0]
+test_vending_machine	$auto$simplemap.cc:106:simplemap_bitop$69	$_XOR_	B	in	1'1
+test_vending_machine	$auto$simplemap.cc:106:simplemap_bitop$69	$_XOR_	Y	out	$auto$simplemap.cc:271:simplemap_eqne$67 [0]
+test_vending_machine	$auto$simplemap.cc:106:simplemap_bitop$70	$_XOR_	A	in	\state [1]
+test_vending_machine	$auto$simplemap.cc:106:simplemap_bitop$70	$_XOR_	B	in	1'0
+test_vending_machine	$auto$simplemap.cc:106:simplemap_bitop$70	$_XOR_	Y	out	$auto$simplemap.cc:271:simplemap_eqne$67 [1]
+test_vending_machine	$auto$simplemap.cc:157:simplemap_reduce$57	$_OR_	A	in	$auto$simplemap.cc:271:simplemap_eqne$50 [0]
+test_vending_machine	$auto$simplemap.cc:157:simplemap_reduce$57	$_OR_	B	in	$auto$simplemap.cc:271:simplemap_eqne$50 [1]
+test_vending_machine	$auto$simplemap.cc:157:simplemap_reduce$57	$_OR_	Y	out	$auto$simplemap.cc:277:simplemap_eqne$54
+test_vending_machine	$auto$simplemap.cc:157:simplemap_reduce$74	$_OR_	A	in	$auto$simplemap.cc:271:simplemap_eqne$67 [0]
+test_vending_machine	$auto$simplemap.cc:157:simplemap_reduce$74	$_OR_	B	in	$auto$simplemap.cc:271:simplemap_eqne$67 [1]
+test_vending_machine	$auto$simplemap.cc:157:simplemap_reduce$74	$_OR_	Y	out	$auto$simplemap.cc:277:simplemap_eqne$71
+test_vending_machine	$auto$simplemap.cc:198:logic_reduce$28	$_OR_	A	in	\state [0]
+test_vending_machine	$auto$simplemap.cc:198:logic_reduce$28	$_OR_	B	in	\state [1]
+test_vending_machine	$auto$simplemap.cc:198:logic_reduce$28	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$27
+test_vending_machine	$auto$simplemap.cc:198:logic_reduce$35	$_OR_	A	in	$procmux$16_CMP
+test_vending_machine	$auto$simplemap.cc:198:logic_reduce$35	$_OR_	B	in	$procmux$23_CMP
+test_vending_machine	$auto$simplemap.cc:198:logic_reduce$35	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$34
+test_vending_machine	$auto$simplemap.cc:198:logic_reduce$41	$_OR_	A	in	$auto$simplemap.cc:465:simplemap_pmux$37
+test_vending_machine	$auto$simplemap.cc:198:logic_reduce$41	$_OR_	B	in	$auto$simplemap.cc:465:simplemap_pmux$39
+test_vending_machine	$auto$simplemap.cc:198:logic_reduce$41	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$40
+test_vending_machine	$auto$simplemap.cc:198:logic_reduce$48	$_OR_	A	in	$auto$simplemap.cc:465:simplemap_pmux$44
+test_vending_machine	$auto$simplemap.cc:198:logic_reduce$48	$_OR_	B	in	$auto$simplemap.cc:465:simplemap_pmux$46
+test_vending_machine	$auto$simplemap.cc:198:logic_reduce$48	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$47
+test_vending_machine	$auto$simplemap.cc:198:logic_reduce$79	$_OR_	A	in	\state [0]
+test_vending_machine	$auto$simplemap.cc:198:logic_reduce$79	$_OR_	B	in	\state [1]
+test_vending_machine	$auto$simplemap.cc:198:logic_reduce$79	$_OR_	Y	out	$auto$simplemap.cc:189:logic_reduce$78
+test_vending_machine	$auto$simplemap.cc:227:simplemap_lognot$29	$_NOT_	A	in	$auto$simplemap.cc:189:logic_reduce$27
+test_vending_machine	$auto$simplemap.cc:227:simplemap_lognot$29	$_NOT_	Y	out	$procmux$23_CMP
+test_vending_machine	$auto$simplemap.cc:227:simplemap_lognot$59	$_NOT_	A	in	$auto$simplemap.cc:277:simplemap_eqne$54
+test_vending_machine	$auto$simplemap.cc:227:simplemap_lognot$59	$_NOT_	Y	out	$procmux$16_CMP
+test_vending_machine	$auto$simplemap.cc:227:simplemap_lognot$76	$_NOT_	A	in	$auto$simplemap.cc:277:simplemap_eqne$71
+test_vending_machine	$auto$simplemap.cc:227:simplemap_lognot$76	$_NOT_	Y	out	$eq$test.v:48$4_Y
+test_vending_machine	$auto$simplemap.cc:227:simplemap_lognot$80	$_NOT_	A	in	$auto$simplemap.cc:189:logic_reduce$78
+test_vending_machine	$auto$simplemap.cc:227:simplemap_lognot$80	$_NOT_	Y	out	$eq$test.v:47$2_Y
+test_vending_machine	$auto$simplemap.cc:256:simplemap_logbin$64	$_OR_	A	in	$logic_and$test.v:47$3_Y
+test_vending_machine	$auto$simplemap.cc:256:simplemap_logbin$64	$_OR_	B	in	$logic_and$test.v:48$6_Y
+test_vending_machine	$auto$simplemap.cc:256:simplemap_logbin$64	$_OR_	Y	out	$logic_or$test.v:47$7_Y
+test_vending_machine	$auto$simplemap.cc:256:simplemap_logbin$65	$_AND_	A	in	$eq$test.v:48$4_Y
+test_vending_machine	$auto$simplemap.cc:256:simplemap_logbin$65	$_AND_	B	in	$logic_or$test.v:48$5_Y
+test_vending_machine	$auto$simplemap.cc:256:simplemap_logbin$65	$_AND_	Y	out	$logic_and$test.v:48$6_Y
+test_vending_machine	$auto$simplemap.cc:256:simplemap_logbin$66	$_OR_	A	in	\coin5
+test_vending_machine	$auto$simplemap.cc:256:simplemap_logbin$66	$_OR_	B	in	\coin10
+test_vending_machine	$auto$simplemap.cc:256:simplemap_logbin$66	$_OR_	Y	out	$logic_or$test.v:48$5_Y
+test_vending_machine	$auto$simplemap.cc:256:simplemap_logbin$77	$_AND_	A	in	$eq$test.v:47$2_Y
+test_vending_machine	$auto$simplemap.cc:256:simplemap_logbin$77	$_AND_	B	in	\coin10
+test_vending_machine	$auto$simplemap.cc:256:simplemap_logbin$77	$_AND_	Y	out	$logic_and$test.v:47$3_Y
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$30	$_MUX_	A	in	$procmux$18_Y [0]
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$30	$_MUX_	B	in	1'0
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$30	$_MUX_	S	in	\coin10
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$30	$_MUX_	Y	out	$procmux$21_Y [0]
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$31	$_MUX_	A	in	$procmux$18_Y [1]
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$31	$_MUX_	B	in	1'0
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$31	$_MUX_	S	in	\coin10
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$31	$_MUX_	Y	out	$procmux$21_Y [1]
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$32	$_MUX_	A	in	1'0
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$32	$_MUX_	B	in	1'1
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$32	$_MUX_	S	in	\coin5
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$32	$_MUX_	Y	out	$procmux$18_Y [0]
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$33	$_MUX_	A	in	1'0
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$33	$_MUX_	B	in	1'0
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$33	$_MUX_	S	in	\coin5
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$33	$_MUX_	Y	out	$procmux$18_Y [1]
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$60	$_MUX_	A	in	$procmux$10_Y [0]
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$60	$_MUX_	B	in	1'0
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$60	$_MUX_	S	in	\coin5
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$60	$_MUX_	Y	out	$procmux$13_Y [0]
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$61	$_MUX_	A	in	$procmux$10_Y [1]
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$61	$_MUX_	B	in	1'0
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$61	$_MUX_	S	in	\coin5
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$61	$_MUX_	Y	out	$procmux$13_Y [1]
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$62	$_MUX_	A	in	1'1
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$62	$_MUX_	B	in	1'0
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$62	$_MUX_	S	in	\coin10
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$62	$_MUX_	Y	out	$procmux$10_Y [0]
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$63	$_MUX_	A	in	1'0
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$63	$_MUX_	B	in	1'0
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$63	$_MUX_	S	in	\coin10
+test_vending_machine	$auto$simplemap.cc:298:simplemap_mux$63	$_MUX_	Y	out	$procmux$10_Y [1]
+test_vending_machine	$auto$simplemap.cc:460:simplemap_pmux$36	$_AND_	A	in	$procmux$13_Y [0]
+test_vending_machine	$auto$simplemap.cc:460:simplemap_pmux$36	$_AND_	B	in	$procmux$16_CMP
+test_vending_machine	$auto$simplemap.cc:460:simplemap_pmux$36	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$37
+test_vending_machine	$auto$simplemap.cc:460:simplemap_pmux$38	$_AND_	A	in	$procmux$21_Y [0]
+test_vending_machine	$auto$simplemap.cc:460:simplemap_pmux$38	$_AND_	B	in	$procmux$23_CMP
+test_vending_machine	$auto$simplemap.cc:460:simplemap_pmux$38	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$39
+test_vending_machine	$auto$simplemap.cc:460:simplemap_pmux$43	$_AND_	A	in	$procmux$13_Y [1]
+test_vending_machine	$auto$simplemap.cc:460:simplemap_pmux$43	$_AND_	B	in	$procmux$16_CMP
+test_vending_machine	$auto$simplemap.cc:460:simplemap_pmux$43	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$44
+test_vending_machine	$auto$simplemap.cc:460:simplemap_pmux$45	$_AND_	A	in	$procmux$21_Y [1]
+test_vending_machine	$auto$simplemap.cc:460:simplemap_pmux$45	$_AND_	B	in	$procmux$23_CMP
+test_vending_machine	$auto$simplemap.cc:460:simplemap_pmux$45	$_AND_	Y	out	$auto$simplemap.cc:465:simplemap_pmux$46
+test_vending_machine	$auto$simplemap.cc:474:simplemap_pmux$42	$_MUX_	A	in	1'0
+test_vending_machine	$auto$simplemap.cc:474:simplemap_pmux$42	$_MUX_	B	in	$auto$simplemap.cc:189:logic_reduce$40
+test_vending_machine	$auto$simplemap.cc:474:simplemap_pmux$42	$_MUX_	S	in	$auto$simplemap.cc:189:logic_reduce$34
+test_vending_machine	$auto$simplemap.cc:474:simplemap_pmux$42	$_MUX_	Y	out	$procmux$15_Y [0]
+test_vending_machine	$auto$simplemap.cc:474:simplemap_pmux$49	$_MUX_	A	in	1'0
+test_vending_machine	$auto$simplemap.cc:474:simplemap_pmux$49	$_MUX_	B	in	$auto$simplemap.cc:189:logic_reduce$47
+test_vending_machine	$auto$simplemap.cc:474:simplemap_pmux$49	$_MUX_	S	in	$auto$simplemap.cc:189:logic_reduce$34
+test_vending_machine	$auto$simplemap.cc:474:simplemap_pmux$49	$_MUX_	Y	out	$procmux$15_Y [1]

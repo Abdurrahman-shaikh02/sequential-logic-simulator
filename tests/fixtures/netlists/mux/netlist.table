@@ -1,0 +1,20 @@
+test_mux2	a	-	-	pi	\a
+test_mux2	b	-	-	pi	\b
+test_mux2	sel	-	-	pi	\sel
+test_mux2	y	-	-	po	$ternary$test.v:22$1_Y
+test_mux2	$auto$simplemap.cc:298:simplemap_mux$2	$_MUX_	A	in	\a [0]
+test_mux2	$auto$simplemap.cc:298:simplemap_mux$2	$_MUX_	B	in	\b [0]
+test_mux2	$auto$simplemap.cc:298:simplemap_mux$2	$_MUX_	S	in	\sel
+test_mux2	$auto$simplemap.cc:298:simplemap_mux$2	$_MUX_	Y	out	$ternary$test.v:22$1_Y [0]
+test_mux2	$auto$simplemap.cc:298:simplemap_mux$3	$_MUX_	A	in	\a [1]
+test_mux2	$auto$simplemap.cc:298:simplemap_mux$3	$_MUX_	B	in	\b [1]
+test_mux2	$auto$simplemap.cc:298:simplemap_mux$3	$_MUX_	S	in	\sel
+test_mux2	$auto$simplemap.cc:298:simplemap_mux$3	$_MUX_	Y	out	$ternary$test.v:22$1_Y [1]
+test_mux2	$auto$simplemap.cc:298:simplemap_mux$4	$_MUX_	A	in	\a [2]
+test_mux2	$auto$simplemap.cc:298:simplemap_mux$4	$_MUX_	B	in	\b [2]
+test_mux2	$auto$simplemap.cc:298:simplemap_mux$4	$_MUX_	S	in	\sel
+test_mux2	$auto$simplemap.cc:298:simplemap_mux$4	$_MUX_	Y	out	$ternary$test.v:22$1_Y [2]
+test_mux2	$auto$simplemap.cc:298:simplemap_mux$5	$_MUX_	A	in	\a [3]
+test_mux2	$auto$simplemap.cc:298:simplemap_mux$5	$_MUX_	B	in	\b [3]
+test_mux2	$auto$simplemap.cc:298:simplemap_mux$5	$_MUX_	S	in	\sel
+test_mux2	$auto$simplemap.cc:298:simplemap_mux$5	$_MUX_	Y	out	$ternary$test.v:22$1_Y [3]
