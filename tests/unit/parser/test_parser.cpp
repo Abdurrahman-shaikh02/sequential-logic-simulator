@@ -620,6 +620,58 @@ TEST(parser, err_unknown_gate_direction) {
     CHECK(errHas(r, "unknown direction"));
 }
 
+TEST(parser, err_unknown_primary_direction) {
+    std::string nl =
+        row("t", "a", "-", "-", "pi", "w") +
+        row("t", "y", "-", "-", "inout", "w");
+    auto r = run("bad_pdir", nl);
+    CHECK(r.rc == -1);
+    CHECK(errHas(r, "unknown direction inout for primary node y"));
+}
+
+TEST(parser, err_port_on_primary_component) {
+    std::string nl =
+        row("t", "a", "-", "A", "pi", "w") +
+        row("t", "y", "-", "-", "po", "w");
+    auto r = run("primary_port", nl);
+    CHECK(r.rc == -1);
+    CHECK(errHas(r, "port defined on primary component a"));
+}
+
+TEST(parser, err_gate_input_port_marked_out) {
+    std::string nl =
+        row("t", "a", "-", "-", "pi", "wa") +
+        row("t", "y", "-", "-", "po", "wy") +
+        row("t", "g", "$_NOT_", "A", "out", "wa") +
+        row("t", "g", "$_NOT_", "Y", "out", "wy");
+    auto r = run("in_as_out", nl);
+    CHECK(r.rc == -1);
+    CHECK(errHas(r, "port A has wrong direction on g"));
+}
+
+TEST(parser, err_gate_output_port_marked_in) {
+    std::string nl =
+        row("t", "a", "-", "-", "pi", "wa") +
+        row("t", "y", "-", "-", "po", "wy") +
+        row("t", "g", "$_NOT_", "A", "in", "wa") +
+        row("t", "g", "$_NOT_", "Y", "in", "wy");
+    auto r = run("out_as_in", nl);
+    CHECK(r.rc == -1);
+    CHECK(errHas(r, "port Y has wrong direction on g"));
+}
+
+TEST(parser, err_dff_ports_with_wrong_direction) {
+    for (auto [port, wrongDir] : {std::pair{"D", "out"}, {"C", "out"}, {"Q", "in"}}) {
+        std::string nl;
+        for (auto [p, d, w] : {std::tuple{"D", "in", "wd"}, {"C", "in", "wc"}, {"Q", "out", "wq"}})
+            nl += row("t", "ff", "$_DFF_P_", p, std::string(p) == port ? wrongDir : d, w);
+        auto r = run("dff_dir", nl);
+        INFO("port " << port << " as " << wrongDir);
+        CHECK(r.rc == -1);
+        CHECK(errHas(r, std::string("port ") + port + " has wrong direction on ff"));
+    }
+}
+
 TEST(parser, err_multiple_drivers_two_primary_inputs) {
     std::string nl =
         row("t", "a", "-", "-", "pi", "w") +
@@ -703,18 +755,6 @@ TEST(parser, err_gate_input_wire_has_no_driver) {
 // ---------------------------------------------------------------------------
 // Current behaviours worth knowing about (pin them so changes are deliberate)
 // ---------------------------------------------------------------------------
-
-TEST(parser, unknown_primary_direction_is_currently_accepted_as_output) {
-    // The old "unknown primary port direction" error is gone: any direction other
-    // than "pi" is treated as an output. If you want it rejected again, change
-    // rc to -1 here and add the check back in Parser.cpp.
-    std::string nl =
-        row("t", "a", "-", "-", "pi", "w") +
-        row("t", "y", "-", "-", "inout", "w");
-    auto r = run("bad_pdir", nl);
-    CHECK(r.rc == 0);
-    CHECK(vec(r.po, "y").size() == 1);
-}
 
 TEST(parser, empty_file_current_behaviour) {
     auto r = run("empty", "");

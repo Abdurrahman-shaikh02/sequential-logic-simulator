@@ -12,28 +12,65 @@ using namespace hdltest;
 
 namespace {
 
-std::vector<std::vector<int>> readRows(const std::string &path) {
-    std::vector<std::vector<int>> rows;
-    std::istringstream in(readFile(path));
-    for (std::string line; std::getline(in, line);) {
-        std::istringstream ls(line);
-        std::vector<int> r;
-        for (int v; ls >> v;) r.push_back(v);
-        rows.push_back(r);
+// The file written by generateTruthTable:
+//   a b | y
+//   0 0 | 0
+//   ...
+struct TruthTable {
+    std::vector<std::string> inLabels, outLabels;
+    std::vector<std::vector<int>> ins, outs;   // one entry per row
+};
+
+// Splits "x y | z" into its two sides
+template <class T>
+std::pair<std::vector<T>, std::vector<T>> splitAtBar(const std::string &line) {
+    std::istringstream in(line);
+    std::pair<std::vector<T>, std::vector<T>> sides;
+    bool right = false;
+    for (std::string tok; in >> tok;) {
+        if (tok == "|") { right = true; continue; }
+        T v;
+        std::istringstream(tok) >> v;
+        (right ? sides.second : sides.first).push_back(v);
     }
-    return rows;
+    return sides;
 }
 
-// Header printed by generateTruthTable: "a b | y" -> ({a, b}, {y})
-std::pair<std::vector<std::string>, std::vector<std::string>> readHeader(const std::string &out) {
-    std::istringstream in(out.substr(0, out.find('\n')));
-    std::pair<std::vector<std::string>, std::vector<std::string>> h;
-    bool outputs = false;
-    for (std::string tok; in >> tok;) {
-        if (tok == "|") outputs = true;
-        else (outputs ? h.second : h.first).push_back(tok);
+TruthTable readTable(const std::string &path) {
+    TruthTable t;
+    std::istringstream in(readFile(path));
+    std::string line;
+    if (!std::getline(in, line)) return t;
+    std::tie(t.inLabels, t.outLabels) = splitAtBar<std::string>(line);
+    while (std::getline(in, line)) {
+        auto [i, o] = splitAtBar<int>(line);
+        t.ins.push_back(i);
+        t.outs.push_back(o);
     }
-    return h;
+    return t;
+}
+
+// Generates the table of the current circuit into a temp file and reads it back
+TruthTable generate() {
+    TempDir dir;
+    std::string path = dir.path("table.txt");
+    Capture err(std::cerr);
+    bool ok = Simulator::generateTruthTable(path);
+    INFO("stderr: " << err.str());
+    REQUIRE(ok);
+    CHECK_EQ(err.str(), "");
+    return readTable(path);
+}
+
+// Integer value of bus `name` in one row, read through the column labels
+unsigned busValue(const std::vector<std::string> &labels, const std::vector<int> &row, const std::string &name) {
+    unsigned v = 0;
+    for (size_t i = 0; i < labels.size(); i++) {
+        if (labels[i].rfind(name + "[", 0) != 0) continue;
+        int idx = std::stoi(labels[i].substr(name.size() + 1));
+        v |= static_cast<unsigned>(row[i]) << idx;
+    }
+    return v;
 }
 
 }  // namespace
@@ -163,92 +200,123 @@ TEST(simulator, reconvergent_fanout_does_not_glitch) {
 
 TEST(truth_table, and_gate_rows) {
     NetlistSim sim(fixture("netlists/and/netlist.table"));
+    auto t = generate();
+    CHECK_EQ(t.inLabels, (std::vector<std::string>{"a", "b"}));
+    CHECK_EQ(t.outLabels, (std::vector<std::string>{"y"}));
+    CHECK_EQ(t.ins, (std::vector<std::vector<int>>{{0, 0}, {0, 1}, {1, 0}, {1, 1}}));
+    CHECK_EQ(t.outs, (std::vector<std::vector<int>>{{0}, {0}, {0}, {1}}));
+}
+
+TEST(truth_table, file_format_is_exact) {
+    NetlistSim sim(fixture("netlists/and/netlist.table"));
+    TempDir dir;
+    REQUIRE(Simulator::generateTruthTable(dir.path("table.txt")));
+    CHECK_EQ(readFile(dir.path("table.txt")),
+             "a b | y \n"
+             "0 0 | 0 \n"
+             "0 1 | 0 \n"
+             "1 0 | 0 \n"
+             "1 1 | 1 \n");
+}
+
+TEST(truth_table, nothing_is_printed_to_stdout) {
+    NetlistSim sim(fixture("netlists/and/netlist.table"));
     TempDir dir;
     Capture out(std::cout);
-    REQUIRE(Simulator::generateTruthTable(dir.path("in.txt"), dir.path("out.txt")));
-
-    CHECK_EQ(readRows(dir.path("in.txt")), (std::vector<std::vector<int>>{{0, 0}, {0, 1}, {1, 0}, {1, 1}}));
-    CHECK_EQ(readRows(dir.path("out.txt")), (std::vector<std::vector<int>>{{0}, {0}, {0}, {1}}));
-    auto [ins, outs] = readHeader(out.str());
-    CHECK_EQ(ins, (std::vector<std::string>{"a", "b"}));
-    CHECK_EQ(outs, (std::vector<std::string>{"y"}));
+    REQUIRE(Simulator::generateTruthTable(dir.path("table.txt")));
+    CHECK_EQ(out.str(), "");
 }
 
 TEST(truth_table, all_zero_first_row_is_correct_for_inverting_logic) {
-    // decoder y0 = ~a & ~b is 1 on the all-zero row: the generator's priming
-    // step must make that row propagate
+    // decoder y0 = ~a & ~b is 1 on the all-zero row, so that row must propagate
     NetlistSim sim(fixture("netlists/decode2-4/netlist.table"));
-    TempDir dir;
-    Capture out(std::cout);
-    REQUIRE(Simulator::generateTruthTable(dir.path("in.txt"), dir.path("out.txt")));
-    auto rows = readRows(dir.path("out.txt"));
-    REQUIRE_EQ(rows.size(), 4u);
-    CHECK_EQ(rows[0], (std::vector<int>{1, 0, 0, 0}));   // y0 y1 y2 y3
-    CHECK_EQ(rows[3], (std::vector<int>{0, 0, 0, 1}));
+    auto t = generate();
+    REQUIRE_EQ(t.outLabels, (std::vector<std::string>{"y0", "y1", "y2", "y3"}));
+    CHECK_EQ(t.outs, (std::vector<std::vector<int>>{{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}}));
+}
+
+TEST(truth_table, rows_count_up_in_binary_with_first_column_as_msb) {
+    NetlistSim sim(fixture("netlists/comparator/netlist.table"));
+    auto t = generate();
+    REQUIRE_EQ(t.ins.size(), 256u);
+    for (size_t r = 0; r < t.ins.size(); r++) {
+        unsigned v = 0;
+        for (int b : t.ins[r]) v = (v << 1) | static_cast<unsigned>(b);
+        INFO("row " << r);
+        REQUIRE_EQ(v, r);
+    }
 }
 
 TEST(truth_table, matches_direct_simulation_for_every_row) {
     NetlistSim sim(fixture("netlists/comparator/netlist.table"));
-    TempDir dir;
-    {
-        Capture out(std::cout);
-        REQUIRE(Simulator::generateTruthTable(dir.path("in.txt"), dir.path("out.txt")));
-    }
-    auto ins = readRows(dir.path("in.txt")), outs = readRows(dir.path("out.txt"));
-    REQUIRE_EQ(ins.size(), 256u);
-    REQUIRE_EQ(outs.size(), 256u);
+    auto t = generate();
+    REQUIRE_EQ(t.ins.size(), 256u);
+    REQUIRE_EQ(t.outs.size(), 256u);
 
-    // Columns follow the vector order the simulator uses: names sorted, then
-    // each bus element in parser order. Re-drive those exact nodes and compare.
+    // Columns are: names sorted, then each bus from its msb (last element) down.
+    // Re-drive those exact nodes and compare.
     std::vector<Node *> inNodes, outNodes;
     for (auto *m : {&Simulator::primaryInputs, &Simulator::primaryOutputs}) {
         std::map<std::string, std::vector<Node *>> sorted(m->begin(), m->end());
         for (auto &[name, bits] : sorted)
-            for (auto *n : bits) (m == &Simulator::primaryInputs ? inNodes : outNodes).push_back(n);
+            for (auto it = bits.rbegin(); it != bits.rend(); ++it)
+                (m == &Simulator::primaryInputs ? inNodes : outNodes).push_back(*it);
     }
-    for (size_t r = 0; r < ins.size(); r++) {
-        for (size_t i = 0; i < inNodes.size(); i++) inNodes[i]->evaluate(Port::O, sig(ins[r][i]));
+    for (size_t r = 0; r < t.ins.size(); r++) {
+        for (size_t i = 0; i < inNodes.size(); i++) inNodes[i]->evaluate(Port::O, sig(t.ins[r][i]));
         Simulator::run();
         std::vector<int> got;
         for (auto *n : outNodes) got.push_back(bit(n->getResult()));
         INFO("row " << r);
-        CHECK_EQ(got, outs[r]);
+        CHECK_EQ(got, t.outs[r]);
     }
 }
 
-TEST_XFAIL(truth_table, bus_bit_labels_match_bit_positions,
-           "generateTruthTable's flatten() labels vector element 0 as name[N-1], but the "
-           "parser stores bit 0 at element 0, so every bus column is labelled with the "
-           "mirrored bit index (a[3] is really a[0])") {
+TEST(truth_table, bus_labels_run_from_msb_to_lsb) {
+    NetlistSim sim(fixture("netlists/adder/netlist.table"));
+    auto t = generate();
+    CHECK_EQ(t.inLabels, (std::vector<std::string>{"a[3]", "a[2]", "a[1]", "a[0]", "b[3]", "b[2]", "b[1]", "b[0]"}));
+    CHECK_EQ(t.outLabels, (std::vector<std::string>{"y[3]", "y[2]", "y[1]", "y[0]"}));
+}
+
+TEST(truth_table, bus_bit_labels_match_bit_positions) {
     // adder: y = a + b. Read the table by its labels and check the arithmetic.
     NetlistSim sim(fixture("netlists/adder/netlist.table"));
-    TempDir dir;
-    Capture out(std::cout);
-    REQUIRE(Simulator::generateTruthTable(dir.path("in.txt"), dir.path("out.txt")));
-    auto [inLabels, outLabels] = readHeader(out.str());
-    auto ins = readRows(dir.path("in.txt")), outs = readRows(dir.path("out.txt"));
-
-    auto value = [](const std::vector<std::string> &labels, const std::vector<int> &row, const std::string &bus) {
-        unsigned v = 0;
-        for (size_t i = 0; i < labels.size(); i++) {
-            if (labels[i].rfind(bus + "[", 0) != 0) continue;
-            int idx = std::stoi(labels[i].substr(bus.size() + 1));
-            v |= static_cast<unsigned>(row[i]) << idx;
-        }
-        return v;
-    };
-    for (size_t r = 0; r < ins.size(); r++) {
-        unsigned a = value(inLabels, ins[r], "a"), b = value(inLabels, ins[r], "b");
-        unsigned y = value(outLabels, outs[r], "y");
+    auto t = generate();
+    REQUIRE_EQ(t.ins.size(), 256u);
+    for (size_t r = 0; r < t.ins.size(); r++) {
+        unsigned a = busValue(t.inLabels, t.ins[r], "a"), b = busValue(t.inLabels, t.ins[r], "b");
+        unsigned y = busValue(t.outLabels, t.outs[r], "y");
         INFO("row " << r << ": a=" << a << " b=" << b);
         REQUIRE_EQ(y, (a + b) & 0xF);
     }
 }
 
+TEST(truth_table, result_does_not_depend_on_prior_input_state) {
+    // the generator re-initializes, so leftover input values must not leak in
+    NetlistSim sim(fixture("netlists/decode2-4/netlist.table"));
+    sim.set("a", 1);
+    sim.set("b", 1);
+    auto t = generate();
+    REQUIRE_EQ(t.outs.size(), 4u);
+    CHECK_EQ(t.outs[0], (std::vector<int>{1, 0, 0, 0}));
+}
+
+TEST(truth_table, can_be_generated_twice) {
+    NetlistSim sim(fixture("netlists/and/netlist.table"));
+    auto first = generate();
+    auto second = generate();
+    CHECK_EQ(first.ins, second.ins);
+    CHECK_EQ(first.outs, second.outs);
+}
+
 TEST(truth_table, rejects_netlist_without_inputs) {
     Simulator::clear();
     TempDir dir;
-    CHECK(!Simulator::generateTruthTable(dir.path("in.txt"), dir.path("out.txt")));
+    Capture err(std::cerr);
+    CHECK(!Simulator::generateTruthTable(dir.path("table.txt")));
+    CHECK_CONTAINS(err.str(), "no primary inputs");
+    CHECK(!fileExists(dir.path("table.txt")));
 }
 
 TEST(truth_table, rejects_more_than_20_inputs) {
@@ -256,11 +324,37 @@ TEST(truth_table, rejects_more_than_20_inputs) {
     for (int i = 0; i < 21; i++) c.probe(c.input("i" + std::to_string(i)), "o" + std::to_string(i));
     c.init();
     TempDir dir;
-    CHECK(!Simulator::generateTruthTable(dir.path("in.txt"), dir.path("out.txt")));
+    Capture err(std::cerr);
+    CHECK(!Simulator::generateTruthTable(dir.path("table.txt")));
+    CHECK_CONTAINS(err.str(), "21 primary inputs");
+    CHECK(!fileExists(dir.path("table.txt")));
+}
+
+TEST(truth_table, rejects_sequential_circuits) {
+    NetlistSim sim(fixture("netlists/ringcounter/netlist.table"));
+    TempDir dir;
+    Capture err(std::cerr);
+    CHECK(!Simulator::generateTruthTable(dir.path("table.txt")));
+    CHECK_CONTAINS(err.str(), "sequential");
+    CHECK(!fileExists(dir.path("table.txt")));
+}
+
+TEST(truth_table, rejects_hand_built_circuit_with_a_flip_flop) {
+    Circuit c;
+    auto &d = c.input("d");
+    auto &ff = c.add<DFF_P>();
+    c.probe(ff, "q");
+    Circuit::connect(d, ff, Port::D);
+    c.init();
+    TempDir dir;
+    Capture err(std::cerr);
+    CHECK(!Simulator::generateTruthTable(dir.path("table.txt")));
+    CHECK_CONTAINS(err.str(), "sequential");
 }
 
 TEST(truth_table, rejects_unwritable_output_path) {
     NetlistSim sim(fixture("netlists/and/netlist.table"));
-    Capture out(std::cout);
-    CHECK(!Simulator::generateTruthTable("/nonexistent/dir/in.txt", "/nonexistent/dir/out.txt"));
+    Capture err(std::cerr);
+    CHECK(!Simulator::generateTruthTable("/nonexistent/dir/table.txt"));
+    CHECK_CONTAINS(err.str(), "cannot open");
 }
