@@ -843,7 +843,7 @@ const std::vector<std::string> &fixtureNetlists() {
     static const std::vector<std::string> names = {
         "and", "boolean", "mux", "mux4", "mux8", "mux16", "decode2-4", "encoder", "comparator",
         "adder", "subtractor", "alu", "arbitrarycombinational", "dffp", "shiftregister",
-        "parallelregister", "binaryupcounter", "updowncounter", "trafficlight",
+        "parallelregister", "binaryupcounter", "updowncounter", "ringcounter", "trafficlight",
         "sequencedetector", "vendingmachine"};
     return names;
 }

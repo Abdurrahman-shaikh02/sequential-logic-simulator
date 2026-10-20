@@ -10,18 +10,17 @@
 //   - sequential feedback
 //   - combinational wiring
 // ============================================================
-
 module test_ring_counter (
-    input        clk,
-    output [3:0] q
+    input  wire       clk,
+    input  wire       rst,
+    output reg  [3:0] q
 );
 
-    reg [3:0] state = 4'b0001;
-
-    always @(posedge clk) begin
-        state <= {state[2:0], state[3]};
-    end
-
-    assign q = state;
+always @(posedge clk) begin
+    if (rst)
+        q <= 4'b0001;
+    else
+        q <= {q[2:0], q[3]};
+end
 
 endmodule

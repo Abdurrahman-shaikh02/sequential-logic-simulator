@@ -265,8 +265,8 @@ TEST(netlists, up_down_counter) {
     }
 }
 
-TEST(netlists, ring_counter_without_initial_value_stays_zero) {
-    // what the netlist actually describes: four DFFs in a loop, all starting at 0
+TEST(netlists, ring_counter_stays_zero_until_reset) {
+    // DFFs power up at 0, and rotating 0000 gives 0000: reset is what loads the 1
     NetlistSim sim(netlist("ringcounter"));
     for (int cycle = 0; cycle <= 8; cycle++) {
         INFO("cycle " << cycle);
@@ -275,16 +275,40 @@ TEST(netlists, ring_counter_without_initial_value_stays_zero) {
     }
 }
 
-TEST_XFAIL(netlists, ring_counter,
-           "write_table drops the `reg [3:0] state = 4'b0001` initial value, so every DFF starts "
-           "at 0 and the ring never leaves 0000") {
+TEST(netlists, ring_counter_reset_is_synchronous) {
+    NetlistSim sim(netlist("ringcounter"));
+    NetlistSim::set("rst", 1);
+    CHECK_EQ(NetlistSim::get("q"), 0u);   // nothing happens before the clock edge
+    NetlistSim::clock();
+    CHECK_EQ(NetlistSim::get("q"), 1u);
+    NetlistSim::clock();
+    CHECK_EQ(NetlistSim::get("q"), 1u);   // held in 0001 while rst stays high
+}
+
+TEST(netlists, ring_counter_rotates_after_reset) {
     // 0001 -> 0010 -> 0100 -> 1000 -> 0001
     NetlistSim sim(netlist("ringcounter"));
+    NetlistSim::set("rst", 1);
+    NetlistSim::clock();
+    NetlistSim::set("rst", 0);
     REQUIRE_EQ(NetlistSim::get("q"), 1u);
     for (int cycle = 1; cycle <= 12; cycle++) {
         NetlistSim::clock();
         INFO("cycle " << cycle);
         REQUIRE_EQ(NetlistSim::get("q"), 1ULL << (cycle % 4));
+    }
+}
+
+TEST(netlists, ring_counter_random_reset_matches_model) {
+    NetlistSim sim(netlist("ringcounter"));
+    uint64_t q = 0;
+    for (int step = 0; step < 300; step++) {
+        uint64_t rst = randomBits(3) == 0;   // reset about one cycle in eight
+        NetlistSim::set("rst", rst);
+        NetlistSim::clock();
+        q = rst ? 1 : ((q << 1) | (q >> 3)) & 0xF;
+        INFO("step " << step << " rst=" << rst);
+        REQUIRE_EQ(NetlistSim::get("q"), q);
     }
 }
 
