@@ -15,6 +15,7 @@ protected:
 	bool initialized;	// for sequential node's evaluate() if not initialized just set internal values!
 	Node();
 public:
+	virtual ~Node() = default;
 	int priority = -1;
 
 	void addConnection(Node &node, Port p);

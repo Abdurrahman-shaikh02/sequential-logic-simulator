@@ -17,3 +17,7 @@ void TopologicalQueue::commitNext() {
 
     x->commit(x->getResult());
 }
+
+void TopologicalQueue::clear() {
+    queue.clear();
+}
