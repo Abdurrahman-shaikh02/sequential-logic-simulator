@@ -2,6 +2,8 @@
 #include "synthesizer/Synthesizer.hpp"
 #include "parser/Parser.hpp"
 #include "operations/EvaluateOperation.hpp"
+#include "combinational/CombinationalNode.hpp"
+#include "primary/PrimaryNode.hpp"
 #include <iostream>
 #include <fstream>
 #include <algorithm>
@@ -89,74 +91,92 @@ void Simulator::run() {
     }
 }
 
-// turns a name -> bits map into ordered columns (names sorted alphabetically)
-static void flatten(const std::unordered_map<std::string, std::vector<Node *>> &m,
-                    std::vector<Node *> &nodesOut,
-                    std::vector<std::string> &labelsOut) {
+// A circuit is sequential if it has any node that is neither primary nor combinational
+static bool hasSequentialNode() {
+    for (auto &n : Simulator::nodes) {
+        Node *p = n.get();
+        if (!dynamic_cast<CombinationalNode *>(p) && !dynamic_cast<PrimaryNode *>(p))
+            return true;
+    }
+    return false;
+}
+
+// Returns bits ordered from msb to lsb
+static void flatten(const std::unordered_map<std::string, std::vector<Node *>> &m, std::vector<Node *> &nodesOut, std::vector<std::string> &labelsOut) {
     std::vector<std::string> names;
     for (auto &kv : m) names.push_back(kv.first);
     std::sort(names.begin(), names.end());
 
     for (auto &name : names) {
         const auto &bits = m.at(name);
-        for (size_t k = 0; k < bits.size(); k++) {
+        for (size_t k = bits.size(); k-- > 0; ) {
             nodesOut.push_back(bits[k]);
-            labelsOut.push_back(bits.size() == 1
-                ? name
-                : name + "[" + std::to_string(bits.size() - 1 - k) + "]");
+            labelsOut.push_back(bits.size() == 1 ? name : name + "[" + std::to_string(k) + "]");
         }
     }
 }
 
-bool Simulator::generateTruthTable(const std::string &inputPath,
-                                   const std::string &outputPath) {
+// Outputs truth table in the file specified in path
+bool Simulator::generateTruthTable(const std::string &path) {
+    // Truth table is only generated for purely combinational circuits
+    if (hasSequentialNode()) {
+        std::cerr << "error: circuit contains sequential components\n";
+        return false;
+    }
+
     std::vector<Node *> inputNodes, outputNodes;
     std::vector<std::string> inputLabels, outputLabels;
-    flatten(primaryInputs,  inputNodes,  inputLabels);
+    flatten(primaryInputs, inputNodes, inputLabels);
     flatten(primaryOutputs, outputNodes, outputLabels);
+    const size_t n = inputNodes.size();
 
-    const int n = static_cast<int>(inputNodes.size());
-    if (n <= 0 || n > 20) return false;          // 2^n rows, so keep n small
+    if (n == 0) {
+        std::cerr << "error: circuit has no primary inputs\n";
+        return false;
+    }
+    if (n > 20) {
+        std::cerr << "error: circuit has " << n << " primary inputs (max 20 allowed)\n";
+        return false;
+    }
 
-    std::ofstream inFile(inputPath);
-    std::ofstream outFile(outputPath);
-    if (!inFile || !outFile) return false;
+    std::ofstream file(path);
+    if (!file) {
+        std::cerr << "cannot open " << path << " for writing the truth table\n";
+        return false;
+    }
 
-    // table header
-    for (auto &l : inputLabels)  std::cout << l << ' ';
-    std::cout << "| ";
-    for (auto &l : outputLabels) std::cout << l << ' ';
-    std::cout << '\n';
+    // Table header
+    for (auto &l : inputLabels)
+        file << l << ' ';
+    file << "| ";
+    for (auto &l : outputLabels)
+        file << l << ' ';
+    file << '\n';
 
-    // Prime: InputNode ignores a value equal to its current one, and every node
-    // starts LOW, so push HIGH once so that an all-zero first row still propagates.
-    for (Node *in : inputNodes)
-        combinationalQueue.enqueue(std::make_unique<EvaluateOperation>(*in, Port::O, Signal::HIGH));
-    run();
+    initialize();
 
-    const unsigned long long rows = 1ULL << n;
-    for (unsigned long long r = 0; r < rows; r++) {
-
-        // enqueue one EvaluateOperation per primary input (first input = leftmost bit)
-        for (int i = 0; i < n; i++) {
-            int bit = (r >> (n - 1 - i)) & 1;
-            Signal s = bit ? Signal::HIGH : Signal::LOW;
+    std::vector<char> bits(n, 0);
+    while (true) {
+        for (size_t i = 0; i < n; i++) {
+            Signal s = bits[i] ? Signal::HIGH : Signal::LOW;
             combinationalQueue.enqueue(std::make_unique<EvaluateOperation>(*inputNodes[i], Port::O, s));
-
-            inFile << bit << (i < n - 1 ? ' ' : '\n');
-            std::cout << bit << ' ';
+            file << int(bits[i]) << ' ';
         }
 
         run();
 
-        // read every output
-        std::cout << "| ";
-        for (size_t o = 0; o < outputNodes.size(); o++) {
-            int v = static_cast<int>(outputNodes[o]->getResult());
-            outFile << v << (o + 1 < outputNodes.size() ? ' ' : '\n');
-            std::cout << v << ' ';
-        }
-        std::cout << '\n';
+        file << "| ";
+        for (auto *o : outputNodes)
+            file << static_cast<int>(o->getResult()) << ' ';
+        file << '\n';
+
+        // Run simulator 2^n times
+        size_t i = n;
+        while (i > 0 && bits[i - 1])
+            bits[--i] = 0;
+        if (i == 0)
+            break;
+        bits[i - 1] = 1;
     }
     return true;
 }
