@@ -1,0 +1,17 @@
+inputs:  x
+outputs: z
+reset:   A
+
+# A and B are normal states. T is a trap reached from B.
+# U, V and H are never reached from A; V and H are also traps.
+
+# current | x | next | z
+A | 0 | A | 0
+A | 1 | B | 0
+B | 0 | A | 0
+B | 1 | T | 1      # into the trap
+T | 0 | T | 1      # T: every row loops back -> dead
+T | 1 | T | 1
+U | 0 | A | 0      # U: nothing leads here -> unreachable
+U | 1 | V | 0      # V: only reachable from U, no rows of its own -> dead, unreachable
+H | 0 | H | 0      # H: one row, loops back (x=1 not listed) -> dead, unreachable
