@@ -1,8 +1,10 @@
 # --------------------------------------------------
 # hdl_sim build
 #
-#   make                  build ./simulator
-#   make test             build and run every test
+#   make                  build ./simulator (optimized, same as make release)
+#   make debug            build ./simulator-debug (-O0)
+#   make asan             build ./simulator-asan (AddressSanitizer + UBSan)
+#   make test             build and run every test (debug build unless MODE=...)
 #   make test TESTS=dff   run tests whose name contains "dff" (globs work too)
 #   make test ARGS=-v     pass options to the runner (see: make test ARGS=--help)
 #   make test-asan        same tests under AddressSanitizer + UBSan + checked STL
@@ -15,7 +17,7 @@
 # --------------------------------------------------
 
 CXX      ?= g++
-MODE     ?= debug
+MODE     ?= release
 BUILD    := build/$(MODE)
 NPROC    := $(shell nproc 2>/dev/null || echo 4)
 
@@ -36,7 +38,12 @@ else
   $(error unknown MODE '$(MODE)' (use debug, asan or release))
 endif
 
-TARGET = simulator
+# One binary per mode, so switching modes never reuses a stale link
+ifeq ($(MODE),release)
+  TARGET = simulator
+else
+  TARGET = simulator-$(MODE)
+endif
 
 APP_SRC = main.cpp
 
@@ -58,6 +65,11 @@ APP_OBJ = $(patsubst %.cpp,$(BUILD)/%.o,$(APP_SRC))
 # --------------------------------------------------
 # Main simulator
 # --------------------------------------------------
+
+all: $(TARGET)
+
+release debug asan:
+	@$(MAKE) --no-print-directory -j$(NPROC) MODE=$@
 
 $(TARGET): $(APP_OBJ) $(LIB)
 	$(CXX) $(LDFLAGS) $^ -o $@
@@ -92,16 +104,20 @@ $(TEST_BIN): $(TEST_OBJ) $(LIB)
 TESTS ?=
 ARGS  ?=
 
+# Tests build in debug mode unless a mode is given on the command line
+TEST_MODE := $(if $(filter command line,$(origin MODE)),$(MODE),debug)
+TEST_RUNNER = build/$(TEST_MODE)/run_tests
+
 test:
-	@$(MAKE) --no-print-directory -j$(NPROC) $(TEST_BIN)
-	@$(TEST_BIN) $(ARGS) $(TESTS)
+	@$(MAKE) --no-print-directory -j$(NPROC) MODE=$(TEST_MODE) $(TEST_RUNNER)
+	@$(TEST_RUNNER) $(ARGS) $(TESTS)
 
 test-asan:
 	@$(MAKE) --no-print-directory MODE=asan test
 
 test-list:
-	@$(MAKE) --no-print-directory -j$(NPROC) $(TEST_BIN)
-	@$(TEST_BIN) --list $(TESTS)
+	@$(MAKE) --no-print-directory -j$(NPROC) MODE=$(TEST_MODE) $(TEST_RUNNER)
+	@$(TEST_RUNNER) --list $(TESTS)
 
 check: test
 
@@ -120,9 +136,9 @@ run: $(TARGET)
 
 clean:
 	rm -rf build
-	rm -f $(TARGET)
+	rm -f simulator simulator-debug simulator-asan
 
 
 -include $(LIB_OBJ:.o=.d) $(APP_OBJ:.o=.d) $(TEST_OBJ:.o=.d)
 
-.PHONY: test test-asan test-list check run clean
+.PHONY: all release debug asan test test-asan test-list check run clean

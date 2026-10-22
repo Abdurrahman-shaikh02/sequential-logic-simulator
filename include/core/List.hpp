@@ -20,6 +20,10 @@ private:
 	ListNode *head;
 public:
 	List();
+	~List();
+	// owns its ListNodes, so copying would free them twice
+	List(const List &) = delete;
+	List &operator=(const List &) = delete;
 	void addElement(Node &node, Port p);
 	void loopAndEvaluate(Signal value);
 };

@@ -15,6 +15,7 @@ TopologicalQueue Simulator::topologicalQueue;
 std::vector<std::unique_ptr<Node>> Simulator::nodes;
 std::unordered_map<std::string, std::vector<Node*>> Simulator::primaryInputs;
 std::unordered_map<std::string, std::vector<Node*>> Simulator::primaryOutputs;
+Simulator::Stats Simulator::stats;
 
 int Simulator::parse(const std::string &path) {
     return Parser::parse(path, nodes, primaryInputs, primaryOutputs);
@@ -32,6 +33,7 @@ void Simulator::clear() {
     primaryInputs.clear();
     primaryOutputs.clear();
     nodes.clear();
+    stats = Stats();
 }
 
 void Simulator::initialize(){
@@ -62,18 +64,22 @@ void Simulator::run() {
             std::unique_ptr<Operation> op = combinationalQueue.dequeue();
             if (op) {
                 op->run(); 
+                stats.combinationalOps++;
             }
         }
         
         while(!(combinationalQueue.isEmpty() && topologicalQueue.isEmpty())){
             // make a commit
+            // the combinational queue is empty here, so the topological queue is not
             topologicalQueue.commitNext();
+            stats.topologicalCommits++;
             
             // Drain Combinational Queue
             while (!combinationalQueue.isEmpty()) {
                 std::unique_ptr<Operation> op = combinationalQueue.dequeue();
                 if (op) {
                     op->run(); 
+                    stats.combinationalOps++;
                 }
             }
         }
@@ -86,6 +92,7 @@ void Simulator::run() {
             std::unique_ptr<Operation> op = sequentialQueue.dequeue();
             if (op) {
                 op->run();
+                stats.sequentialOps++;
             }
         }
     }
@@ -116,19 +123,23 @@ static void flatten(const std::unordered_map<std::string, std::vector<Node *>> &
     }
 }
 
-// Outputs truth table in the file specified in path
-bool Simulator::generateTruthTable(const std::string &path) {
+// Primary I/O of a circuit a truth table can be generated for
+struct TruthTablePorts {
+    std::vector<Node *> inputNodes, outputNodes;
+    std::vector<std::string> inputLabels, outputLabels;
+};
+
+// Checks the circuit can have a truth table; writes the reason to std error if not
+static bool truthTablePorts(TruthTablePorts &p) {
     // Truth table is only generated for purely combinational circuits
     if (hasSequentialNode()) {
         std::cerr << "error: circuit contains sequential components\n";
         return false;
     }
 
-    std::vector<Node *> inputNodes, outputNodes;
-    std::vector<std::string> inputLabels, outputLabels;
-    flatten(primaryInputs, inputNodes, inputLabels);
-    flatten(primaryOutputs, outputNodes, outputLabels);
-    const size_t n = inputNodes.size();
+    flatten(Simulator::primaryInputs, p.inputNodes, p.inputLabels);
+    flatten(Simulator::primaryOutputs, p.outputNodes, p.outputLabels);
+    const size_t n = p.inputNodes.size();
 
     if (n == 0) {
         std::cerr << "error: circuit has no primary inputs\n";
@@ -138,35 +149,34 @@ bool Simulator::generateTruthTable(const std::string &path) {
         std::cerr << "error: circuit has " << n << " primary inputs (max 20 allowed)\n";
         return false;
     }
+    return true;
+}
 
-    std::ofstream file(path);
-    if (!file) {
-        std::cerr << "cannot open " << path << " for writing the truth table\n";
-        return false;
-    }
+static void writeTruthTable(const TruthTablePorts &p, std::ostream &file) {
+    const size_t n = p.inputNodes.size();
 
     // Table header
-    for (auto &l : inputLabels)
+    for (auto &l : p.inputLabels)
         file << l << ' ';
     file << "| ";
-    for (auto &l : outputLabels)
+    for (auto &l : p.outputLabels)
         file << l << ' ';
     file << '\n';
 
-    initialize();
+    Simulator::initialize();
 
     std::vector<char> bits(n, 0);
     while (true) {
         for (size_t i = 0; i < n; i++) {
             Signal s = bits[i] ? Signal::HIGH : Signal::LOW;
-            combinationalQueue.enqueue(std::make_unique<EvaluateOperation>(*inputNodes[i], Port::O, s));
+            Simulator::combinationalQueue.enqueue(std::make_unique<EvaluateOperation>(*p.inputNodes[i], Port::O, s));
             file << int(bits[i]) << ' ';
         }
 
-        run();
+        Simulator::run();
 
         file << "| ";
-        for (auto *o : outputNodes)
+        for (auto *o : p.outputNodes)
             file << static_cast<int>(o->getResult()) << ' ';
         file << '\n';
 
@@ -178,5 +188,28 @@ bool Simulator::generateTruthTable(const std::string &path) {
             break;
         bits[i - 1] = 1;
     }
+}
+
+// Outputs truth table in the file specified in path
+bool Simulator::generateTruthTable(const std::string &path) {
+    TruthTablePorts p;
+    if (!truthTablePorts(p))
+        return false;
+
+    std::ofstream file(path);
+    if (!file) {
+        std::cerr << "cannot open " << path << " for writing the truth table\n";
+        return false;
+    }
+    writeTruthTable(p, file);
+    return true;
+}
+
+// Outputs truth table to an already open stream
+bool Simulator::generateTruthTable(std::ostream &out) {
+    TruthTablePorts p;
+    if (!truthTablePorts(p))
+        return false;
+    writeTruthTable(p, out);
     return true;
 }

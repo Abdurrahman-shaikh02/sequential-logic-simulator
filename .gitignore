@@ -2,3 +2,4 @@ build/
 temp/
 private/
 .clangd
+simulator

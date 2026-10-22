@@ -268,10 +268,10 @@ namespace {
     }
 }
 
-std::string Synthesizer::synthesize(const std::string &path) {
+bool Synthesizer::synthesize(const std::string &path, std::ostream &out) {
     Fsm fsm;
     if (!readFsm(path, fsm))
-        return "";
+        return false;
 
     // All primary I/O shares one namespace in the netlist
     std::set<std::string> names = {"clk", "reset"};
@@ -279,7 +279,7 @@ std::string Synthesizer::synthesize(const std::string &path) {
         for (auto &n : *list) {
             if (!names.insert(n).second) {
                 std::cerr << path << ": signal name '" << n << "' is used twice or reserved (clk, reset)\n";
-                return "";
+                return false;
             }
         }
     }
@@ -291,7 +291,7 @@ std::string Synthesizer::synthesize(const std::string &path) {
         for (auto *s : {&r.current, &r.next}) {
             if (!isIdentifier(*s)) {
                 error(path, r.line, "invalid state name '" + *s + "'");
-                return "";
+                return false;
             }
             if (!code.count(*s)) {
                 code[*s] = states.size();
@@ -312,17 +312,17 @@ std::string Synthesizer::synthesize(const std::string &path) {
     for (auto &r : fsm.rows) {
         if (!isBits(r.inputs, fsm.inputs.size())) {
             error(path, r.line, "expected " + std::to_string(fsm.inputs.size()) + " input bits (0/1)");
-            return "";
+            return false;
         }
         if (!isBits(r.outputs, fsm.outputs.size())) {
             error(path, r.line, "expected " + std::to_string(fsm.outputs.size()) + " output bits (0/1)");
-            return "";
+            return false;
         }
 
         int cur = code[r.current], next = code[r.next];
         if (!seen.insert({cur, r.inputs}).second) {
             error(path, r.line, "duplicate transition for state " + r.current + " on inputs " + r.inputs);
-            return "";
+            return false;
         }
 
         Term term;
@@ -393,8 +393,17 @@ std::string Synthesizer::synthesize(const std::string &path) {
     if (!unread.empty()) {
         for (auto &w : unread)
             std::cerr << path << ": '" << w << "' does not affect the next state or any output\n";
-        return "";
+        return false;
     }
+
+    out << net.str();
+    return true;
+}
+
+std::string Synthesizer::synthesize(const std::string &path) {
+    std::ostringstream netlist;
+    if (!synthesize(path, netlist))
+        return "";
 
     std::filesystem::path outPath = std::filesystem::path(path).replace_extension(".table");
     if (outPath == std::filesystem::path(path)) {
@@ -407,6 +416,6 @@ std::string Synthesizer::synthesize(const std::string &path) {
         std::cerr << "cannot write file " << outPath.string() << '\n';
         return "";
     }
-    file << net.str();
+    file << netlist.str();
     return outPath.string();
 }

@@ -15,6 +15,15 @@ List::List() : head(nullptr)
 {
 }
 
+List::~List()
+{
+	while(head){
+		ListNode *next = head->next;
+		delete head;
+		head = next;
+	}
+}
+
 void List::addElement(Node &node, Port p)
 {
 	head = new ListNode(node, p, head);
