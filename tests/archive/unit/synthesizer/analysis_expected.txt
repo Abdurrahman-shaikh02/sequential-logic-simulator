@@ -1,0 +1,9 @@
+dead states:
+  T  (2/2 input combinations listed, all go back to T)
+  V  (no transitions listed)
+  H  (1/2 input combinations listed, all go back to H)
+reset state: A
+reachable:   A B T
+unreachable: U V H
+returned dead: T V H
+returned unreachable: U V H

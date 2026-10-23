@@ -1,0 +1,8 @@
+test_dff_pos	clk	-	-	pi	\clk
+test_dff_pos	d	-	-	pi	\d
+test_dff_pos	q	-	-	po	\q
+test_dff_pos	$auto$ff.cc:337:slice$4	$_DFF_P_	C	in	$not$test.v:14$1_Y
+test_dff_pos	$auto$ff.cc:337:slice$4	$_DFF_P_	D	in	\d
+test_dff_pos	$auto$ff.cc:337:slice$4	$_DFF_P_	Q	out	\q
+test_dff_pos	$auto$simplemap.cc:46:simplemap_not$5	$_NOT_	A	in	\clk
+test_dff_pos	$auto$simplemap.cc:46:simplemap_not$5	$_NOT_	Y	out	$not$test.v:14$1_Y
