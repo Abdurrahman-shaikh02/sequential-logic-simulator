@@ -7,6 +7,8 @@
 #   make test ARGS=-v     pass options to the runner (see: make test ARGS=--help)
 #   make test-asan        same tests under AddressSanitizer + UBSan + checked STL
 #   make test-list        list the available tests
+#   make test-old         build and run the archived pre-refactor tests (tests/archive)
+#   make test-old TESTS=and   only archived tests whose path contains "and"
 #   make clean
 #
 # The library is compiled once into build/<mode>/libhdlsim.a and every test
@@ -72,10 +74,10 @@ $(BUILD)/%.o: %.cpp
 
 
 # --------------------------------------------------
-# Tests: everything under tests/ links into one runner
+# Tests: everything under tests/ (except tests/archive) links into one runner
 # --------------------------------------------------
 
-TEST_SRC = $(shell find tests -type f -name '*.cpp')
+TEST_SRC = $(shell find tests -path tests/archive -prune -o -type f -name '*.cpp' -print)
 TEST_OBJ = $(patsubst %.cpp,$(BUILD)/%.o,$(TEST_SRC))
 TEST_BIN = $(BUILD)/run_tests
 
@@ -107,6 +109,22 @@ check: test
 
 
 # --------------------------------------------------
+# Archived tests: the old standalone programs, one binary each
+# --------------------------------------------------
+
+OLD_TEST_SRC = $(shell find tests/archive -type f -name '*.cpp')
+OLD_TEST_BIN = $(patsubst %.cpp,$(BUILD)/%,$(OLD_TEST_SRC))
+
+$(BUILD)/tests/archive/%: tests/archive/%.cpp $(LIB)
+	@mkdir -p $(dir $@)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) $< $(LIB) -o $@
+
+test-old:
+	@$(MAKE) --no-print-directory -j$(NPROC) $(OLD_TEST_BIN)
+	@tests/archive/run.sh $(BUILD)/tests/archive $(TESTS)
+
+
+# --------------------------------------------------
 # Run
 # --------------------------------------------------
 
@@ -125,4 +143,4 @@ clean:
 
 -include $(LIB_OBJ:.o=.d) $(APP_OBJ:.o=.d) $(TEST_OBJ:.o=.d)
 
-.PHONY: test test-asan test-list check run clean
+.PHONY: test test-asan test-list test-old check run clean
