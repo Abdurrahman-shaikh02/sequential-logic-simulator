@@ -1,0 +1,21 @@
+# Testbench for 2-input AND gate
+# Pure combinational verification across full input vector
+
+NETLIST tests/netlists/combinational/and/netlist.table
+MAX_TIME 40
+
+# Vector 0: a=0, b=0 -> y=0
+@0  a=0 b=0
+ASSERT @5 y=0 "0 AND 0 = 0"
+
+# Vector 1: a=1, b=0 -> y=0
+@10 a=1 b=0
+ASSERT @15 y=0 "1 AND 0 = 0"
+
+# Vector 2: a=0, b=1 -> y=0
+@20 a=0 b=1
+ASSERT @25 y=0 "0 AND 1 = 0"
+
+# Vector 3: a=1, b=1 -> y=1
+@30 a=1 b=1
+ASSERT @35 y=1 "1 AND 1 = 1"

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sequential Logic Simulator & FSM Engine</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="shell">
+  <header class="topbar">
+    <div><h1>Sequential Logic Simulator &amp; FSM Engine</h1><p>Worklet 3: Verification, Digital Waveforms &amp; Assertions</p></div>
+    <span class="status" id="engineStatus">Connecting to C++…</span>
+  </header>
+  <div class="dashboard">
+    <section class="panel traffic-panel">
+      <h2>Traffic Light FSM</h2>
+      <div class="signal-box"><div class="traffic-housing">
+        <div class="lamp red" id="lampRed" aria-label="Red light"></div>
+        <div class="lamp yellow" id="lampYellow" aria-label="Yellow light"></div>
+        <div class="lamp green" id="lampGreen" aria-label="Green light"></div>
+      </div><p class="current-state">Current State: <b id="stateLabel">—</b></p></div>
+    </section>
+    <section class="panel waveform-panel"><div class="panel-head"><h2>Live Waveform Monitor (Logic Analyzer)</h2><span id="timeLabel">Time: —</span></div><div class="waveform-scroll"><canvas id="waveformCanvas" aria-label="Digital timing traces"></canvas></div></section>
+    <section class="panel controls-panel"><h2>Input Controls</h2>
+      <label class="switch-row"><span>Enable (en) – Advance state</span><input id="enableSwitch" type="checkbox" checked><span class="switch-track"></span></label>
+      <label class="switch-row"><span>Reset (reset) – Force Green</span><input id="resetSwitch" type="checkbox"><span class="switch-track"></span></label>
+      <button class="btn tick" id="stepBtn">▶ Step Clock (Tick)</button>
+      <div class="button-pair"><button class="btn secondary" id="autoBtn">▶ Auto Clock</button><button class="btn reset" id="resetBtn">Reset</button></div>
+      <p class="hint" id="stepInfo">Each Tick runs the C++ simulator with your current inputs and adds new waveform data.</p>
+    </section>
+    <section class="panel assertions-panel"><h2>Circuit Assertions &amp; Health</h2>
+      <div class="assertion" id="aMutual"><span>Mutual Exclusion: Red and Green never active together</span><b class="result">—</b></div>
+      <div class="assertion" id="aOneHot"><span>One-Hot Invariant: Exactly one light is illuminated</span><b class="result">—</b></div>
+      <div class="assertion" id="aSequence"><span>Sequence Progression: Green → Yellow → Red → Green</span><b class="result">—</b></div>
+    </section>
+  </div>
+
+  <section class="panel vending-panel" id="vendingPanel">
+    <div class="panel-head">
+      <div>
+        <h2>Vending Machine FSM</h2>
+        <p class="subheading">Product price: ₹10 · Powered by the C++ FSM engine</p>
+      </div>
+      <span class="vending-badge" id="vendingStatus">Ready</span>
+    </div>
+
+    <div class="vending-layout">
+      <div class="vending-machine">
+        <div class="machine-top">
+          <span class="machine-light"></span>
+          <span>SLMS VEND-10</span>
+        </div>
+        <div class="product-window">
+          <div class="product-icon">▣</div>
+          <strong>Product</strong>
+          <span>₹10</span>
+        </div>
+        <div class="dispense-slot" id="dispenseSlot">
+          <span id="dispenseIcon">□</span>
+          <span id="dispenseText">Waiting for payment</span>
+        </div>
+      </div>
+
+      <div class="vending-controls">
+        <h3>Insert a coin</h3>
+        <div class="coin-grid">
+          <button class="coin-button" data-coin="1">₹1</button>
+          <button class="coin-button" data-coin="2">₹2</button>
+          <button class="coin-button" data-coin="5">₹5</button>
+          <button class="coin-button" data-coin="10">₹10</button>
+        </div>
+
+        <div class="vending-metrics">
+          <div class="metric-card">
+            <span>Current balance</span>
+            <strong id="vendingBalance">₹0</strong>
+          </div>
+          <div class="metric-card">
+            <span>Change returned</span>
+            <strong id="vendingChange">₹0</strong>
+          </div>
+        </div>
+
+        <div class="vend-result" id="vendResult" aria-live="polite">
+          Insert coins to begin.
+        </div>
+        <button class="btn reset vending-reset" id="vendingReset">↻ Reset vending machine</button>
+        <p class="hint" id="vendingHint">
+          Each coin is evaluated by the C++ FSM. The displayed balance, vend output,
+          change and waveform come from the simulator response.
+        </p>
+      </div>
+    </div>
+
+    <div class="vending-wave-head">
+      <h3>Vending FSM Waveform</h3>
+      <span id="vendingTime">Time: —</span>
+    </div>
+    <div class="vending-wave-scroll">
+      <canvas id="vendingWaveCanvas" aria-label="Vending machine FSM digital waveform"></canvas>
+    </div>
+    <div class="signal-legend">
+      <span>Inputs: coin1, coin2, coin5, coin10</span>
+      <span>Outputs: vend, balance bits, change bits</span>
+    </div>
+    <details class="vending-details">
+      <summary>View current FSM signal values</summary>
+      <pre id="vendingSignals" class="terminal">Waiting for the first simulation.</pre>
+    </details>
+  </section>
+
+  <section class="panel suite-panel"><div class="panel-head"><h2>Automated Verification Suite</h2><button class="btn tests" id="testsBtn">Run All 7 Tests</button></div><pre id="testOutput" class="terminal">Click “Run All 7 Tests” to execute Unit, Integration, Validation, Black Box, White Box, Regression, and System Testing.</pre></section>
+  <section class="panel advanced-panel"><details id="advanced"><summary>Advanced: Run a custom FSM testbench and download waveforms</summary>
+    <p>Optional: Enter a testbench script to run through the existing C++ engine. Traffic-light controls apply only to the traffic-light preset.</p>
+    <textarea id="tbEditor" spellcheck="false" aria-label="Custom testbench script"></textarea>
+    <div class="advanced-actions"><button class="btn secondary" id="loadTrafficBtn">Restore traffic-light example</button><button class="btn tick" id="runCustomBtn">Run this testbench</button><button class="btn secondary" id="vcdBtn">Download VCD</button><button class="btn secondary" id="txtBtn">Download TXT</button><button class="btn secondary" id="jsonBtn">Download JSON</button></div>
+    <pre id="simOutput" class="terminal" hidden></pre>
+  </details></section>
+</main><script src="app.js"></script>
+</body></html>

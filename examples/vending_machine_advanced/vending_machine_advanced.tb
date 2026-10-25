@@ -1,0 +1,102 @@
+# Advanced vending-machine functional regression tests
+# Price: Rs. 10
+# Inputs: coin1 coin2 coin5 coin10
+# Outputs: vend, binary balance, binary change
+
+FSM examples/vending_machine_advanced/vending_machine_advanced.net
+CLOCK clk 10
+MAX_TIME 210
+
+# --------------------------------------------------
+# TEST 1: Reset and insufficient payment
+# --------------------------------------------------
+@0 reset=1 coin1=0 coin2=0 coin5=0 coin10=0
+@5 reset=0
+ASSERT @6 vend=0 bal1=0 bal2=0 bal4=0 bal8=0 "Reset starts with zero balance"
+
+@8 coin5=1
+@16 coin5=0
+ASSERT @16 vend=0 bal1=1 bal2=0 bal4=1 bal8=0 "Five rupees are retained after a five-rupee coin"
+
+# --------------------------------------------------
+# TEST 2: Balance retention: Rs. 5 + Rs. 2 = Rs. 7
+# --------------------------------------------------
+@18 coin2=1
+@26 coin2=0
+ASSERT @26 vend=0 bal1=1 bal2=1 bal4=1 bal8=0 "Five plus two rupees gives seven rupees"
+
+# --------------------------------------------------
+# TEST 3: Rs. 7 + Rs. 5 = Rs. 12; dispense and return Rs. 2
+# --------------------------------------------------
+@28 coin5=1
+@36 coin5=0
+ASSERT @36 vend=1 bal1=0 bal2=0 bal4=0 bal8=0 change1=0 change2=1 change4=0 change8=0 "Twelve rupees dispenses product and returns two rupees"
+
+# Dispense state lasts one cycle; machine returns to zero balance.
+ASSERT @46 vend=0 bal1=0 bal2=0 bal4=0 bal8=0 "Machine returns to idle after dispensing"
+
+# --------------------------------------------------
+# TEST 4: Exact payment with Rs. 10
+# --------------------------------------------------
+@48 coin10=1
+@56 coin10=0
+ASSERT @56 vend=1 change1=0 change2=0 change4=0 change8=0 "Ten-rupee coin dispenses without change"
+ASSERT @66 vend=0 "Exact-payment vend signal clears after one cycle"
+
+# --------------------------------------------------
+# TEST 5: Rs. 5 + Rs. 5 = Rs. 10
+# --------------------------------------------------
+@68 coin5=1
+@76 coin5=0
+ASSERT @76 vend=0 bal1=1 bal2=0 bal4=1 bal8=0 "First five-rupee coin is retained"
+
+@78 coin5=1
+@86 coin5=0
+ASSERT @86 vend=1 change1=0 change2=0 change4=0 change8=0 "Two five-rupee coins dispense with no change"
+ASSERT @96 vend=0 "Second vend pulse clears"
+
+# --------------------------------------------------
+# TEST 6: Rs. 1 + Rs. 2 = Rs. 3, no dispensing
+# --------------------------------------------------
+@98 coin1=1
+@106 coin1=0
+ASSERT @106 vend=0 bal1=1 bal2=0 bal4=0 bal8=0 "One rupee is retained"
+
+@108 coin2=1
+@116 coin2=0
+ASSERT @116 vend=0 bal1=1 bal2=1 bal4=0 bal8=0 "One plus two rupees gives three rupees"
+
+# --------------------------------------------------
+# TEST 7: Reset clears accumulated credit
+# --------------------------------------------------
+@118 reset=1
+@126 reset=0
+ASSERT @126 vend=0 bal1=0 bal2=0 bal4=0 bal8=0 "Reset clears accumulated balance"
+
+# --------------------------------------------------
+# TEST 8: Rs. 10 + Rs. 2 = Rs. 12; return Rs. 2
+# --------------------------------------------------
+@128 coin10=1
+@136 coin10=0
+ASSERT @136 vend=1 change1=0 change2=0 change4=0 change8=0 "Ten rupees dispenses with no change"
+ASSERT @146 vend=0 "Vend returns low after exact payment"
+
+@148 coin2=1
+@156 coin2=0
+ASSERT @156 vend=0 bal1=0 bal2=1 bal4=0 bal8=0 "Two rupees are retained after a new purchase starts"
+
+@158 coin10=1
+@166 coin10=0
+ASSERT @166 vend=1 change1=0 change2=1 change4=0 change8=0 "Twelve rupees returns two rupees change"
+
+ASSERT @176 vend=0 "Final vend pulse clears"
+
+# --------------------------------------------------
+# Input-safety invariants
+# --------------------------------------------------
+INVARIANT no_simultaneous_coins !(coin1 == 1 && coin2 == 1) "One- and two-rupee inputs are never active together"
+INVARIANT no_coin1_coin5 !(coin1 == 1 && coin5 == 1) "One- and five-rupee inputs are never active together"
+INVARIANT no_coin1_coin10 !(coin1 == 1 && coin10 == 1) "One- and ten-rupee inputs are never active together"
+INVARIANT no_coin2_coin5 !(coin2 == 1 && coin5 == 1) "Two- and five-rupee inputs are never active together"
+INVARIANT no_coin2_coin10 !(coin2 == 1 && coin10 == 1) "Two- and ten-rupee inputs are never active together"
+INVARIANT no_coin5_coin10 !(coin5 == 1 && coin10 == 1) "Five- and ten-rupee inputs are never active together"
