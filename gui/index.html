@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sequential Logic Simulator & FSM Engine</title>
+  <link rel="stylesheet" href="style.css?v=2">
+</head>
+<body>
+<main class="shell">
+  <header class="topbar">
+    <div><h1>Sequential Logic Simulator &amp; FSM Engine</h1><p>Worklet 3: Verification, Digital Waveforms &amp; Assertions</p></div>
+    <span class="status" id="engineStatus">Connecting to C++…</span>
+  </header>
+  <div class="dashboard">
+    <section class="panel traffic-panel">
+      <h2>Traffic Light FSM</h2>
+      <div class="signal-box"><div class="traffic-housing">
+        <div class="lamp red" id="lampRed" aria-label="Red light"></div>
+        <div class="lamp yellow" id="lampYellow" aria-label="Yellow light"></div>
+        <div class="lamp green" id="lampGreen" aria-label="Green light"></div>
+      </div><p class="current-state">Current State: <b id="stateLabel">—</b></p></div>
+    </section>
+    <section class="panel waveform-panel"><div class="panel-head"><h2>Live Waveform Monitor (Logic Analyzer)</h2><span id="timeLabel">Time: —</span></div><div class="waveform-scroll"><canvas id="waveformCanvas" aria-label="Digital timing traces"></canvas></div></section>
+    <section class="panel controls-panel"><h2>Input Controls</h2>
+      <label class="switch-row"><span>Enable (en) – Advance state</span><input id="enableSwitch" type="checkbox" checked><span class="switch-track"></span></label>
+      <label class="switch-row"><span>Reset (reset) – Force Green</span><input id="resetSwitch" type="checkbox"><span class="switch-track"></span></label>
+      <button class="btn tick" id="stepBtn">▶ Step Clock (Tick)</button>
+      <div class="button-pair"><button class="btn secondary" id="autoBtn">▶ Auto Clock</button><button class="btn reset" id="resetBtn">Reset</button></div>
+      <p class="hint" id="stepInfo">Each Tick runs the C++ simulator with your current inputs and adds new waveform data.</p>
+    </section>
+    <section class="panel assertions-panel"><h2>Circuit Assertions &amp; Health</h2>
+      <div class="assertion" id="aMutual"><span>Mutual Exclusion: Red and Green never active together</span><b class="result">—</b></div>
+      <div class="assertion" id="aOneHot"><span>One-Hot Invariant: Exactly one light is illuminated</span><b class="result">—</b></div>
+      <div class="assertion" id="aSequence"><span>Sequence Progression: Green → Yellow → Red → Green</span><b class="result">—</b></div>
+    </section>
+  </div>
+
+  <section class="panel generic-panel">
+    <h2>Generic Netlist Simulation</h2>
+    <p class="panel-note">Simulate your own supported combinational netlist or FSM using the C++ engine. Use project-relative paths and enter input changes at specific times.</p>
+    <div class="form-grid">
+      <label>Circuit type<select id="genericType"><option value="netlist">Combinational netlist (.table)</option><option value="fsm">FSM (.net)</option></select></label>
+      <label>Netlist path<input id="genericPath" value="tests/netlists/combinational/and/netlist.table" spellcheck="false"></label>
+      <label>Maximum time (ns)<input id="genericMaxTime" type="number" min="1" max="100000" value="40"></label>
+      <label>Clock period (ns; FSM only)<input id="genericClock" type="number" min="2" max="10000" value="10"></label>
+    </div>
+    <label class="block-label" for="genericStimuli">Input events</label>
+    <textarea id="genericStimuli" class="short-textarea" spellcheck="false">0: a=0 b=0
+10: a=1 b=0
+20: a=0 b=1
+30: a=1 b=1</textarea>
+    <p class="hint">Format: <code>0: a=0 b=1</code> or <code>@10 a=1</code>. Signal names must match the netlist.</p>
+    <div class="advanced-actions"><button class="btn tick" id="genericRunBtn">Run generic simulation</button><button class="btn secondary" id="genericAndBtn">Load AND example</button><button class="btn secondary" id="genericFsmBtn">Load vending FSM example</button></div>
+    <pre id="genericOutput" class="terminal" hidden></pre>
+  </section>
+  <section class="panel vending-panel">
+    <h2>Vending Machine FSM</h2>
+    <p class="panel-note">Run coin inputs through the bundled FSM using the C++ simulator. A 10-unit item accepts 5-unit or 10-unit coins.</p>
+    <div class="vending-controls"><button class="btn secondary" id="coin5Btn">Insert 5</button><button class="btn secondary" id="coin10Btn">Insert 10</button><button class="btn reset" id="vendingResetBtn">Reset session</button></div>
+    <div class="vending-readout"><div><span>Coins entered</span><b id="vendingCoins">None</b></div><div><span>Vend output</span><b id="vendingVend">—</b></div><div><span>Stored 5-unit credit</span><b id="vendingCredit">—</b></div></div>
+    <pre id="vendingOutput" class="terminal">Insert a coin to run the vending-machine FSM.</pre>
+  </section>
+
+  <section class="panel suite-panel"><div class="panel-head"><h2>Automated Verification Suite</h2><button class="btn tests" id="testsBtn">Run All 7 Tests</button></div><pre id="testOutput" class="terminal">Click “Run All 7 Tests” to execute Unit, Integration, Validation, Black Box, White Box, Regression, and System Testing.</pre></section>
+  <section class="panel advanced-panel"><details id="advanced"><summary>Advanced: Run a custom FSM testbench and download waveforms</summary>
+    <p>Optional: Enter a testbench script to run through the existing C++ engine. Traffic-light controls apply only to the traffic-light preset.</p>
+    <textarea id="tbEditor" spellcheck="false" aria-label="Custom testbench script"></textarea>
+    <div class="advanced-actions"><button class="btn secondary" id="loadTrafficBtn">Restore traffic-light example</button><button class="btn tick" id="runCustomBtn">Run this testbench</button><button class="btn secondary" id="vcdBtn">Download VCD</button><button class="btn secondary" id="txtBtn">Download TXT</button><button class="btn secondary" id="jsonBtn">Download JSON</button></div>
+    <pre id="simOutput" class="terminal" hidden></pre>
+  </details></section>
+</main><script src="app.js?v=2"></script>
+</body></html>

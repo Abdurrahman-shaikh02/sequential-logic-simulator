@@ -1,0 +1,87 @@
+# synthesized from examples/vending_machine/vending_machine.net
+# state encoding (Q0..Q0): Idle=0 Credit5=1  (reset: Idle)
+
+# primary inputs / clock / reset
+vending_machine	coin5	-	-	pi	\coin5
+vending_machine	coin10	-	-	pi	\coin10
+vending_machine	clk	-	-	pi	\clk
+vending_machine	reset	-	-	pi	\reset
+
+# state bit Q0: D = (next-state logic) AND NOT reset
+vending_machine	$not$0	$_NOT_	A	in	\reset
+vending_machine	$not$0	$_NOT_	Y	out	$not$0_Y
+vending_machine	$not$1	$_NOT_	A	in	$dff$q0_Q
+vending_machine	$not$1	$_NOT_	Y	out	$not$1_Y
+vending_machine	$and$2	$_AND_	A	in	$not$1_Y
+vending_machine	$and$2	$_AND_	B	in	\coin5
+vending_machine	$and$2	$_AND_	Y	out	$and$2_Y
+vending_machine	$not$3	$_NOT_	A	in	\coin10
+vending_machine	$not$3	$_NOT_	Y	out	$not$3_Y
+vending_machine	$and$4	$_AND_	A	in	$and$2_Y
+vending_machine	$and$4	$_AND_	B	in	$not$3_Y
+vending_machine	$and$4	$_AND_	Y	out	$and$4_Y
+vending_machine	$not$5	$_NOT_	A	in	\coin5
+vending_machine	$not$5	$_NOT_	Y	out	$not$5_Y
+vending_machine	$and$6	$_AND_	A	in	$dff$q0_Q
+vending_machine	$and$6	$_AND_	B	in	$not$5_Y
+vending_machine	$and$6	$_AND_	Y	out	$and$6_Y
+vending_machine	$and$7	$_AND_	A	in	$and$6_Y
+vending_machine	$and$7	$_AND_	B	in	$not$3_Y
+vending_machine	$and$7	$_AND_	Y	out	$and$7_Y
+vending_machine	$or$8	$_OR_	A	in	$and$4_Y
+vending_machine	$or$8	$_OR_	B	in	$and$7_Y
+vending_machine	$or$8	$_OR_	Y	out	$or$8_Y
+vending_machine	$and$9	$_AND_	A	in	$or$8_Y
+vending_machine	$and$9	$_AND_	B	in	$not$0_Y
+vending_machine	$and$9	$_AND_	Y	out	$and$9_Y
+vending_machine	$dff$q0	$_DFF_P_	D	in	$and$9_Y
+vending_machine	$dff$q0	$_DFF_P_	C	in	\clk
+vending_machine	$dff$q0	$_DFF_P_	Q	out	$dff$q0_Q
+
+# output vend
+vending_machine	$and$10	$_AND_	A	in	$not$1_Y
+vending_machine	$and$10	$_AND_	B	in	$not$5_Y
+vending_machine	$and$10	$_AND_	Y	out	$and$10_Y
+vending_machine	$and$11	$_AND_	A	in	$and$10_Y
+vending_machine	$and$11	$_AND_	B	in	\coin10
+vending_machine	$and$11	$_AND_	Y	out	$and$11_Y
+vending_machine	$and$12	$_AND_	A	in	$and$2_Y
+vending_machine	$and$12	$_AND_	B	in	\coin10
+vending_machine	$and$12	$_AND_	Y	out	$and$12_Y
+vending_machine	$and$13	$_AND_	A	in	$dff$q0_Q
+vending_machine	$and$13	$_AND_	B	in	\coin5
+vending_machine	$and$13	$_AND_	Y	out	$and$13_Y
+vending_machine	$and$14	$_AND_	A	in	$and$13_Y
+vending_machine	$and$14	$_AND_	B	in	$not$3_Y
+vending_machine	$and$14	$_AND_	Y	out	$and$14_Y
+vending_machine	$and$15	$_AND_	A	in	$and$6_Y
+vending_machine	$and$15	$_AND_	B	in	\coin10
+vending_machine	$and$15	$_AND_	Y	out	$and$15_Y
+vending_machine	$and$16	$_AND_	A	in	$and$13_Y
+vending_machine	$and$16	$_AND_	B	in	\coin10
+vending_machine	$and$16	$_AND_	Y	out	$and$16_Y
+vending_machine	$or$17	$_OR_	A	in	$and$11_Y
+vending_machine	$or$17	$_OR_	B	in	$and$12_Y
+vending_machine	$or$17	$_OR_	Y	out	$or$17_Y
+vending_machine	$or$18	$_OR_	A	in	$or$17_Y
+vending_machine	$or$18	$_OR_	B	in	$and$14_Y
+vending_machine	$or$18	$_OR_	Y	out	$or$18_Y
+vending_machine	$or$19	$_OR_	A	in	$or$18_Y
+vending_machine	$or$19	$_OR_	B	in	$and$15_Y
+vending_machine	$or$19	$_OR_	Y	out	$or$19_Y
+vending_machine	$or$20	$_OR_	A	in	$or$19_Y
+vending_machine	$or$20	$_OR_	B	in	$and$16_Y
+vending_machine	$or$20	$_OR_	Y	out	$or$20_Y
+vending_machine	vend	-	-	po	$or$20_Y
+
+# output credit5
+vending_machine	$or$21	$_OR_	A	in	$and$7_Y
+vending_machine	$or$21	$_OR_	B	in	$and$14_Y
+vending_machine	$or$21	$_OR_	Y	out	$or$21_Y
+vending_machine	$or$22	$_OR_	A	in	$or$21_Y
+vending_machine	$or$22	$_OR_	B	in	$and$15_Y
+vending_machine	$or$22	$_OR_	Y	out	$or$22_Y
+vending_machine	$or$23	$_OR_	A	in	$or$22_Y
+vending_machine	$or$23	$_OR_	B	in	$and$16_Y
+vending_machine	$or$23	$_OR_	Y	out	$or$23_Y
+vending_machine	credit5	-	-	po	$or$23_Y

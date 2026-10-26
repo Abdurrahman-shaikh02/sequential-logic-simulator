@@ -1,0 +1,13 @@
+# Testbench for 4-bit SIPO Shift Register
+# Shifts serial data into register across successive clock edges
+
+NETLIST tests/netlists/sequential/15_shiftregister/netlist.table
+CLOCK clk 10
+MAX_TIME 50
+
+# Apply serial bit stream on input 'serial_in'
+@0  serial_in=1
+@10 serial_in=0
+@20 serial_in=1
+@30 serial_in=1
+@40 serial_in=0

@@ -1,0 +1,33 @@
+# Generic testbench for a vending-machine FSM.
+# A 10-unit coin vends immediately; a 5-unit coin stores credit;
+# another coin while holding 5 units vends and returns to Idle.
+FSM examples/vending_machine/vending_machine.net
+CLOCK clk 10
+MAX_TIME 46
+
+# Reset into Idle, then release reset.
+@0 reset=1 coin5=0 coin10=0
+@5 reset=0
+ASSERT @6 vend=0 credit5=0 "Reset state has no credit and does not vend"
+
+# Insert 5 units: after the next rising edge, Credit5 is active.
+@8 coin5=1
+ASSERT @10 credit5=0 "Credit is sampled on the clock edge, not early"
+ASSERT @16 credit5=1 vend=0 "Five units are stored"
+@16 coin5=0
+
+# Insert another 5 units and hold it through the next rising edge at t=25.
+@18 coin5=1
+ASSERT @20 vend=1 "Second five-unit coin is recognised while credit is stored"
+@21 coin5=0
+ASSERT @22 vend=0 credit5=1 "Stored credit remains after the coin pulse"
+
+# While Credit5 is active, a 10-unit coin completes the purchase.
+@28 coin10=1
+ASSERT @29 vend=1 "Ten-unit coin triggers vend"
+@30 coin10=0
+ASSERT @31 vend=0 "Vend deasserts when coin input is removed"
+
+# Generic safety invariant: the two output indicators must not be high together.
+INVARIANT no_simultaneous_coins !(coin5 == 1 && coin10 == 1) "The test never drives both coin inputs simultaneously"
+INVARIANT coin_inputs_valid (coin5 == 0 || coin10 == 0) "At least one coin input remains low"

@@ -1,0 +1,20 @@
+# Testbench for Positive-Edge-Triggered D Flip-Flop
+# Shows edge triggering and data latching
+
+NETLIST tests/netlists/sequential/13_dffp/netlist.table
+CLOCK clk 10
+MAX_TIME 40
+
+# Initial state
+@0  d=0
+ASSERT @0 q=0 "Initial Q is LOW"
+
+# Set D=1 before rising edge at t=5
+@2  d=1
+ASSERT @3 q=0 "Q remains 0 before clock edge"
+ASSERT @6 q=1 "Q latches 1 on positive clock edge"
+
+# Change D to 0 at t=12 (before rising edge at t=15)
+@12 d=0
+ASSERT @13 q=1 "Q remains 1 until clock edge"
+ASSERT @16 q=0 "Q latches 0 on next rising edge"

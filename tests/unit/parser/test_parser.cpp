@@ -601,14 +601,24 @@ TEST(err_legacy_gate_names_rejected) {
     CHECK(errHas(r, "unknown component type"));
 }
 
-TEST(err_unsupported_ff_types_currently_commented_out) {
-    // $_DFF_N_ / $_TFF_*_ / $_JKFF_*_ are commented out in compTypeTable.
-    // Delete/adjust these checks when you enable them.
-    const char* types[] = {"$_DFF_N_", "$_TFF_P_", "$_TFF_N_", "$_JKFF_P_", "$_JKFF_N_"};
-    for (auto* t : types) {
-        auto r = run("ff_unsup", row("t", "ff", t, "D", "in", "w"));
-        CHECK(r.rc == -1);
-        CHECK(errHas(r, "unknown component type"));
+TEST(parser_registers_all_flip_flop_types) {
+    const std::string piClk = row("t", "clk", "-", "-", "pi", "\\clk");
+    const std::string piD = row("t", "d", "-", "-", "pi", "\\d");
+    const std::string piJ = row("t", "j", "-", "-", "pi", "\\j");
+    const std::string piK = row("t", "k", "-", "-", "pi", "\\k");
+    const std::string piT = row("t", "t_in", "-", "-", "pi", "\\t");
+    const std::string poQ = row("t", "q", "-", "-", "po", "\\q");
+    const std::vector<std::pair<std::string, std::string>> cases = {
+        {"$_DFF_N_", piClk + piD + poQ + row("t", "ff", "$_DFF_N_", "D", "in", "\\d") + row("t", "ff", "$_DFF_N_", "C", "in", "\\clk") + row("t", "ff", "$_DFF_N_", "Q", "out", "\\q")},
+        {"$_TFF_P_", piClk + piT + poQ + row("t", "ff", "$_TFF_P_", "T", "in", "\\t") + row("t", "ff", "$_TFF_P_", "C", "in", "\\clk") + row("t", "ff", "$_TFF_P_", "Q", "out", "\\q")},
+        {"$_TFF_N_", piClk + piT + poQ + row("t", "ff", "$_TFF_N_", "T", "in", "\\t") + row("t", "ff", "$_TFF_N_", "C", "in", "\\clk") + row("t", "ff", "$_TFF_N_", "Q", "out", "\\q")},
+        {"$_JKFF_P_", piClk + piJ + piK + poQ + row("t", "ff", "$_JKFF_P_", "J", "in", "\\j") + row("t", "ff", "$_JKFF_P_", "K", "in", "\\k") + row("t", "ff", "$_JKFF_P_", "C", "in", "\\clk") + row("t", "ff", "$_JKFF_P_", "Q", "out", "\\q")},
+        {"$_JKFF_N_", piClk + piJ + piK + poQ + row("t", "ff", "$_JKFF_N_", "J", "in", "\\j") + row("t", "ff", "$_JKFF_N_", "K", "in", "\\k") + row("t", "ff", "$_JKFF_N_", "C", "in", "\\clk") + row("t", "ff", "$_JKFF_N_", "Q", "out", "\\q")}
+    };
+    for (const auto& [type, netlist] : cases) {
+        auto r = run("ff_supported_" + type, netlist);
+        CHECK(r.rc == 0);
+        CHECK(!errHas(r, "unknown component type"));
     }
 }
 
@@ -740,16 +750,14 @@ TEST(err_gate_input_wire_has_no_driver) {
 // Current behaviours worth knowing about (pin them so changes are deliberate)
 // ---------------------------------------------------------------------------
 
-TEST(unknown_primary_direction_is_currently_accepted_as_output) {
-    // The old "unknown primary port direction" error is gone: any direction other
-    // than "pi" is treated as an output. If you want it rejected again, change
-    // rc to -1 here and add the check back in Parser.cpp.
+TEST(err_unknown_primary_direction) {
+    // Only pi and po are valid directions for primary nodes.
     std::string nl =
         row("t", "a", "-", "-", "pi", "w") +
         row("t", "y", "-", "-", "inout", "w");
     auto r = run("bad_pdir", nl);
-    CHECK(r.rc == 0);
-    CHECK(vec(r.po, "y").size() == 1);
+    CHECK(r.rc == -1);
+    CHECK(errHas(r, "unknown direction"));
 }
 
 TEST(empty_file_current_behaviour) {

@@ -1,0 +1,33 @@
+# Testbench for Traffic Light FSM
+# Evaluates state progression: Green -> Yellow -> Red -> Green
+# Worklet 3 End-to-End Demonstration
+
+FSM tests/netlists/fsm/traffic_light/traffic_light_fsm.net
+CLOCK clk 10
+MAX_TIME 60
+
+# Apply Reset at t=0, release at t=5
+@0 reset=1 en=0
+@5 reset=0 en=0
+
+# Assert reset state is Green (G=1, Y=0, R=0)
+ASSERT @5 R=0 Y=0 G=1 "Initial state after reset must be Green"
+
+# Hold Green while enable is 0
+ASSERT @10 R=0 Y=0 G=1 "Holding Green when en=0"
+
+# Enable transitions at t=10
+@10 en=1
+
+# Clock edges occur at t=5, 15, 25, 35, 45, 55
+# At t=15 (clk rising edge with en=1): Sg -> Sy (Yellow turns on)
+ASSERT @16 R=0 Y=1 G=0 "Traffic light advances to Yellow"
+
+# At t=25: Sy -> Sr (Red turns on)
+ASSERT @26 R=1 Y=0 G=0 "Traffic light advances to Red"
+
+# At t=35: Sr -> Sg (Green turns on)
+ASSERT @36 R=0 Y=0 G=1 "Traffic light returns to Green"
+
+# Safety Invariant: Red and Green must never be ON together
+INVARIANT safe_traffic !(R == 1 && G == 1) "Traffic safety: Red and Green never active simultaneously"
