@@ -6,6 +6,11 @@ module test_shift_register (
 
     reg [3:0] state;
 
+    // Initialize state to zero
+    initial begin
+        state = 4'b0000;
+    end
+
     always @(posedge clk) begin
         state[0] <= serial_in;
         state[1] <= state[0];

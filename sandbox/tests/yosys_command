@@ -1,2 +1,15 @@
 yosys -p "read_verilog test.v; proc; simplemap; techmap; write_table netlist.table"
 yosys -p "read_verilog test.v; proc; simplemap; techmap; opt; write_table netlist.table"
+
+traffic light->
+yosys -p "read_verilog test.v; hierarchy -top test_traffic_fsm; proc; opt; dffunmap; techmap; opt -nodffe -nosdff; write_table netlist.table"
+
+// the following command enforces legal gates
+read_verilog traffic.v
+synth -top test_traffic_fsm -flatten -noabc
+attrmap -remove init
+dfflegalize -cell $_DFF_P_ x -cell $_DFF_N_ x
+abc -g AND,NAND,OR,NOR,XOR,ANDNOT,ORNOT,MUX
+splitnets -ports
+opt_clean
+write_table traffic.net
