@@ -164,6 +164,7 @@ run: $(TARGET)
 clean:
 	rm -rf build
 	rm -f simulator simulator-debug simulator-asan
+	rm -rf validation/icarus/out
 	rm -f $(OLD_TEST_BIN)
 
 
