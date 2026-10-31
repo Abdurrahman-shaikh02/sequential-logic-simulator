@@ -3,3 +3,7 @@ temp/
 private/
 .clangd
 simulator
+# test-old executables: anything in tests/archive without an extension
+tests/archive/**
+!tests/archive/**/
+!tests/archive/**/*.*

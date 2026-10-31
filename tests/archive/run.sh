@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Runs the archived (pre-refactor) standalone tests.
 #
-#   run.sh <bin-dir> [filter]
+#   run.sh [filter]
 #
-# Every tests/archive/**/<name>.cpp was built to <bin-dir>/<same path>/<name>.
+# Every tests/archive/**/<name>.cpp was built to <name> in the same directory.
 # Each test runs from its own source directory (they open their netlists by
 # relative path), with input.txt on stdin when there is one. If the directory
 # has an expected.txt, or <name>_expected.txt for test <name>t (analysist ->
@@ -12,8 +12,7 @@
 
 set -u
 
-BIN_DIR=$(cd "$1" && pwd)
-FILTER=${2:-}
+FILTER=${1:-}
 ARCHIVE=$(cd "$(dirname "$0")" && pwd)
 
 pass=0 fail=0 ran=0
@@ -25,7 +24,7 @@ while IFS= read -r src; do
     [[ -n $FILTER && $rel != *$FILTER* ]] && continue
 
     dir=$(dirname "$src")
-    bin=$BIN_DIR/$rel
+    bin=${src%.cpp}
 
     input=/dev/null
     [[ -f $dir/input.txt ]] && input=$dir/input.txt

@@ -9,7 +9,8 @@
 #   make test ARGS=-v     pass options to the runner (see: make test ARGS=--help)
 #   make test-asan        same tests under AddressSanitizer + UBSan + checked STL
 #   make test-list        list the available tests
-#   make test-old         build and run the archived pre-refactor tests (tests/archive)
+#   make test-old         build and run the archived pre-refactor tests (tests/archive);
+#                         x.cpp builds to an executable x in the same directory
 #   make test-old TESTS=and   only archived tests whose path contains "and"
 #   make clean
 #
@@ -129,15 +130,23 @@ check: test
 # --------------------------------------------------
 
 OLD_TEST_SRC = $(shell find tests/archive -type f -name '*.cpp')
-OLD_TEST_BIN = $(patsubst %.cpp,build/$(TEST_MODE)/%,$(OLD_TEST_SRC))
+OLD_TEST_BIN = $(OLD_TEST_SRC:.cpp=)
 
-$(BUILD)/tests/archive/%: tests/archive/%.cpp $(LIB)
+# The binaries sit beside their sources, shared by every mode, so this stamp
+# changes with MODE to force a relink instead of reusing another mode's build.
+OLD_TEST_STAMP = build/archive-mode
+
+$(OLD_TEST_STAMP): FORCE
 	@mkdir -p $(dir $@)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) $< $(LIB) -o $@
+	@echo $(MODE) | cmp -s - $@ || echo $(MODE) > $@
+
+$(OLD_TEST_BIN): %: %.cpp $(LIB) $(OLD_TEST_STAMP)
+	@mkdir -p $(dir $(BUILD)/$@)
+	$(CXX) $(CPPFLAGS) -MF $(BUILD)/$@.d -MT $@ $(CXXFLAGS) $(LDFLAGS) $< $(LIB) -o $@
 
 test-old:
 	@$(MAKE) --no-print-directory -j$(NPROC) MODE=$(TEST_MODE) $(OLD_TEST_BIN)
-	@tests/archive/run.sh build/$(TEST_MODE)/tests/archive $(TESTS)
+	@tests/archive/run.sh $(TESTS)
 
 
 # --------------------------------------------------
@@ -155,8 +164,9 @@ run: $(TARGET)
 clean:
 	rm -rf build
 	rm -f simulator simulator-debug simulator-asan
+	rm -f $(OLD_TEST_BIN)
 
 
--include $(LIB_OBJ:.o=.d) $(APP_OBJ:.o=.d) $(TEST_OBJ:.o=.d)
+-include $(LIB_OBJ:.o=.d) $(APP_OBJ:.o=.d) $(TEST_OBJ:.o=.d) $(OLD_TEST_BIN:%=$(BUILD)/%.d)
 
-.PHONY: all release debug asan test test-asan test-list test-old check run clean
+.PHONY: all release debug asan test test-asan test-list test-old check run clean FORCE
