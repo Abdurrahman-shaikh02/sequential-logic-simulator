@@ -7,7 +7,6 @@
 
 class OperationQueue {
 private:
-	// why deque? it allows iteration and swapping (reorder) easily!
 	std::deque<std::unique_ptr<Operation>> q;
 public:
 	OperationQueue() = default;
@@ -23,6 +22,4 @@ public:
 	void clear() {
 		q.clear();
 	}
-
-	void reorder();		
 };
