@@ -56,7 +56,6 @@ sequential-logic-simulator/
 │   │   ├── OperationType.hpp
 │   │   ├── Operation.hpp
 │   │   ├── EvaluateOperation.hpp
-│   │   ├── SetPortOperation.hpp
 │   │   ├── ChangeStateOperation.hpp
 │   │   └── CommitOperation.hpp
 │   │
@@ -103,7 +102,6 @@ sequential-logic-simulator/
 │   ├── operations/
 │   │   ├── Operation.cpp
 │   │   ├── EvaluateOperation.cpp
-│   │   ├── SetPortOperation.cpp
 │   │   ├── ChangeStateOperation.cpp
 │   │   └── CommitOperation.cpp
 │   │

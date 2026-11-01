@@ -114,11 +114,22 @@ def sequential_rows(inputs, clock, cycles, rng):
     return rows
 
 
+def check_hold_time(rows, clock):
+    """Our simulator samples the new data when data moves with the clock, and
+    gives no warning, so such a row would not be a valid comparison."""
+    for row, (before, after) in enumerate(zip(rows, rows[1:]), start=1):
+        moved = any(after[name] != before[name] for name in after if name != clock)
+        if moved and "1" in (before[clock], after[clock]):
+            raise Failure(f"invalid stimulus: hold-time violation at row {row}")
+
+
 def generate_rows(inputs, cycles, seed):
     rng = random.Random(seed)
     clock = next((name for name, _ in inputs if name in CLOCKS), None)
     if clock:
-        return sequential_rows(inputs, clock, cycles, rng)
+        rows = sequential_rows(inputs, clock, cycles, rng)
+        check_hold_time(rows, clock)
+        return rows
     return combinational_rows(inputs, cycles, rng)
 
 
@@ -158,10 +169,8 @@ def run_icarus(work, result):
 
 
 def run_simulator(sim, work, result):
-    done = run([sim, "sim", str(work / "netlist.table"), "-s", str(work / "stimulus"),
-                "-o", str(result)], "simulator")
-    if "Hold-time violation" in done.stderr:
-        raise Failure("invalid stimulus: hold-time violation")
+    run([sim, "sim", str(work / "netlist.table"), "-s", str(work / "stimulus"),
+         "-o", str(result)], "simulator")
 
 
 def compare(icarus_out, sim_out):

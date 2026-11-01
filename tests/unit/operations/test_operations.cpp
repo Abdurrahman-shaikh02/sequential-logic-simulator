@@ -7,7 +7,6 @@
 #include "operations/ChangeStateOperation.hpp"
 #include "operations/CommitOperation.hpp"
 #include "operations/EvaluateOperation.hpp"
-#include "operations/SetPortOperation.hpp"
 
 using namespace hdltest;
 
@@ -16,12 +15,6 @@ TEST(operations, evaluate_calls_evaluate_with_port_and_value) {
     EvaluateOperation(n, Port::S, Signal::HIGH).run();
     EvaluateOperation(n, Port::A, Signal::LOW).run();
     CHECK_EQ(n.calls, (std::vector<Call>{{Port::S, Signal::HIGH}, {Port::A, Signal::LOW}}));
-}
-
-TEST(operations, set_port_calls_set_port_on_sequential_node) {
-    ProbeSeqNode ff;
-    SetPortOperation(ff, Port::D, Signal::HIGH).run();
-    CHECK_EQ(ff.log, (std::vector<std::string>{"setPort Port::D HIGH"}));
 }
 
 TEST(operations, change_state_calls_change_state) {
@@ -43,7 +36,6 @@ TEST(operations, commit_fans_out_the_targets_current_result) {
 
 TEST(operations, sequential_ops_on_combinational_node_throw_bad_cast) {
     ProbeNode n;
-    CHECK_THROWS(SetPortOperation(n, Port::D, Signal::HIGH).run());
     CHECK_THROWS(ChangeStateOperation(n, Port::CLK, Signal::HIGH).run());
 }
 

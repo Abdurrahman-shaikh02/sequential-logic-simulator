@@ -144,44 +144,37 @@ TEST(dff_p, repeated_clock_edges_with_same_d_keep_q) {
     }
 }
 
-TEST(dff_p, d_change_with_rising_edge_samples_old_d_d_first) {
-    // Zero-delay model: an edge and a D change in the same step are a
-    // hold-time race; the flip-flop must sample the value from before the step.
+TEST(dff_p, d_change_with_rising_edge_samples_new_d_d_first) {
+    // Zero-delay model: D settles before the sequential queue runs, so an edge
+    // and a D change in the same step sample the new D.
     DffBench b;
-    Capture err(std::cerr);
     b.d.evaluate(Port::O, Signal::HIGH);
     b.clk.evaluate(Port::O, Signal::HIGH);
     Simulator::run();
-    CHECK_EQ(b.Q(), 0);
-    CHECK_CONTAINS(err.str(), "Hold-time violation");
+    CHECK_EQ(b.Q(), 1);
 }
 
-TEST(dff_p, d_change_with_rising_edge_samples_old_d_clock_first) {
+TEST(dff_p, d_change_with_rising_edge_samples_new_d_clock_first) {
     // same as above with the evaluate() calls swapped
     DffBench b;
-    Capture err(std::cerr);
     b.clk.evaluate(Port::O, Signal::HIGH);
     b.d.evaluate(Port::O, Signal::HIGH);
     Simulator::run();
-    CHECK_EQ(b.Q(), 0);
-    CHECK_CONTAINS(err.str(), "Hold-time violation");
+    CHECK_EQ(b.Q(), 1);
 }
 
 TEST(dff_p, d_change_with_rising_edge_keeps_the_new_d_for_the_next_edge) {
     DffBench b;
-    Capture err(std::cerr);
     Circuit::setAll({{&b.d, 1}, {&b.clk, 1}});
-    REQUIRE_EQ(b.Q(), 0);
+    REQUIRE_EQ(b.Q(), 1);
     Circuit::set(b.clk, 0);
     Circuit::set(b.clk, 1);
     CHECK_EQ(b.Q(), 1);
 }
 
 TEST(dff_p, last_d_change_in_a_step_wins) {
-    // several D updates queued before one edge: the edge sees the D from before
-    // the step, and the latest update is what the next edge loads
+    // several D updates before one edge: the latest update is what the edge loads
     DffBench b;
-    Capture err(std::cerr);
     for (int v : {1, 0, 1}) b.d.evaluate(Port::O, sig(v));
     Simulator::run();
     Circuit::pulse(b.clk);
@@ -215,19 +208,17 @@ TEST(dff_p, glitch_pulse_within_one_step_counts_as_an_edge) {
 
 TEST(dff_p, random_stimulus_matches_reference_model) {
     DffBench b;
-    Capture err(std::cerr);   // hold-time warnings are expected here
-    int d = 0, clk = 0, q = 0;
+    int clk = 0, q = 0;
     for (int step = 0; step < 2000; step++) {
         int nd = randomBit(), nclk = randomBit();
-        if (!clk && nclk) q = d;   // edge samples D from before this step
+        if (!clk && nclk) q = nd;   // edge samples the D of this step
 
         // drive in a random order
         if (randomBit()) Circuit::setAll({{&b.d, nd}, {&b.clk, nclk}});
         else Circuit::setAll({{&b.clk, nclk}, {&b.d, nd}});
-        d = nd;
         clk = nclk;
 
-        INFO("step " << step << " d=" << d << " clk=" << clk);
+        INFO("step " << step << " d=" << nd << " clk=" << clk);
         REQUIRE_EQ(b.Q(), q);
     }
 }
