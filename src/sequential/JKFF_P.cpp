@@ -2,7 +2,6 @@
 #include <memory>
 
 #include "sequential/SequentialNode.hpp"
-#include "operations/SetPortOperation.hpp"
 #include "operations/ChangeStateOperation.hpp"
 #include "operations/CommitOperation.hpp"
 #include "simulation/OperationQueue.hpp"
@@ -14,20 +13,13 @@ JKFF_P::JKFF_P() : j(Signal::LOW), k(Signal::LOW), clk(Signal::LOW) {}
 void JKFF_P::evaluate(Port p, Signal value) {
     switch (p) {
         case Port::J: {
-            if (!initialized) {
-                j = value; // just set the internal value if the node is invalid
-            } else {
-                Simulator::sequentialQueue.enqueue(std::make_unique<SetPortOperation>(*this, p, value));
-            }
-            break;
+                          setPort(p, value);
+                          break;
+
         }
         case Port::K: {
-            if (!initialized) {
-                k = value; // just set the internal value if the node is invalid
-            } else {
-                Simulator::sequentialQueue.enqueue(std::make_unique<SetPortOperation>(*this, p, value));
-            }
-            break;
+                          setPort(p, value);
+                          break;
         }
         case Port::CLK: {
             if (!initialized) {
