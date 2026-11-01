@@ -1,0 +1,13 @@
+simulator,family,activity,points,run_slope,compile_slope
+hdl_sim,random,0.02,5,1.26,
+hdl_sim,random,0.5,5,1.21,
+hdl_sim,mixed,0.02,5,1.22,
+hdl_sim,mixed,0.5,5,1.21,
+hdl_sim,multiplier,0.02,4,0.96,
+hdl_sim,multiplier,0.5,4,1.03,
+icarus,random,0.02,5,1.27,1.06
+icarus,random,0.5,5,1.27,1.06
+icarus,mixed,0.02,5,1.14,1.88
+icarus,mixed,0.5,5,1.19,1.87
+icarus,multiplier,0.02,4,0.8,0.85
+icarus,multiplier,0.5,4,1.08,0.8
