@@ -78,9 +78,6 @@ void Simulator::run() {
             }
         }
 
-        // Timing check & reorder S-Queue (Prioritizes CHANGE_STATE over SET_PORT on FFs)
-        sequentialQueue.reorder();
-
         // Drain Sequential Queue (Flip-flop state calculations and commits)
         while (!sequentialQueue.isEmpty()) {
             std::unique_ptr<Operation> op = sequentialQueue.dequeue();
