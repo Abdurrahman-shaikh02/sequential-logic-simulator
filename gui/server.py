@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 """
 SLMS Web GUI Server
-Zero-dependency HTTP server bridging the frontend with the C++ simulator.
-Includes traffic-light live simulation, custom testbenches, test-suite execution,
-and an interactive vending-machine FSM endpoint.
+Zero-dependency HTTP server bridging the web frontend with the C++ simulator engine.
 """
 
 import sys
@@ -11,412 +9,328 @@ import os
 import json
 import subprocess
 import threading
+import re
+import tempfile
+import shutil
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 
 PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8080
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(BASE_DIR)
-SIMULATOR = os.path.join(PROJECT_ROOT, "simulator")
-OUTPUT_JSON = os.path.join(PROJECT_ROOT, "output", "waveform.json")
-BUILD_DIR = os.path.join(PROJECT_ROOT, "build")
 
-# The simulator writes shared waveform files, so only one simulation may
-# run at a time. RLock allows helpers to be safely called within locked code.
-SIMULATOR_LOCK = threading.RLock()
+# Each browser session has an independent sequence of clock inputs. The C++
+# testbench is replayed through the latest edge; only the newly calculated
+# samples are returned to the browser. This avoids precomputed future waves.
 LIVE_LOCK = threading.RLock()
-VENDING_LOCK = threading.RLock()
-
 LIVE_SESSIONS = {}
-VENDING_SESSIONS = {}
-
 MAX_LIVE_TICKS = 200
-MAX_VENDING_COINS = 100
-
-TRAFFIC_NETLIST = "tests/netlists/fsm/traffic_light/traffic_light_fsm.net"
-VENDING_NETLIST = (
-    "examples/vending_machine_advanced/vending_machine_advanced.net"
-)
-
-
-def run_testbench(script, filename, timeout=30):
-    """Run a testbench through the real C++ simulator and return its waveform."""
-    os.makedirs(BUILD_DIR, exist_ok=True)
-    temp_path = os.path.join(BUILD_DIR, filename)
-
-    with open(temp_path, "w", encoding="utf-8") as fh:
-        fh.write(script)
-
-    with SIMULATOR_LOCK:
-        completed = subprocess.run(
-            [SIMULATOR, "--testbench", temp_path],
-            cwd=PROJECT_ROOT,
-            text=True,
-            capture_output=True,
-            timeout=timeout,
-        )
-
-        if completed.returncode != 0:
-            raise RuntimeError(
-                (completed.stderr + "\n" + completed.stdout)[-3000:]
-            )
-
-        if not os.path.isfile(OUTPUT_JSON):
-            raise RuntimeError("The C++ simulator did not generate waveform.json.")
-
-        with open(OUTPUT_JSON, encoding="utf-8") as fh:
-            waveform = json.load(fh)
-
-    if not waveform.get("times"):
-        raise RuntimeError("The C++ simulator returned an empty waveform.")
-
-    return completed, waveform
-
+SIMULATOR_LOCK = threading.RLock()
+VENDING_SESSIONS = {}
+MAX_GENERIC_EVENTS = 500
 
 def evaluate_live(steps):
-    """Replay traffic-light inputs through the actual C++ simulator."""
     end = 6 if not steps else 10 * len(steps) + 6
-
     lines = [
-        f"FSM {TRAFFIC_NETLIST}",
-        "CLOCK clk 10",
-        f"MAX_TIME {end}",
-        "@0 reset=1 en=0",
-        "@6 reset=0 en=0",
+        'FSM tests/netlists/fsm/traffic_light/traffic_light_fsm.net',
+        'CLOCK clk 10', f'MAX_TIME {end}',
+        '@0 reset=1 en=0', '@6 reset=0 en=0',
     ]
-
     for i, item in enumerate(steps):
-        lines.append(
-            f"@{10 * (i + 1)} en={item['en']} reset={item['reset']}"
-        )
-
-    _, wave = run_testbench(
-        "\n".join(lines) + "\n",
-        "live_gui_testbench.tb",
-    )
-
-    times = wave["times"]
-    targets = [0, 5] if not steps else [10 * len(steps), 10 * len(steps) + 5]
-
+        lines.append(f"@{10 * (i+1)} en={item['en']} reset={item['reset']}")
+    script = '\n'.join(lines) + '\n'
+    temp_path = os.path.join(PROJECT_ROOT, 'build', 'live_gui_testbench.tb')
+    os.makedirs(os.path.dirname(temp_path), exist_ok=True)
+    with open(temp_path, 'w', encoding='utf-8') as fh:
+        fh.write(script)
+    sim_bin = os.path.join(PROJECT_ROOT, 'simulator')
+    completed = subprocess.run([sim_bin, '--testbench', temp_path],
+                               cwd=PROJECT_ROOT, text=True, capture_output=True, timeout=30)
+    if completed.returncode:
+        raise RuntimeError((completed.stderr + '\n' + completed.stdout)[-2500:])
+    with open(os.path.join(PROJECT_ROOT, 'output', 'waveform.json'), encoding='utf-8') as fh:
+        wave = json.load(fh)
+    times = wave['times']
+    # Show ONLY samples for the current tick. No future values are sent.
+    targets = [0, 5] if not steps else [10*len(steps), 10*len(steps)+5]
     samples = []
     for time in targets:
-        if time not in times:
-            raise RuntimeError(
-                f"Expected traffic-light sample at {time} ns was not found."
-            )
-
         i = times.index(time)
-        samples.append({
-            "time": time,
-            "signals": {
-                signal: int(values[i])
-                for signal, values in wave["data"].items()
-            },
-        })
-
+        samples.append({'time': time, 'signals': {s: int(values[i]) for s, values in wave['data'].items()}})
     return samples
-
-
-def evaluate_vending(coins):
-    """
-    Replay a vending-machine session through the actual C++ FSM.
-
-    Accepted coins: ₹1, ₹2, ₹5, ₹10.
-    Product price: ₹10.
-
-    Each coin has a separate clock slot. A full idle clock edge after each
-    slot allows the FSM to leave its one-cycle dispense/change state before
-    another coin is sampled.
-    """
-    lines = [
-        f"FSM {VENDING_NETLIST}",
-        "CLOCK clk 10",
-        f"MAX_TIME {max(30, 20 * len(coins) + 30)}",
-        "@0 reset=1 coin1=0 coin2=0 coin5=0 coin10=0",
-        "@6 reset=0",
-    ]
-
-    for i, coin in enumerate(coins):
-        start = 8 + 20 * i
-        end = start + 8
-
-        lines.append(
-            f"@{start} "
-            f"coin1={int(coin == 1)} "
-            f"coin2={int(coin == 2)} "
-            f"coin5={int(coin == 5)} "
-            f"coin10={int(coin == 10)}"
-        )
-        lines.append(
-            f"@{end} coin1=0 coin2=0 coin5=0 coin10=0"
-        )
-
-    _, wave = run_testbench(
-        "\n".join(lines) + "\n",
-        "live_vending_testbench.tb",
-    )
-
-    times = wave["times"]
-    target_time = 6 if not coins else 16 + 20 * (len(coins) - 1)
-
-    if target_time not in times:
-        raise RuntimeError(
-            f"Expected vending-machine sample at {target_time} ns was not found."
-        )
-
-    sample_index = times.index(target_time)
-    signals = {
-        name: int(values[sample_index])
-        for name, values in wave["data"].items()
-    }
-
-    def decode_binary(prefix):
-        return sum(
-            (1 << bit) * signals.get(f"{prefix}{1 << bit}", 0)
-            for bit in range(4)
-        )
-
-    # The actual netlist uses bal1/bal2/bal4/bal8 and
-    # change1/change2/change4/change8 output bits.
-    balance = sum(
-        weight * signals.get(f"bal{weight}", 0)
-        for weight in (1, 2, 4, 8)
-    )
-    change = sum(
-        weight * signals.get(f"change{weight}", 0)
-        for weight in (1, 2, 4, 8)
-    )
-    vend = signals.get("vend", 0)
-
-    return {
-        "time": target_time,
-        "signals": signals,
-        "balance": balance,
-        "vend": vend,
-        "change": change if vend else 0,
-        "waveform": wave,
-    }
-
 
 class SLMSRequestHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=BASE_DIR, **kwargs)
 
     def do_POST(self):
-        if self.path == "/api/live":
+        if self.path == '/api/live':
             self.handle_live()
-        elif self.path == "/api/simulate":
+        elif self.path == '/api/simulate':
             self.handle_simulate()
-        elif self.path == "/api/vending":
+        elif self.path == '/api/file-simulate':
+            self.handle_file_simulate()
+        elif self.path == '/api/generic-simulate':
+            self.handle_generic_simulate()
+        elif self.path == '/api/vending':
             self.handle_vending()
         else:
             self.send_error(404, "Endpoint not found")
 
     def do_GET(self):
-        if self.path == "/api/tests":
+        if self.path == '/api/tests':
             self.handle_tests()
         else:
             super().do_GET()
 
-    def read_json_request(self):
-        length = int(self.headers.get("Content-Length", "0"))
-        if length <= 0 or length > 1_000_000:
-            raise ValueError("Invalid or oversized request body.")
-
-        return json.loads(self.rfile.read(length).decode("utf-8"))
+    def handle_live(self):
+        try:
+            n = int(self.headers.get('Content-Length', '0'))
+            req = json.loads(self.rfile.read(n).decode('utf-8'))
+            session = str(req.get('session', 'default'))[:100]
+            operation = req.get('action', 'step')
+            with LIVE_LOCK:
+                if operation == 'reset':
+                    steps = []
+                elif operation == 'step':
+                    if session not in LIVE_SESSIONS:
+                        raise ValueError('Session not initialized; reset first')
+                    steps = LIVE_SESSIONS[session] + [
+                        {'en': int(bool(req.get('en', 0))), 'reset': int(bool(req.get('reset', 0)))}
+                    ]
+                    if len(steps) > MAX_LIVE_TICKS:
+                        raise ValueError('Maximum 200 ticks reached. Press Reset.')
+                else:
+                    raise ValueError('Unknown action')
+                samples = evaluate_live(steps)
+                LIVE_SESSIONS[session] = steps
+            self.send_json({'success': True, 'samples': samples, 'tick': len(steps)})
+        except Exception as exc:
+            self.send_json({'success': False, 'error': str(exc)}, 500)
 
     def send_json(self, data, code=200):
-        payload = json.dumps(data).encode("utf-8")
+        payload = json.dumps(data).encode('utf-8')
         self.send_response(code)
-        self.send_header("Content-Type", "application/json; charset=utf-8")
-        self.send_header("Content-Length", str(len(payload)))
-        self.send_header("Cache-Control", "no-store")
+        self.send_header('Content-Type', 'application/json; charset=utf-8')
+        self.send_header('Cache-Control', 'no-store')
+        self.send_header('Content-Length', str(len(payload)))
         self.end_headers()
         self.wfile.write(payload)
 
-    def handle_live(self):
-        try:
-            req = self.read_json_request()
-            session = str(req.get("session", "default"))[:100]
-            operation = req.get("action", "step")
-
-            with LIVE_LOCK:
-                if operation == "reset":
-                    steps = []
-                elif operation == "step":
-                    if session not in LIVE_SESSIONS:
-                        raise ValueError("Session not initialized; reset first.")
-
-                    steps = list(LIVE_SESSIONS[session])
-                    steps.append({
-                        "en": int(bool(req.get("en", 0))),
-                        "reset": int(bool(req.get("reset", 0))),
-                    })
-
-                    if len(steps) > MAX_LIVE_TICKS:
-                        raise ValueError(
-                            "Maximum 200 ticks reached. Press Reset."
-                        )
-                else:
-                    raise ValueError("Unknown traffic-light action.")
-
-                samples = evaluate_live(steps)
-                LIVE_SESSIONS[session] = steps
-
-            self.send_json({
-                "success": True,
-                "samples": samples,
-                "tick": len(steps),
-            })
-
-        except Exception as exc:
-            self.send_json({"success": False, "error": str(exc)}, 500)
-
-    def handle_vending(self):
-        try:
-            req = self.read_json_request()
-            session = str(req.get("session", "default"))[:100]
-            action = req.get("action", "insert")
-
-            with VENDING_LOCK:
-                if action == "reset":
-                    coins = []
-
-                elif action == "insert":
-                    coins = list(VENDING_SESSIONS.get(session, []))
-                    coin = req.get("coin")
-
-                    # bool is a subclass of int in Python, so reject it too.
-                    if isinstance(coin, bool) or coin not in (1, 2, 5, 10):
-                        raise ValueError(
-                            "Select a valid coin: ₹1, ₹2, ₹5, or ₹10."
-                        )
-
-                    coins.append(coin)
-
-                    if len(coins) > MAX_VENDING_COINS:
-                        raise ValueError(
-                            "Maximum 100 coin insertions reached. Reset first."
-                        )
-
-                else:
-                    raise ValueError("Unknown vending-machine action.")
-
-                result = evaluate_vending(coins)
-                VENDING_SESSIONS[session] = coins
-
-            self.send_json({
-                "success": True,
-                "steps": len(coins),
-                "result": result,
-            })
-
-        except Exception as exc:
-            self.send_json({"success": False, "error": str(exc)}, 500)
-
     def handle_simulate(self):
         try:
-            req = self.read_json_request()
-            tb_content = req.get("testbench", "")
-
-            if not isinstance(tb_content, str) or not tb_content.strip():
-                raise ValueError("Enter a non-empty testbench script.")
-
-            completed, wave = run_testbench(
-                tb_content,
-                "temp_gui_testbench.tb",
-                timeout=30,
-            )
-
-            assertions = {
-                "total": 0,
-                "passed": 0,
-                "failed": 0,
-                "records": [],
-            }
-
-            for line in completed.stdout.splitlines():
-                if "Total Evaluated" in line:
-                    try:
-                        assertions["total"] = int(line.split(":", 1)[1].strip())
-                    except (ValueError, IndexError):
-                        pass
-
-                elif "Passed" in line and "(" in line:
-                    try:
-                        assertions["passed"] = int(
-                            line.split(":", 1)[1].split("(")[0].strip()
-                        )
-                    except (ValueError, IndexError):
-                        pass
-
-                elif "Failed" in line and ":" in line:
-                    try:
-                        assertions["failed"] = int(
-                            line.split(":", 1)[1].strip()
-                        )
-                    except (ValueError, IndexError):
-                        pass
-
-            self.send_json({
-                "success": completed.returncode == 0,
-                "stdout": completed.stdout,
-                "stderr": completed.stderr,
-                "waveform": wave,
-                "assertions": assertions,
-            })
-
+            n = int(self.headers.get('Content-Length', '0'))
+            if not 0 < n <= 1_000_000:
+                raise ValueError('Invalid testbench size.')
+            req = json.loads(self.rfile.read(n).decode('utf-8'))
+            script = req.get('testbench', '')
+            if not isinstance(script,str) or not script.strip():
+                raise ValueError('Testbench is empty.')
+            res,wave = self.run_generated_testbench(script)
+            self.send_json({'success':res.returncode == 0,'stdout':res.stdout,'stderr':res.stderr,'waveform':wave},
+                           200 if res.returncode == 0 else 400)
         except Exception as exc:
-            self.send_json({"success": False, "error": str(exc)}, 500)
+            self.send_json({'success':False,'error':str(exc)},400)
+
+    def run_generated_testbench(self, script, timeout=20):
+        """Run a generated testbench through the real simulator, safely serialized."""
+        temp_dir = os.path.join(PROJECT_ROOT, 'build')
+        os.makedirs(temp_dir, exist_ok=True)
+        # Each request gets its own file; simulator output files are shared, so execution is locked.
+        import tempfile
+        fd, temp_path = tempfile.mkstemp(prefix='gui_', suffix='.tb', dir=temp_dir, text=True)
+        try:
+            with os.fdopen(fd, 'w', encoding='utf-8') as fh:
+                fh.write(script)
+            sim_bin = os.path.join(PROJECT_ROOT, 'simulator')
+            with SIMULATOR_LOCK:
+                res = subprocess.run([sim_bin, '--testbench', temp_path], cwd=PROJECT_ROOT,
+                                     capture_output=True, text=True, timeout=timeout)
+                wave_path = os.path.join(PROJECT_ROOT, 'output', 'waveform.json')
+                wave = {}
+                if os.path.isfile(wave_path):
+                    with open(wave_path, encoding='utf-8') as wf:
+                        wave = json.load(wf)
+            return res, wave
+        finally:
+            try:
+                os.remove(temp_path)
+            except OSError:
+                pass
+
+    def handle_file_simulate(self):
+        """Run uploaded .tb script against an uploaded .table/.net circuit."""
+        try:
+            n = int(self.headers.get('Content-Length', '0'))
+            if not 0 < n <= 3_000_000:
+                raise ValueError('Input files exceed 3 MB request limit.')
+            req = json.loads(self.rfile.read(n).decode('utf-8'))
+            tb = req.get('testbench', '')
+            net = req.get('netlistContent', '')
+            net_name = os.path.basename(str(req.get('netlistName', '')))
+            if not isinstance(tb, str) or not isinstance(net, str) or not tb.strip() or not net.strip():
+                raise ValueError('Choose a nonempty netlist and testbench input file.')
+            if len(tb) > 1_000_000 or len(net) > 1_000_000 or not net_name.lower().endswith(('.table', '.tbl', '.net')):
+                raise ValueError('Netlist must be .table, .tbl or .net; each file must be under 1 MB.')
+            # Keep the original directives, replacing only the selected circuit source.
+            build_dir = os.path.join(PROJECT_ROOT, 'build')
+            os.makedirs(build_dir, exist_ok=True)
+            with tempfile.TemporaryDirectory(prefix='slms_file_', dir=build_dir) as td:
+                circuit = os.path.join(td, 'uploaded' + os.path.splitext(net_name)[1].lower())
+                with open(circuit, 'w', encoding='utf-8') as f:
+                    f.write(net)
+                kind = 'FSM' if net_name.lower().endswith('.net') else 'NETLIST'
+                lines = tb.splitlines()
+                found = False
+                for i,line in enumerate(lines):
+                    if re.match(r'^\s*(?:CIRCUIT|FSM|NETLIST)\s+', line, re.I):
+                        lines[i] = kind + ' ' + os.path.relpath(circuit, PROJECT_ROOT)
+                        found = True
+                        break
+                if not found:
+                    lines.insert(0, kind + ' ' + os.path.relpath(circuit, PROJECT_ROOT))
+                script = '\n'.join(lines) + '\n'
+                res, wave = self.run_generated_testbench(script, timeout=35)
+            self.send_json({'success': res.returncode == 0, 'stdout':res.stdout,
+                            'stderr':res.stderr,'waveform':wave},
+                           200 if res.returncode == 0 and wave.get('times') else 400)
+        except Exception as exc:
+            self.send_json({'success':False,'error':str(exc)},400)
+
+    def handle_generic_simulate(self):
+        """Run a user-selected .table combinational netlist or .net FSM with timed inputs."""
+        try:
+            n = int(self.headers.get('Content-Length', '0'))
+            if n <= 0 or n > 1_000_000:
+                raise ValueError('Invalid request size.')
+            req = json.loads(self.rfile.read(n).decode('utf-8'))
+            circuit_type = str(req.get('circuitType', 'netlist')).lower()
+            circuit_path = str(req.get('netlist', '')).strip()
+            if not circuit_path or os.path.isabs(circuit_path) or '..' in circuit_path.split('/'):
+                raise ValueError('Enter a project-relative netlist path (no absolute paths or ..).')
+            full_path = os.path.realpath(os.path.join(PROJECT_ROOT, circuit_path))
+            if not full_path.startswith(os.path.realpath(PROJECT_ROOT) + os.sep) or not os.path.isfile(full_path):
+                raise ValueError('Netlist file not found inside the project. Check the relative path.')
+            if circuit_type == 'fsm' and not circuit_path.endswith('.net'):
+                raise ValueError('FSM simulation expects a .net file.')
+            if circuit_type != 'fsm' and not circuit_path.endswith(('.table', '.tbl')):
+                raise ValueError('Combinational netlist simulation expects a .table file.')
+            max_time = int(req.get('maxTime', 40))
+            if max_time < 1 or max_time > 100000:
+                raise ValueError('Maximum time must be between 1 and 100000.')
+            lines = [('FSM ' if circuit_type == 'fsm' else 'NETLIST ') + circuit_path]
+            clock = str(req.get('clockPeriod', '')).strip()
+            if circuit_type == 'fsm' and clock:
+                period = int(clock)
+                if period < 2 or period > 10000:
+                    raise ValueError('Clock period must be between 2 and 10000.')
+                lines.append(f'CLOCK clk {period}')
+            lines.append(f'MAX_TIME {max_time}')
+            stimuli = str(req.get('stimuli', '')).splitlines()
+            events = 0
+            for raw in stimuli:
+                raw = raw.strip()
+                if not raw or raw.startswith('#'):
+                    continue
+                # Accept `0: a=0 b=1` or `@0 a=0 b=1`.
+                match = re.fullmatch(r'@?(\d+)\s*:\s*(.+)|@(\d+)\s+(.+)', raw)
+                if not match:
+                    raise ValueError(f'Invalid input line: {raw!r}. Use `0: a=0 b=1` or `@0 a=0 b=1`.')
+                time = int(match.group(1) or match.group(3))
+                assignments = match.group(2) or match.group(4)
+                if time > max_time:
+                    raise ValueError(f'Input time {time} exceeds MAX_TIME {max_time}.')
+                if not re.fullmatch(r'\s*[A-Za-z_][A-Za-z0-9_]*(?:\[-?\d+\])?\s*=\s*[01](?:\s+[A-Za-z_][A-Za-z0-9_]*(?:\[-?\d+\])?\s*=\s*[01])*\s*', assignments):
+                    raise ValueError(f'Invalid assignments at time {time}: use signal=0/1 pairs.')
+                lines.append(f'@{time} {assignments}')
+                events += 1
+                if events > MAX_GENERIC_EVENTS:
+                    raise ValueError(f'At most {MAX_GENERIC_EVENTS} input events are allowed.')
+            if not events:
+                raise ValueError('Add at least one input event.')
+            res, wave = self.run_generated_testbench('\n'.join(lines) + '\n')
+            self.send_json({'success': res.returncode == 0, 'stdout': res.stdout,
+                            'stderr': res.stderr, 'waveform': wave,
+                            'generatedTestbench': '\n'.join(lines) + '\n'},
+                           200 if res.returncode == 0 and wave.get('times') else 400)
+        except Exception as exc:
+            self.send_json({'success': False, 'error': str(exc)}, 400)
+
+    def handle_vending(self):
+        """Run the bundled vending FSM for a sequence of 5/10-unit coins."""
+        try:
+            n = int(self.headers.get('Content-Length', '0'))
+            if n <= 0 or n > 100000:
+                raise ValueError('Invalid request size.')
+            req = json.loads(self.rfile.read(n).decode('utf-8'))
+            coins = req.get('coins', [])
+            if not isinstance(coins, list) or len(coins) > 50 or any(c not in (5, 10) for c in coins):
+                raise ValueError('Coins must be a list of 5 or 10 values (maximum 50 coins).')
+            lines = [
+                'FSM examples/vending_machine/vending_machine.net',
+                'CLOCK clk 10',
+                f'MAX_TIME {max(40, 20 * len(coins) + 20)}',
+                '@0 reset=1 coin5=0 coin10=0',
+                '@5 reset=0',
+            ]
+            for i, coin in enumerate(coins):
+                start = 8 + 20 * i
+                lines.append(f'@{start} coin5={int(coin == 5)} coin10={int(coin == 10)}')
+                lines.append(f'@{start + 8} coin5=0 coin10=0')
+            res, wave = self.run_generated_testbench('\n'.join(lines) + '\n')
+            if res.returncode != 0 or not wave.get('times'):
+                raise RuntimeError((res.stderr + '\n' + res.stdout)[-2500:] or 'Vending simulation returned no waveform.')
+            times = wave['times']
+            # Sample the meaningful response to the final coin, not the idle end of the testbench.
+            if not coins:
+                target_time = 6
+            elif coins[-1] == 10 or (coins[-1] == 5 and len(coins) > 1 and coins[-2] == 5):
+                # A 10 coin vends on the next rising edge; a second 5 coin
+                # completes the purchase when the FSM already holds 5 credit.
+                target_time = 10 + 20 * (len(coins) - 1)
+            else:
+                # A first 5 coin is reflected as stored credit after the edge.
+                target_time = 16 + 20 * (len(coins) - 1)
+            sample = next((i for i, t in enumerate(times) if t >= target_time), len(times) - 1)
+            signals = {name: int(values[sample]) for name, values in wave.get('data', {}).items() if sample < len(values)}
+            response = {'success': True, 'coins': coins, 'time': times[sample], 'signals': signals,
+                        'vend': signals.get('vend', 0), 'credit5': signals.get('credit5', 0),
+                        'waveform': wave, 'stdout': res.stdout}
+            self.send_json(response)
+        except Exception as exc:
+            self.send_json({'success': False, 'error': str(exc)}, 400)
 
     def handle_tests(self):
+        sim_bin = os.path.join(PROJECT_ROOT, 'simulator')
         try:
-            with SIMULATOR_LOCK:
-                completed = subprocess.run(
-                    [SIMULATOR, "--test", "all"],
-                    cwd=PROJECT_ROOT,
-                    capture_output=True,
-                    text=True,
-                    timeout=30,
-                )
-
+            res = subprocess.run([sim_bin, '--test', 'all'], 
+                                 cwd=PROJECT_ROOT, 
+                                 capture_output=True, 
+                                 text=True, 
+                                 timeout=10)
+            
             tests = []
-            for line in completed.stdout.splitlines():
-                if (
-                    "[" in line
-                    and "]" in line
-                    and ("[ PASS ]" in line or "[ FAIL ]" in line)
-                ):
+            for line in res.stdout.splitlines():
+                if "[" in line and "]" in line and ("[ PASS ]" in line or "[ FAIL ]" in line):
                     parts = line.split()
-                    if len(parts) >= 2:
-                        category = parts[0].strip("[]")
-                        name = parts[1]
-                        tests.append({
-                            "cat": category,
-                            "name": name,
-                            "ok": "[ PASS ]" in line,
-                        })
+                    cat = parts[0].replace("[", "").replace("]", "")
+                    name = parts[1]
+                    status = "PASS" in line
+                    tests.append({"cat": cat, "name": name, "ok": status})
 
-            self.send_json({
-                "success": completed.returncode == 0,
-                "total": len(tests),
-                "passed": sum(test["ok"] for test in tests),
-                "failed": sum(not test["ok"] for test in tests),
-                "tests": tests,
-                "stdout": completed.stdout,
-                "stderr": completed.stderr,
-            })
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({"total": len(tests), "passed": sum(t["ok"] for t in tests), "failed": sum(not t["ok"] for t in tests), "tests": tests}).encode('utf-8'))
+        except Exception as e:
+            self.send_response(500)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
 
-        except Exception as exc:
-            self.send_json({"success": False, "error": str(exc)}, 500)
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     print(f"[*] Starting SLMS Web GUI Server on http://localhost:{PORT}")
-    httpd = HTTPServer(("0.0.0.0", PORT), SLMSRequestHandler)
-
+    httpd = HTTPServer(('0.0.0.0', PORT), SLMSRequestHandler)
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
         print("\n[*] Server stopped.")
-    finally:
-        httpd.server_close()

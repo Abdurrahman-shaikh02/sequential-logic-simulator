@@ -15,6 +15,9 @@
 #include "combinational/XOR.hpp"
 #include "combinational/MUX.hpp"
 #include "sequential/DFF_P.hpp"
+#include "sequential/TFF_N.hpp"
+#include "sequential/JKFF_N.hpp"
+#include "sequential/DFF_N.hpp"
 #include "sequential/TFF_P.hpp"
 #include "sequential/JKFF_P.hpp"
 #include "primary/InputNode.hpp"
@@ -104,6 +107,75 @@ void TestSuite::runUnitTests() {
         dff.changeState();
         bool p2 = (dff.getResult() == Signal::LOW);
         record("Unit", "Sequential_DFF_P_ClockStateChange", p1 && p2, "DFF updates state on positive clock edge");
+    }
+
+    {
+        JKFF_P ff;
+        ff.evaluate(Port::J, Signal::HIGH);
+        ff.evaluate(Port::K, Signal::LOW);
+        ff.changeState();
+        bool set = ff.getResult() == Signal::HIGH;
+        ff.evaluate(Port::J, Signal::HIGH);
+        ff.evaluate(Port::K, Signal::HIGH);
+        ff.changeState();
+        bool toggle = ff.getResult() == Signal::LOW;
+        ff.evaluate(Port::J, Signal::LOW);
+        ff.evaluate(Port::K, Signal::LOW);
+        ff.changeState();
+        bool hold = ff.getResult() == Signal::LOW;
+        record("Unit", "Sequential_JKFF_P_SetToggleHold", set && toggle && hold,
+               "JK positive-edge state rules: set, toggle, and hold");
+    }
+
+    {
+        TFF_P ff;
+        ff.evaluate(Port::T, Signal::HIGH);
+        ff.changeState();
+        bool firstToggle = ff.getResult() == Signal::HIGH;
+        ff.changeState();
+        bool secondToggle = ff.getResult() == Signal::LOW;
+        ff.evaluate(Port::T, Signal::LOW);
+        ff.changeState();
+        bool hold = ff.getResult() == Signal::LOW;
+        record("Unit", "Sequential_TFF_P_ToggleHold", firstToggle && secondToggle && hold,
+               "T positive-edge state rules: toggle when T=1, hold when T=0");
+    }
+
+    {
+        DFF_N ff;
+        ff.evaluate(Port::D, Signal::HIGH);
+        ff.changeState();
+        bool captured = ff.getResult() == Signal::HIGH;
+        ff.evaluate(Port::D, Signal::LOW);
+        ff.changeState();
+        bool capturedLow = ff.getResult() == Signal::LOW;
+        record("Unit", "Sequential_DFF_N_StateChange", captured && capturedLow,
+               "DFF negative-edge state capture logic");
+    }
+
+    {
+        JKFF_N ff;
+        ff.evaluate(Port::J, Signal::LOW);
+        ff.evaluate(Port::K, Signal::HIGH);
+        ff.changeState();
+        bool reset = ff.getResult() == Signal::LOW;
+        ff.evaluate(Port::J, Signal::HIGH);
+        ff.evaluate(Port::K, Signal::LOW);
+        ff.changeState();
+        bool set = ff.getResult() == Signal::HIGH;
+        record("Unit", "Sequential_JKFF_N_ResetSet", reset && set,
+               "JK negative-edge state rules: reset and set");
+    }
+
+    {
+        TFF_N ff;
+        ff.evaluate(Port::T, Signal::HIGH);
+        ff.changeState();
+        bool firstToggle = ff.getResult() == Signal::HIGH;
+        ff.changeState();
+        bool secondToggle = ff.getResult() == Signal::LOW;
+        record("Unit", "Sequential_TFF_N_Toggle", firstToggle && secondToggle,
+               "T negative-edge state toggles when T=1");
     }
 
     // C. Synthesizer State Analysis

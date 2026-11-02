@@ -1,0 +1,4 @@
+not_test	a	-	-	pi	\a
+not_test	y	-	-	po	\y
+not_test	$not_gate	$_NOT_	A	in	\a
+not_test	$not_gate	$_NOT_	Y	out	\y

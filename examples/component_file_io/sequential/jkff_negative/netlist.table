@@ -1,0 +1,8 @@
+jkff_negative_test	j	-	-	pi	\j
+jkff_negative_test	k	-	-	pi	\k
+jkff_negative_test	clk	-	-	pi	\clk
+jkff_negative_test	q	-	-	po	\q
+jkff_negative_test	$jkff_negative_cell	$_JKFF_N_	J	in	\j
+jkff_negative_test	$jkff_negative_cell	$_JKFF_N_	K	in	\k
+jkff_negative_test	$jkff_negative_cell	$_JKFF_N_	C	in	\clk
+jkff_negative_test	$jkff_negative_cell	$_JKFF_N_	Q	out	\q

@@ -1,0 +1,6 @@
+tff_positive_test	t	-	-	pi	\t
+tff_positive_test	clk	-	-	pi	\clk
+tff_positive_test	q	-	-	po	\q
+tff_positive_test	$tff_positive_cell	$_TFF_P_	T	in	\t
+tff_positive_test	$tff_positive_cell	$_TFF_P_	C	in	\clk
+tff_positive_test	$tff_positive_cell	$_TFF_P_	Q	out	\q

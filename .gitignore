@@ -2,3 +2,7 @@ build/
 temp/
 private/
 .clangd
+
+/build/
+/output/
+/simulator

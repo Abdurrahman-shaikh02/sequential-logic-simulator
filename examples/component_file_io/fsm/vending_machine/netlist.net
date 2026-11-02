@@ -1,0 +1,16 @@
+# Generic Moore/Mealy-style vending FSM for a 10-unit item.
+# Inputs: coin5 and coin10; reset is synchronous and active high.
+# Outputs: vend is asserted for a purchase; credit5 indicates 5 units stored.
+inputs: coin5 coin10
+outputs: vend credit5
+reset: Idle
+
+# current | coin5coin10 | next | vend credit5
+Idle    | 00 | Idle    | 0 0
+Idle    | 10 | Credit5 | 0 0
+Idle    | 01 | Idle    | 1 0
+Idle    | 11 | Idle    | 1 0
+Credit5 | 00 | Credit5 | 0 1
+Credit5 | 10 | Idle    | 1 1
+Credit5 | 01 | Idle    | 1 1
+Credit5 | 11 | Idle    | 1 1

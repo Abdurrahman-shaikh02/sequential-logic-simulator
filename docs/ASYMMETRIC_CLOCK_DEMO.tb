@@ -1,0 +1,14 @@
+# Demonstration of a 30% duty-cycle clock (3 HIGH, 7 LOW per 10-unit period).
+FSM tests/netlists/fsm/traffic_light/traffic_light_fsm.net
+CLOCK clk 10 3
+MAX_TIME 43
+
+# Reset is asserted at t=0 and released before the first rising edge at t=3.
+@0 reset=1 en=0
+@1 reset=0 en=0
+
+# Enable before subsequent rising edges at t=13, 23, and 33.
+@8 en=1
+ASSERT @14 G=0 Y=1 R=0 "First enabled rising edge advances Green to Yellow"
+ASSERT @24 G=0 Y=0 R=1 "Second enabled rising edge advances Yellow to Red"
+ASSERT @34 G=1 Y=0 R=0 "Third enabled rising edge advances Red to Green"

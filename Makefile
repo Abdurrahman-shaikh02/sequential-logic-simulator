@@ -53,8 +53,11 @@ build/%.o: %.cpp
 
 TEST_SUITE_BIN = tests/test_suite
 
-test: $(TEST_SUITE_BIN)
+PARSER_TEST_BIN = build/standalone/tests/unit/parser/test_parser
+
+test: $(TEST_SUITE_BIN) $(PARSER_TEST_BIN)
 	./$(TEST_SUITE_BIN) all
+	./$(PARSER_TEST_BIN)
 
 $(TEST_SUITE_BIN): tests/test_suite.cpp $(LIB_OBJ) $(TEST_CATEGORY_OBJ)
 	@mkdir -p build/tests
@@ -77,9 +80,9 @@ gui: $(TARGET)
 # --------------------------------------------------
 
 clean:
+	@echo "Removing generated build files and executables..."
 	rm -rf build output
-	rm -f $(TARGET)
-	rm -f $(TEST_SUITE_BIN)
+	rm -f $(TARGET) $(TEST_SUITE_BIN) $(STANDALONE_BINS)
 
 
 .PHONY: test run clean gui
@@ -106,3 +109,10 @@ examples-test: $(TARGET)
 	./$(TARGET) --testbench examples/vending_machine/vending_machine.tb
 
 .PHONY: examples-test
+
+
+# Focused parser regression suite (includes supported sequential primitive types).
+parser-test: $(PARSER_TEST_BIN)
+	./$(PARSER_TEST_BIN)
+
+.PHONY: parser-test

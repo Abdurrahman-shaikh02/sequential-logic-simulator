@@ -1,0 +1,7 @@
+# NOT gate file-I/O testbench
+NETLIST examples/component_file_io/combinational/not/netlist.table
+MAX_TIME 20
+@0 a=0
+ASSERT @5 y=1 "not vector 0"
+@10 a=1
+ASSERT @15 y=0 "not vector 1"

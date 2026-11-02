@@ -1,0 +1,10 @@
+# Input order: clk coin10 coin5
+# reset/initial low, then test coin10 and coin5 combinations
+0 0 0
+1 0 0
+0 1 0
+1 1 0
+0 0 1
+1 0 1
+0 0 0
+1 0 0

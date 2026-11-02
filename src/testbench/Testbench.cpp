@@ -76,8 +76,31 @@ bool Testbench::loadCircuit(const std::string &filePath) {
     circuitPath = filePath;
     Simulator::clear();
 
-    // Check if it's an FSM file (.net)
-    if (filePath.size() >= 4 && filePath.substr(filePath.size() - 4) == ".net") {
+    // A .net suffix is ambiguous in this project: it is used both for the
+    // project's FSM transition-table format and for Yosys/ABC six-column
+    // gate-level netlists. Detect the format from file contents, not suffix.
+    bool isFsmTable = false;
+    {
+        std::ifstream probe(filePath);
+        if (!probe.is_open()) {
+            std::cerr << "[Testbench] Cannot open circuit file: " << filePath << "\n";
+            return false;
+        }
+        std::string line;
+        while (std::getline(probe, line)) {
+            auto first = line.find_first_not_of(" \t\r");
+            if (first == std::string::npos) continue;
+            line = line.substr(first);
+            if (line.empty() || line[0] == '#') continue;
+            isFsmTable = line.rfind("inputs:", 0) == 0 ||
+                         line.rfind("outputs:", 0) == 0 ||
+                         line.rfind("reset:", 0) == 0 ||
+                         line.find('|') != std::string::npos;
+            break;
+        }
+    }
+
+    if (isFsmTable) {
         isSynthesizedFSM = true;
         tablePath = Simulator::synthesize(filePath);
         if (tablePath.empty()) {
@@ -86,7 +109,7 @@ bool Testbench::loadCircuit(const std::string &filePath) {
         }
     } else {
         isSynthesizedFSM = false;
-        tablePath = filePath;
+        tablePath = filePath; // parse gate-level/Yosys table directly
     }
 
     int rc = Simulator::parse(tablePath);
@@ -171,21 +194,40 @@ void Testbench::applySignalValue(const std::string &name, int bitIndex, Signal v
 }
 
 Signal Testbench::readSignalValue(const std::string &name, int bitIndex) const {
-    auto outIt = Simulator::primaryOutputs.find(name);
+    // A .tb assertion such as q[2]=1 refers to bit 2 of the output bus q.
+    // Prefer an exact signal name when present, but resolve indexed bus syntax
+    // when the parser stores the bus under its base name.
+    std::string resolvedName = name;
+    int resolvedBit = bitIndex;
+    if (bitIndex < 0 && Simulator::primaryOutputs.find(name) == Simulator::primaryOutputs.end()
+                     && Simulator::primaryInputs.find(name) == Simulator::primaryInputs.end()) {
+        const size_t bracket = name.rfind('[');
+        if (bracket != std::string::npos && !name.empty() && name.back() == ']') {
+            const std::string number = name.substr(bracket + 1, name.size() - bracket - 2);
+            const std::string base = name.substr(0, bracket);
+            if (!number.empty() && std::all_of(number.begin(), number.end(), [](unsigned char c) { return std::isdigit(c); })
+                && (Simulator::primaryOutputs.count(base) || Simulator::primaryInputs.count(base))) {
+                resolvedName = base;
+                try { resolvedBit = std::stoi(number); }
+                catch (const std::exception &) { throw std::out_of_range("Invalid bit index: " + name); }
+            }
+        }
+    }
+    auto outIt = Simulator::primaryOutputs.find(resolvedName);
     if (outIt != Simulator::primaryOutputs.end()) {
-        if (bitIndex < 0 && !outIt->second.empty()) {
+        if (resolvedBit < 0 && !outIt->second.empty()) {
             return outIt->second[0]->getResult();
-        } else if (static_cast<size_t>(bitIndex) < outIt->second.size()) {
-            return outIt->second[bitIndex]->getResult();
+        } else if (static_cast<size_t>(resolvedBit) < outIt->second.size()) {
+            return outIt->second[resolvedBit]->getResult();
         }
     }
 
-    auto inIt = Simulator::primaryInputs.find(name);
+    auto inIt = Simulator::primaryInputs.find(resolvedName);
     if (inIt != Simulator::primaryInputs.end()) {
-        if (bitIndex < 0 && !inIt->second.empty()) {
+        if (resolvedBit < 0 && !inIt->second.empty()) {
             return inIt->second[0]->getResult();
-        } else if (static_cast<size_t>(bitIndex) < inIt->second.size()) {
-            return inIt->second[bitIndex]->getResult();
+        } else if (static_cast<size_t>(resolvedBit) < inIt->second.size()) {
+            return inIt->second[resolvedBit]->getResult();
         }
     }
 
