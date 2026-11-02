@@ -1,7 +1,4 @@
-#include <iostream>
 #include "simulation/OperationQueue.hpp"
-#include "operations/SetPortOperation.hpp"
-#include "operations/ChangeStateOperation.hpp"
 
 /* pushes an operation at the back of the queue
  * uses std::move(). See online, how it works :)
@@ -27,46 +24,4 @@ std::unique_ptr<Operation> OperationQueue::dequeue() {
     std::unique_ptr<Operation> op = std::move(q.front());
     q.pop_front();
     return op;
-}
-
-/* goes in a loop and checks if set_port appears
- *  before a change_state for the exact same node.
- *  If so, give warning and swap them!
- */
-void OperationQueue::reorder() {
-    // this represents if there is set_port before change_state on exact same node
-    bool hazardDetected = false;
-
-    for(std::deque<std::unique_ptr<Operation> >::size_type i = 0; i < q.size(); i++) {
-        auto* setPortOp = dynamic_cast<SetPortOperation*>(q[i].get());
-        if(!setPortOp) 
-            continue;
-        
-        for(std::deque<std::unique_ptr<Operation> >::size_type j = 0; j < q.size(); j++) {
-            if(i == j)
-                continue;
-
-            auto* changeStateOp = dynamic_cast<ChangeStateOperation*>(q[j].get());
-            if (!changeStateOp)
-                continue;
-
-            // check : same exact node? via memory addresses
-            if(&setPortOp->getTarget() == &changeStateOp->getTarget()) {
-                
-                // report warning if both operations co-exists in queue for the exact same node!
-                if(!hazardDetected) {
-                    std::cerr << "[WARNING] Hold-time violation detected." << std::endl;
-                    hazardDetected = true;
-                }
-
-                // change_state 'must' appears before set_port i.e. i < j
-                // swap so CHANGE_STATE executes first 
-                if(i < j) {
-                    std::swap(q[i], q[j]);
-                    i--; // reavulate index i after swap
-                    break;
-                }
-            }
-        }
-    }
 }

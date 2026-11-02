@@ -5,11 +5,11 @@
 #include "sequential/SequentialNode.hpp"
 
 class TFF_P : public SequentialNode {
-    Signal t;
-    	Signal clk;
+	Signal t;
+	Signal clk;
 public:
-    TFF_P();
-    void evaluate(Port p, Signal value) override;
-    void setPort(Port p, Signal value) override;
-    void changeState() override;
+	TFF_P();
+	void evaluate(Port p, Signal value) override;
+	void setPort(Port p, Signal value) override;
+	void changeState() override;
 };
