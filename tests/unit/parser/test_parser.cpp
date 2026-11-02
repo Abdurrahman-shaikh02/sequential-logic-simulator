@@ -565,17 +565,6 @@ TEST(parser, err_legacy_gate_names_rejected) {
     CHECK(errHas(r, "unknown component type"));
 }
 
-TEST(parser, err_unsupported_ff_types_currently_commented_out) {
-    // $_DFF_N_ / $_TFF_*_ / $_JKFF_*_ are commented out in compTypeTable.
-    // Delete/adjust these checks when you enable them.
-    const char* types[] = {"$_DFF_N_", "$_TFF_P_", "$_TFF_N_", "$_JKFF_P_", "$_JKFF_N_"};
-    for (auto* t : types) {
-        auto r = run("ff_unsup", row("t", "ff", t, "D", "in", "w"));
-        CHECK(r.rc == -1);
-        CHECK(errHas(r, "unknown component type"));
-    }
-}
-
 TEST(parser, err_unknown_port_name) {
     auto r = run("bad_port", row("t", "g", "$_AND_", "Z", "in", "w"));
     CHECK(r.rc == -1);

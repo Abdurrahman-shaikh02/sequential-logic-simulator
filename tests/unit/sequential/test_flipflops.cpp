@@ -1,12 +1,15 @@
-// Specs for the flip-flops whose sources are still empty (DFF_N, TFF_*, JKFF_*).
+// Specs for DFF_N, TFF_P/TFF_N and JKFF_P/JKFF_N.
 //
-// The Makefile defines HDLSIM_HAVE_<NAME> once include/sequential/<NAME>.hpp
-// is non-empty, so each block below starts compiling and running as soon as that
-// flip-flop is implemented. The tests assume the same shape as DFF_P: a default
-// constructor, the parser's port names (D/T/J/K + CLK, see Parser.cpp) and Q as
-// the result.
+// They assume the same shape as DFF_P: a default constructor, the parser's port
+// names (D/T/J/K + CLK, see Parser.cpp) and Q as the result. A clock edge samples
+// the inputs driven in the same step.
 
 #include "support/helpers.hpp"
+#include "sequential/DFF_N.hpp"
+#include "sequential/TFF_P.hpp"
+#include "sequential/TFF_N.hpp"
+#include "sequential/JKFF_P.hpp"
+#include "sequential/JKFF_N.hpp"
 
 using namespace hdltest;
 
@@ -42,9 +45,6 @@ struct Bench {
 
 }  // namespace
 
-#ifdef HDLSIM_HAVE_DFF_N
-#include "sequential/DFF_N.hpp"
-
 TEST(dff_n, falling_edge_captures_d) {
     Bench<DFF_N> b({Port::D});
     b.set(Port::D, 1);
@@ -57,20 +57,17 @@ TEST(dff_n, falling_edge_captures_d) {
 TEST(dff_n, random_stimulus_matches_reference_model) {
     Bench<DFF_N> b({Port::D});
     Capture err(std::cerr);
-    int d = 0, clk = 0, q = 0;
+    int clk = 0, q = 0;
     for (int step = 0; step < 1000; step++) {
         int nd = randomBit(), nclk = randomBit();
-        if (clk && !nclk) q = d;
+        if (clk && !nclk) q = nd;   // edge samples the D of this step
         Circuit::setAll({{b.ins[0].second, nd}, {&b.clk, nclk}});
-        d = nd;
         clk = nclk;
         INFO("step " << step);
         REQUIRE_EQ(b.Q(), q);
     }
 }
-#endif
 
-#if defined(HDLSIM_HAVE_TFF_P) || defined(HDLSIM_HAVE_TFF_N)
 template <class FF>
 void tffSpec(bool positive) {
     Bench<FF> b({Port::T});
@@ -79,7 +76,7 @@ void tffSpec(bool positive) {
     for (int step = 0; step < 1000; step++) {
         int nt = randomBit(), nclk = randomBit();
         bool edge = positive ? (!clk && nclk) : (clk && !nclk);
-        if (edge && t) q ^= 1;
+        if (edge && nt) q ^= 1;
         Circuit::setAll({{b.ins[0].second, nt}, {&b.clk, nclk}});
         t = nt;
         clk = nclk;
@@ -87,10 +84,6 @@ void tffSpec(bool positive) {
         REQUIRE_EQ(b.Q(), q);
     }
 }
-#endif
-
-#ifdef HDLSIM_HAVE_TFF_P
-#include "sequential/TFF_P.hpp"
 
 TEST(tff_p, toggles_on_rising_edge_when_t_high) {
     Bench<TFF_P> b({Port::T});
@@ -105,15 +98,9 @@ TEST(tff_p, toggles_on_rising_edge_when_t_high) {
 }
 
 TEST(tff_p, random_stimulus_matches_reference_model) { tffSpec<TFF_P>(true); }
-#endif
-
-#ifdef HDLSIM_HAVE_TFF_N
-#include "sequential/TFF_N.hpp"
 
 TEST(tff_n, random_stimulus_matches_reference_model) { tffSpec<TFF_N>(false); }
-#endif
 
-#if defined(HDLSIM_HAVE_JKFF_P) || defined(HDLSIM_HAVE_JKFF_N)
 template <class FF>
 void jkffSpec(bool positive) {
     Bench<FF> b({Port::J, Port::K});
@@ -122,7 +109,7 @@ void jkffSpec(bool positive) {
     for (int step = 0; step < 1000; step++) {
         int nj = randomBit(), nk = randomBit(), nclk = randomBit();
         bool edge = positive ? (!clk && nclk) : (clk && !nclk);
-        if (edge) q = j && k ? !q : j ? 1 : k ? 0 : q;   // 00 hold, 10 set, 01 reset, 11 toggle
+        if (edge) q = nj && nk ? !q : nj ? 1 : nk ? 0 : q;   // 00 hold, 10 set, 01 reset, 11 toggle
         Circuit::setAll({{b.ins[0].second, nj}, {b.ins[1].second, nk}, {&b.clk, nclk}});
         j = nj;
         k = nk;
@@ -131,10 +118,6 @@ void jkffSpec(bool positive) {
         REQUIRE_EQ(b.Q(), q);
     }
 }
-#endif
-
-#ifdef HDLSIM_HAVE_JKFF_P
-#include "sequential/JKFF_P.hpp"
 
 TEST(jkff_p, set_reset_hold_toggle) {
     Bench<JKFF_P> b({Port::J, Port::K});
@@ -155,10 +138,5 @@ TEST(jkff_p, set_reset_hold_toggle) {
 }
 
 TEST(jkff_p, random_stimulus_matches_reference_model) { jkffSpec<JKFF_P>(true); }
-#endif
-
-#ifdef HDLSIM_HAVE_JKFF_N
-#include "sequential/JKFF_N.hpp"
 
 TEST(jkff_n, random_stimulus_matches_reference_model) { jkffSpec<JKFF_N>(false); }
-#endif

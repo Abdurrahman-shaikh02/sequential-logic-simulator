@@ -94,12 +94,7 @@ TEST_SRC = $(shell find tests -path tests/archive -prune -o -type f -name '*.cpp
 TEST_OBJ = $(patsubst %.cpp,$(BUILD)/%.o,$(TEST_SRC))
 TEST_BIN = $(BUILD)/run_tests
 
-# Flip-flops whose header is still empty are not compiled into the tests yet;
-# their tests switch on automatically (HDLSIM_HAVE_<NAME>) once implemented.
-PENDING_FFS = DFF_N TFF_P TFF_N JKFF_P JKFF_N
-HAVE_FLAGS := $(foreach ff,$(PENDING_FFS),$(if $(shell test -s include/sequential/$(ff).hpp && echo y),-DHDLSIM_HAVE_$(ff)))
-
-$(TEST_OBJ): CPPFLAGS += -I./tests -DHDLTEST_FIXTURE_DIR='"$(CURDIR)/tests/fixtures"' $(HAVE_FLAGS)
+$(TEST_OBJ): CPPFLAGS += -I./tests -DHDLTEST_FIXTURE_DIR='"$(CURDIR)/tests/fixtures"'
 
 $(TEST_BIN): $(TEST_OBJ) $(LIB)
 	$(CXX) $(LDFLAGS) $^ -o $@

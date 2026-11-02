@@ -6,7 +6,7 @@
 
 class JKFF_N : public SequentialNode {
 	Signal j;
-    Signal k;
+	Signal k;
 	Signal clk;
 public:
 	JKFF_N();

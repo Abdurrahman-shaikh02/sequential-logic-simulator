@@ -194,9 +194,6 @@ TEST(netlists, dff) {
     }
 }
 
-// Switches on once include/sequential/DFF_N.hpp is non-empty (see the Makefile);
-// $_DFF_N_ must also be uncommented in Parser.cpp's compTypeTable.
-#ifdef HDLSIM_HAVE_DFF_N
 TEST(netlists, dff_negedge) {
     NetlistSim sim(netlist("dffn"));
     Capture err(std::cerr);
@@ -212,7 +209,6 @@ TEST(netlists, dff_negedge) {
         REQUIRE_EQ(NetlistSim::get("q"), q);
     }
 }
-#endif
 
 TEST(netlists, shift_register) {
     NetlistSim sim(netlist("shiftregister"));
