@@ -327,7 +327,6 @@ TEST(two_gate_instances_chained) {
 // ---------------------------------------------------------------------------
 // Warnings (not errors): the parser now only warns about unused wires
 // ---------------------------------------------------------------------------
-
 TEST(warn_primary_input_with_no_consumers) {
     auto r = run("pi_unused", row("t", "a", "-", "-", "pi", "dangling"));
     CHECK(r.rc == 0);
@@ -352,7 +351,6 @@ TEST(warn_gate_output_unconnected) {
 // ---------------------------------------------------------------------------
 // Multibit wires
 // ---------------------------------------------------------------------------
-
 // n_i = NOT(a [i]) -> y [i], for i in 0..width-1
 static std::string notBank(int width, const std::string& piWire, const std::string& poWire) {
     std::string nl = row("t", "a", "-", "-", "pi", piWire) +
@@ -394,7 +392,6 @@ TEST(multibit_inferred_from_indexed_wires) {
     CHECK(r.rc == 0);
     checkBank(r, 4);
 }
-
 TEST(multibit_two_bit_range) {
     auto r = run("range2", notBank(2, "a [1:0]", "y [1:0]"));
     CHECK(r.rc == 0);
@@ -489,7 +486,6 @@ TEST(constant_zero_is_low) {
         CHECK(drives(*c, ands[0], Port::A));
     } else CHECK(false);
 }
-
 TEST(constant_x_is_treated_as_low) {
     auto r = run("constx", constAnd("1'x"));
     CHECK(r.rc == 0);
@@ -601,14 +597,41 @@ TEST(err_legacy_gate_names_rejected) {
     CHECK(errHas(r, "unknown component type"));
 }
 
-TEST(err_unsupported_ff_types_currently_commented_out) {
-    // $_DFF_N_ / $_TFF_*_ / $_JKFF_*_ are commented out in compTypeTable.
-    // Delete/adjust these checks when you enable them.
-    const char* types[] = {"$_DFF_N_", "$_TFF_P_", "$_TFF_N_", "$_JKFF_P_", "$_JKFF_N_"};
-    for (auto* t : types) {
-        auto r = run("ff_unsup", row("t", "ff", t, "D", "in", "w"));
-        CHECK(r.rc == -1);
-        CHECK(errHas(r, "unknown component type"));
+TEST(registered_sequential_ff_types_are_accepted) {
+    // These flip-flop types are registered in Parser.cpp's compTypeTable.
+    // Supply every required port so this test checks type recognition rather
+    // than failing because an instance is incomplete.
+    struct FFCase {
+        const char* type;
+        std::vector<std::string> inputPorts;
+    };
+
+    const FFCase cases[] = {
+        {"$_DFF_N_",  {"D", "C"}},
+        {"$_TFF_P_",  {"T", "C"}},
+        {"$_TFF_N_",  {"T", "C"}},
+        {"$_JKFF_P_", {"J", "K", "C"}},
+        {"$_JKFF_N_", {"J", "K", "C"}}
+    };
+
+    for (const auto& ffCase : cases) {
+        std::string nl;
+        int index = 0;
+
+        for (const auto& port : ffCase.inputPorts) {
+            const std::string inputName = "in" + std::to_string(index);
+            const std::string wireName = "w" + std::to_string(index);
+            nl += row("t", inputName, "-", "-", "pi", wireName);
+            nl += row("t", "ff", ffCase.type, port, "in", wireName);
+            ++index;
+        }
+
+        nl += row("t", "q", "-", "-", "po", "wq");
+        nl += row("t", "ff", ffCase.type, "Q", "out", "wq");
+
+        auto r = run(std::string("supported_ff_") + ffCase.type, nl);
+        CHECK(r.rc == 0);
+        CHECK(!errHas(r, "unknown component type"));
     }
 }
 
@@ -696,6 +719,7 @@ TEST(err_multiple_drivers_on_a_multibit_wire) {
     CHECK(errHas(r, "multiple drivers"));
 }
 
+
 TEST(err_missing_port_on_instance) {
     // $_AND_ with only A and Y -> B missing
     std::string nl =
@@ -739,17 +763,14 @@ TEST(err_gate_input_wire_has_no_driver) {
 // ---------------------------------------------------------------------------
 // Current behaviours worth knowing about (pin them so changes are deliberate)
 // ---------------------------------------------------------------------------
-
-TEST(unknown_primary_direction_is_currently_accepted_as_output) {
-    // The old "unknown primary port direction" error is gone: any direction other
-    // than "pi" is treated as an output. If you want it rejected again, change
-    // rc to -1 here and add the check back in Parser.cpp.
+TEST(unknown_primary_direction_is_rejected) {
+    // Parser.cpp accepts only "pi" and "po" for primary-node directions.
     std::string nl =
-        row("t", "a", "-", "-", "pi", "w") +
-        row("t", "y", "-", "-", "inout", "w");
+        row("t", "a", "-", "-", "pi", "w1") +
+        row("t", "y", "-", "-", "inout", "w2");
     auto r = run("bad_pdir", nl);
-    CHECK(r.rc == 0);
-    CHECK(vec(r.po, "y").size() == 1);
+    CHECK(r.rc == -1);
+    CHECK(errHas(r, "unknown direction"));
 }
 
 TEST(empty_file_current_behaviour) {
@@ -775,7 +796,6 @@ TEST(fsm_block_currently_rejected) {
     CHECK(r.rc == -1);
     CHECK(errHas(r, "expected 6 columns"));
 }
-
 // PENDING: cycle detection / topological sort is not implemented yet.
 // Build with -DRUN_PENDING_TESTS once it is.
 #ifdef RUN_PENDING_TESTS
@@ -804,16 +824,4 @@ TEST(pending_loop_through_dff_allowed) {
         row("t", "n",  "$_NOT_", "Y", "out", "wd");
     auto r = run("dff_loop", nl);
     CHECK(r.rc == 0);
-}
-#endif
-
-int main() {
-    for (auto& t : registry()) {
-        int before = g_failed;
-        t.fn();
-        std::cout << (g_failed == before ? "[ PASS ] " : "[ FAIL ] ") << t.name << "\n";
-    }
-    std::cout << "\n" << registry().size() << " tests, " << g_checks << " checks, "
-              << g_failed << " failed\n";
-    return g_failed ? 1 : 0;
 }
