@@ -94,4 +94,4 @@ The outputs come from gates fed by the current state and the current inputs, as 
 
 The `fsm_flow` tests check the claim on real netlists. They synthesize the traffic light and 40 random FSMs, simulate each one with random inputs and resets, and compare every step with a direct interpretation of the table. See [testing.md](../testing.md).
 
-> **TODO (synthesizer validation):** add the results of the synthesizer validation that checks this argument against an independent reference.
+`validation/synthesizer/validate.py` also checks the claim with code independent of the synthesizer, including every possible table of several small shapes. See [validation.md](../validation.md#synthesizer).

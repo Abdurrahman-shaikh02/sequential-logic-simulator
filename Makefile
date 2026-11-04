@@ -160,6 +160,7 @@ clean:
 	rm -rf build
 	rm -f simulator simulator-debug simulator-asan
 	rm -rf validation/icarus/out
+	rm -rf validation/synthesizer/out
 	rm -rf benchmark/simulation/generated
 	rm -f $(OLD_TEST_BIN)
 
