@@ -385,6 +385,15 @@ bool Testbench::run(int64_t duration) {
         eventTimes.insert(maxTime);
     }
 
+    // Sort stimuli by time once, so each step reads only its own entries instead
+    // of scanning the whole list. stable_sort keeps entries that share a
+    // timestamp in the order they were added, the order they are applied.
+    std::vector<const StimulusEvent*> stimuliByTime;
+    for (const auto &st : stimuli) stimuliByTime.push_back(&st);
+    std::stable_sort(stimuliByTime.begin(), stimuliByTime.end(),
+                     [](const StimulusEvent *a, const StimulusEvent *b) { return a->timestamp < b->timestamp; });
+    size_t nextStimulus = 0;
+
     // 2. Initialize circuit (turn inputs to LOW, topological sweep)
     Simulator::initialize();
     isInitialized = true;
@@ -399,11 +408,12 @@ bool Testbench::run(int64_t duration) {
             applySignalValue(clockDef.signalName, -1, clkVal);
         }
 
-        // B) Apply scheduled stimuli at this timestamp
-        for (const auto &st : stimuli) {
-            if (st.timestamp == t) {
-                applySignalValue(st.signalName, st.bitIndex, st.value);
-            }
+        // B) Apply scheduled stimuli at this timestamp. Event times only increase,
+        // so the cursor only moves forward; entries before t were applied already.
+        while (nextStimulus < stimuliByTime.size() && stimuliByTime[nextStimulus]->timestamp < t) ++nextStimulus;
+        for (; nextStimulus < stimuliByTime.size() && stimuliByTime[nextStimulus]->timestamp == t; ++nextStimulus) {
+            const StimulusEvent &st = *stimuliByTime[nextStimulus];
+            applySignalValue(st.signalName, st.bitIndex, st.value);
         }
 
         // C) Drain event queues (Combinational + Topological + Sequential)
