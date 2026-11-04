@@ -1,6 +1,6 @@
 # FSM analysis: dead and unreachable states
 
-Two functions that check an FSM description (format: `docs/fsm.net`) directly from its transition table, without synthesizing or simulating it. They live next to the synthesizer.
+Two functions that check an FSM description (format: [formats/fsm.md](../formats/fsm.md)) directly from its transition table, without synthesizing or simulating it. They live next to the synthesizer.
 
 | Function | Finds |
 |---|---|
@@ -51,11 +51,12 @@ When there is nothing to report, they print `dead states: none` and `unreachable
 
 ## Testing
 
-From the repo root:
+These functions are tested only by an archived standalone test, which is not part of `make test` yet:
 
 ```sh
-make tests/unit/synthesizer/analysist
-./tests/unit/synthesizer/analysist | diff - tests/unit/synthesizer/analysis_expected.txt
+make test-old TESTS=analysis
 ```
 
-The test calls both functions in print mode and then in return mode, and prints the returned states. No output from `diff` means the test passed.
+It builds `tests/archive/unit/synthesizer/analysist`, which calls both functions in print mode and then in return mode. The output must match `tests/archive/unit/synthesizer/analysis_expected.txt`.
+
+The functions are not available from the command line.

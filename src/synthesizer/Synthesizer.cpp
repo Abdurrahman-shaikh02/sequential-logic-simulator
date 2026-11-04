@@ -12,7 +12,7 @@
 #include "synthesizer/Synthesizer.hpp"
 
 // Converts an FSM table (docs/fsm.net) into a netlist the Parser accepts.
-// Algorithm: docs/synthesis_algorithm.txt
+// Algorithm: docs/synthesizer/algorithm.md
 //  - states are binary encoded, reset state = all zeros, one $_DFF_P_ per bit
 //  - every FSM row becomes one minterm over the state bits and the inputs
 //  - each D input / output line is the OR of the minterms that set it to 1
