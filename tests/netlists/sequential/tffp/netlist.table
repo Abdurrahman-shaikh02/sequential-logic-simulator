@@ -1,0 +1,6 @@
+test_tff_pos	clk	-	-	pi	\clk
+test_tff_pos	t	-	-	pi	\t
+test_tff_pos	q	-	-	po	\q
+test_tff_pos	ff0	$_TFF_P_	C	in	\clk
+test_tff_pos	ff0	$_TFF_P_	T	in	\t
+test_tff_pos	ff0	$_TFF_P_	Q	out	\q
