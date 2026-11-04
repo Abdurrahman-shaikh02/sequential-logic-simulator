@@ -1,85 +1,69 @@
-# Netlist Parser
+# Parser
 
-Reads a netlist file, builds the circuit graph, validates it, and orders the nodes topologically. Priorities are assignmed to nodes starting from 0, and going up to the maximum integer value. A lower number means a higher priority.
+`Parser::parse` reads a netlist (format: [formats/netlist.md](formats/netlist.md)) and builds the circuit graph the simulator runs. The code is in `src/parser/Parser.cpp`.
 
 ```cpp
-int Parser::parse(const std::string &path, std::vector<std::unique_ptr<Node>> &nodes, std::unordered_map<std::string, std::vector<Node*>> &primaryInputs, std::unordered_map<std::string, std::vector<Node*>> &primaryOutputs);
+int Parser::parse(const std::string &path,
+                  std::vector<std::unique_ptr<Node>> &nodes,
+                  std::unordered_map<std::string, std::vector<Node*>> &primaryInputs,
+                  std::unordered_map<std::string, std::vector<Node*>> &primaryOutputs);
 ```
 
-## Input
+It returns 0 on success. On error it writes one message to `std::cerr` and returns -1. Normally it is called as `Simulator::parse(path)`, which fills the simulator's own members.
 
-A text file identified by `path`, with one connection per line and six whitespace-separated columns:
+On success:
 
-```
-module  name  type  port  direction  wire
-```
+- `nodes` holds every node, sorted in topological order, with `priority` equal to its index.
+- `primaryInputs` and `primaryOutputs` map each port name to its bit nodes, **LSB first** (`bits[0]` is bit 0).
+- Every node's connections have been set up.
 
-| Column | Meaning |
-|---|---|
-| `module` | Top-level module name. Must be the same on every line. |
-| `name` | Unique component name. |
-| `type` | Gate type e.g. `$_AND_` or `-` for a primary input/output. |
-| `port` | Port on the gate e.g. `A`, `Y`, or `-` for a primary node. |
-| `direction` | `in` / `out` for gate ports, `pi` / `po` for primary nodes. |
-| `wire` | Wire name. For primary nodes, the base name or a range. |
+## Steps
 
-- Everything after `#` in a line is a comment. Blank lines are ignored.
-- A wire name may contain spaces. Any tokens after the fifth are joined into the wire name.
-- Multibit wires may be defined either as `name` or `name [high:low]` only. If a primary input connects to a wire `name`, later instances of `name [index]` are assumed to be bits of the same input node. A bus cannot be specified as a list of discrete or constant valued wires.
-- A constant can be used as an input wire specified by `1'0`, `1'1` or `1'x`, where `x` is treated as 0. One `InputNode` per type is created for it and set at parse time.
+### 1. Read lines
 
-### Supported gates
+Each line is split into six columns after removing any `#` comment. Columns past the sixth are joined with spaces into the wire name, so `\q [0]` stays one name. Then:
 
-| Type | Ports |
-|---|---|
-| `$_NOT_` | `A`, `Y` |
-| `$_AND_`, `$_OR_`, `$_NAND_`, `$_NOR_`, `$_XOR_`, `$_ANDNOT_`, `$_ORNOT_` | `A`, `B`, `Y` |
-| `$_MUX_` | `A`, `B`, `S`, `Y` |
-| `$_DFF_P_`, `$_DFF_N`, `$_JKFF_P_`, `$_JKFF_N_`, `$_TFF_P_`, `$_TFF_N_` | `D`, `C`, `Q` |
+- **Primary ports** (type `-`) are recorded for step 2.
+- **Cells**: the type and port are looked up in two tables, `compTypeTable` (Yosys type → port list and a function that creates the node) and `portNameTable` (netlist port name → `Port`). The node is created the first time its cell name appears.
+- For each port the parser records, on a temporary `Wire`, its **driver** (an `out` port) or one more **consumer** (an `in` port, with its `Port`).
+- A constant `1'0`, `1'1` or `1'x` on an input creates an `InputNode` with that value as the wire's driver.
 
-`Y` and `Q` are the output ports. A type is treated as sequential if it has a `C` port.
+### 2. Create primary nodes
 
-## Output
+Each primary port becomes one `InputNode` or `OutputNode` per bit. An input node becomes its wire's driver, and an output node becomes one of its wire's consumers. Bus bits come from a ranged name (`\q [3:0]`) or from every wire named `<base> [i]`, sorted by index.
 
-**Return value:** `0` on success, `-1` on error with the message written to `std::cerr`.
+### 3. Validate
 
-**`nodes`:** every node in the circuit including gates, primary nodes, and constant input nodes, stored in topological order. Each node's `priority` is set to its index in that order.
+- Every cell has every port of its type.
+- Every wire has exactly one driver. A wire with no consumers only causes a warning.
 
-**`primaryInputs` / `primaryOutputs`:** map from primary node name to its nodes.
-- A single-bit port has one entry.
-- A multibit port has one entry per bit, in ascending index order.
-- Constant input nodes are not included.
+The full list of errors is in [formats/netlist.md](formats/netlist.md#what-the-parser-rejects).
 
-**Graph:** for every wire, the driver node is connected to each consumer node on the consumer's port via `addConnection`.
+### 4. Connect
 
-On error, `nodes` and the primary maps may be partially filled, so the caller should clear them before parsing again.
+For each wire, `driver->addConnection(consumer, port)` is called for each consumer. Connections hold the node and the port, so the wires themselves are not kept after parsing.
 
-## Validations
+### 5. Topological order
 
-### Netlist File
-- The file can be opened.
-- Every non-empty line has all 6 columns.
-- All lines name the same module.
+The order is computed with Kahn's algorithm:
 
-### Primary Nodes
-- The instance name is unique.
-- `direction` is `pi` or `po`.
-- `port` is `-`.
-- For a ranged wire `name [high:low]`, every wire in the range exists in the netlist.
-- A primary input's wire is not already driven by something else.
+1. Count each node's incoming edges, **leaving out edges into a flip-flop's data inputs** (`D`, `T`, `J`, `K`). Edges into a flip-flop's clock are counted.
+2. Start with the nodes that have no incoming edges: primary inputs, constants and flip-flops with a constant clock. Repeatedly take one node and remove its outgoing edges.
+3. If nodes are left at the end, they are on a cycle, and the netlist is rejected with `cycle detected in circuit`.
 
-### Gates
-- The gate type is known.
-- The port name is known and exists on that gate type.
-- An instance name is not reused with a different type.
-- A port is not defined twice on the same instance.
-- Direction is `in` or `out`.
-- Direction matches the port, i.e. `out` only on `Y` or `Q`.
-- An output does not drive a constant wire.
-- A wire has only one driver.
+Because data inputs are left out, a feedback loop through a flip-flop (a counter, a state machine) is not a cycle. A loop made only of gates is. Because clock inputs are kept, a flip-flop always comes after the logic that drives its clock, which is what [simulation.md](architecture/simulation.md#derived-clocks) needs for derived clocks.
 
-### Whole Circuit
-- Every gate has all of its ports connected.
-- Every wire has a driver (error displayed otherwise).
-- Every wire has at least one consumer (warning only, parsing continues).
-- No purely combinational cycles.
+`nodes` is then sorted into this order, and each node's `priority` is set to its index. The simulator's topological queue commits nodes in priority order. Parsing fails if there are more nodes than an `int` can index.
+
+An empty file parses as an empty circuit with no error.
+
+## Cost
+
+The whole parse is linear in the number of lines, apart from:
+
+- hash map lookups for cells and wires,
+- bus ports given without a range: each one scans every wire with a regex to find its bits, so many such ports cost O(ports × wires).
+
+## Tests
+
+`make parser-test` builds and runs `tests/unit/parser/test_parser.cpp`, a standalone suite of 51 tests and 196 checks covering every error message, buses, constants, priorities and cycle detection. Two of its tests still expect older behavior and fail (7 checks); see [testing.md](testing.md#parser-regression-suite). The unit test `Parser_Negative_MissingFile` and the integration test `Combinational_Netlist_Evaluation` in the 7-category suite also exercise the parser.

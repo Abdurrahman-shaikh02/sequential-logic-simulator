@@ -1,0 +1,139 @@
+# Command line
+
+```
+./simulator                              Launch interactive menu
+./simulator --testbench <file.tb>        Run simulation from testbench file
+./simulator --interactive                Interactively enter circuit inputs
+./simulator --fsm <file.net>             Analyze FSM states, then synthesize it
+./simulator --fsm <file.net> --synth [-o <netlist>]
+                                         Only synthesize: netlist to stdout or a file
+./simulator --fsm <file.net> --dead      Only list dead states
+./simulator --fsm <file.net> --unreachable
+                                         Only list unreachable states
+./simulator --check <netlist>            Only check that the parser accepts a netlist
+./simulator --truthtable <netlist> <out> Generate combinational truth table
+./simulator --test [category]            Run software tests (all, unit, etc.)
+./simulator --gui [port]                 Launch web GUI server
+./simulator --help                       Display this help menu
+```
+
+The first argument picks the command. Only `--fsm` reads further options. Run every command from the project root: paths inside `.tb` files, the examples and the GUI are relative to it. The code is in `main.cpp`.
+
+## `--testbench <file.tb>`
+
+Loads and runs a testbench file (format: [formats/testbench.md](formats/testbench.md)).
+
+1. Loads the circuit named by `CIRCUIT`, `NETLIST` or `FSM`. An FSM table is synthesized first.
+2. Runs the simulation to `MAX_TIME`, checking every `ASSERT` at its time and every `INVARIANT` at every recorded time.
+3. Prints the ASCII waveform and the assertion report.
+4. Writes `output/results.txt`, `output/waveform.txt`, `output/waveform.json` and `output/simulation.vcd` ([formats/output.md](formats/output.md)).
+
+| Exit code | Meaning |
+|---|---|
+| 0 | Loaded, ran, and every assertion and invariant passed. A testbench with no assertions also exits 0 |
+| 1 | The file or circuit could not be loaded, a signal name or bit index was invalid, or an assertion or invariant failed |
+
+## `--interactive`
+
+Asks two questions on standard input:
+
+1. **Circuit path:** a `.table` netlist, or a `.net` file. The file's contents decide what a `.net` file is: an FSM table is synthesized, and a six-column netlist is parsed directly.
+2. **Input vectors file:** the path to a vectors file ([formats/vectors.md](formats/vectors.md)), or Enter to type the values.
+
+Between the two questions it lists the primary inputs, one per bit, sorted by name and then by bit. That is the column order a vectors file must use.
+
+When typing by hand, press Enter at each `Step N` prompt and then give `0` or `1` for each input. Type `q` at a step prompt to finish and run. Steps are 10 time units apart.
+
+After the run it prints the report and the first 30 lines of the ASCII waveform, and writes `output/interactive_results.txt`, `interactive_waveform.txt`, `interactive_waveform.json` and `interactive_simulation.vcd`.
+
+| Exit code | Meaning |
+|---|---|
+| 0 | The run finished and no expected-output check failed |
+| 1 | No path, the circuit could not be loaded, a vectors-file error, no rows, or an expected output did not match |
+
+Scripts can answer both prompts from a pipe, which is how `validation/` and `benchmark/` drive it:
+
+```sh
+printf 'circuit.table\nvectors.txt\n' | ./simulator --interactive
+```
+
+With no vectors file and `q` at the first step, it lists the inputs and exits with code 1 without simulating.
+
+## `--fsm <file.net>`
+
+With no further option, analyzes an FSM table and synthesizes it:
+
+1. Prints its dead states ([synthesizer/fsm-analysis.md](synthesizer/fsm-analysis.md)).
+2. Prints its reachable and unreachable states.
+3. Synthesizes it and writes the netlist next to the input, with the extension changed to `.table` ([synthesizer/synthesizer.md](synthesizer/synthesizer.md)).
+
+One option runs a single step instead:
+
+| Option | Does |
+|---|---|
+| `--synth` | Only synthesizes, and prints the netlist alone to standard output, so it can be piped or saved |
+| `--synth -o <netlist>` | Only synthesizes, and writes the netlist to `<netlist>`. The file is opened only after synthesis succeeds, so a failure leaves an existing file as it was |
+| `--dead` | Only prints the dead-state report |
+| `--unreachable` | Only prints the reachable and unreachable states |
+
+| Exit code | Meaning |
+|---|---|
+| 0 | Every step that ran succeeded. Finding dead or unreachable states is not a failure |
+| 1 | The FSM file could not be read, synthesis failed, the output file could not be written, or the options were wrong (more than one of `--synth`, `--dead` and `--unreachable`, `-o` without `--synth`, or an unknown option) |
+
+Errors go to standard error, with synthesis errors as `file:line: message`.
+
+## `--check <netlist>`
+
+Loads a netlist with the parser and does nothing else: no simulation and no output files. Exits 0 if the parser accepts it, and 1 with the parser's error otherwise. The synthesizer validation uses it to confirm that every generated netlist loads ([validation.md](validation.md#synthesizer)).
+
+```sh
+./simulator --fsm docs/fsm_example/traffic_light_fsm.net --synth -o traffic.table
+./simulator --check traffic.table && echo ok
+```
+
+## `--truthtable <netlist> <out>`
+
+Writes the truth table of a combinational netlist to `<out>` and prints its first lines. The header lists the input bits, `|`, then the output bits, and each row follows in the same order.
+
+It fails, with a message, for circuits that contain a flip-flop, have no inputs, or have more than 20 input bits. Always exits 0.
+
+## `--test [category]`
+
+Runs the C++ test suite ([testing.md](testing.md)). `category` is one of `unit`, `integration`, `validation`, `blackbox`, `whitebox`, `regression`, `system`, or `all` (the default; any other word also runs all). Exits 1 if any test failed.
+
+## `--gui [port]`
+
+Runs `python3 gui/server.py <port>` (default 8080) and waits for it. Open `http://localhost:<port>`. Stop it with Ctrl+C. See [gui.md](gui.md). The same server can be started with `python3 gui/server.py 8080` or `make gui`.
+
+## The menu
+
+`./simulator` with no arguments shows:
+
+```
+  1. Run Traffic Light FSM Testbench (Full Demonstration)
+  2. Run Custom Testbench File (.tb)
+  3. Interactive Terminal Circuit Simulation (enter inputs manually)
+  4. Synthesize FSM and Analyze Dead/Unreachable States
+  5. Generate Combinational Truth Table
+  6. Run Complete Software Testing Suite (All 7 Test Types)
+  7. Launch Graphical User Interface (Web GUI)
+  8. Exit
+```
+
+Option 1 runs `examples/traffic_light/traffic_light.tb`. The others ask for their paths and do the same as the option of the same name above. Option 4 is `--fsm` with no further option. Paths typed at the menu cannot contain spaces.
+
+## `tools/run_file_testbench.py`
+
+Runs a `.tb` file against a netlist of your choice and copies the four output files to a folder:
+
+```sh
+python3 tools/run_file_testbench.py --netlist tests/netlists/combinational/and/netlist.table \
+    --testbench examples/and_gate/and_gate.tb --out-dir results/and
+```
+
+It replaces the testbench's `NETLIST` or `FSM` line with the given netlist (or adds one), runs `./simulator --testbench`, and copies `simulation.vcd`, `waveform.txt`, `waveform.json` and `results.txt` to `--out-dir` (default `file_run_output/`). It exits 1 if the simulator fails.
+
+## Output files are overwritten
+
+Every run writes to the same names in `output/`. Copy them elsewhere to keep a run's results. The GUI server runs one simulation at a time for the same reason.

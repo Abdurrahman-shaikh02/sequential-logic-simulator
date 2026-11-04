@@ -1,6 +1,8 @@
 # Validation
 
-The C++ test suite (`./simulator --test`) checks the simulator against our own understanding. Validation checks it against an established simulator, [Icarus Verilog](https://github.com/steveicarus/iverilog), on the same circuits. Our simulator is run through its Worklet 3 interface, `./simulator --interactive` with an input-vectors file, the same way a user would run it.
+The C++ test suite (`./simulator --test`, see [testing.md](testing.md)) checks the simulator against our own understanding. Validation checks it against an established simulator, [Icarus Verilog](https://github.com/steveicarus/iverilog), on the same circuits. Our simulator is run through its Worklet 3 interface, `./simulator --interactive` with an input-vectors file, the same way a user would run it.
+
+The [synthesizer](#synthesizer) is checked separately: every netlist it writes is compared with the FSM table it came from, by a script that shares no code with it.
 
 ## Simulator
 
@@ -51,7 +53,7 @@ Running both matters: only `abc` produces NAND, NOR, ANDNOT and ORNOT, so a bug 
 | Combinational, more bits | 300 random rows |
 | Sequential (has `clk` or `clock`) | 300 cycles of 3 rows: `(clk=0, new data)`, `(clk=1, same)`, `(clk=0, same)` |
 
-In sequential circuits, an input named `rst` or `reset` is held high for the first 4 cycles and then raised on 1 cycle in 16. Data changes only while the clock is low, so no edge of either polarity sees moving data. The script checks this and refuses to run a stimulus that breaks it, because a flip-flop samples data that changes in the same step as its clock edge, with no warning (see [INPUT_CLOCK_UPDATE_SEMANTICS.md](INPUT_CLOCK_UPDATE_SEMANTICS.md)).
+In sequential circuits, an input named `rst` or `reset` is held high for the first 4 cycles and then raised on 1 cycle in 16. Data changes only while the clock is low, so no edge of either polarity sees moving data. The script checks this and refuses to run a stimulus that breaks it, because a flip-flop samples data that changes in the same step as its clock edge, with no warning (see [architecture/decisions.md](architecture/decisions.md#data-inputs-set-immediately-no-hold-time-check)).
 
 The clock is an ordinary column of the vectors file. The testbench's own `CLOCK` generator is not used.
 
@@ -71,7 +73,7 @@ Each circuit runs with 3 seeds.
 
 ### Results
 
-Run on 2026-11-04 on branch `bv3`, simulator code from commit `1d9689d`, Yosys 0.68+112 and Icarus Verilog 12.0:
+Run on 2026-11-04 on `main` at commit `b92a64b`, Yosys 0.68+112 and Icarus Verilog 12.0:
 
 ```sh
 python3 validation/icarus/validate.py                  # abc
@@ -83,7 +85,7 @@ python3 validation/icarus/validate.py --flow techmap
 | `abc` | 26 / 26 | 62,676 | 0 |
 | `techmap` | 26 / 26 | 62,676 | 0 |
 
-Every row matched in both flows, with the `-O2` build from `make` and with an unoptimized build (`make CXXFLAGS="-std=c++17 -Wall -Wextra -I./include -g -O0"`).
+Every row matched in both flows. The same result was first obtained on commit `1d9689d` (branch `bv3`), with the `-O2` build from `make` and with an unoptimized build (`make CXXFLAGS="-std=c++17 -Wall -Wextra -I./include -g -O0"`). The simulator code has not changed since, apart from removing an unused enum value.
 
 ### What this does not cover
 
@@ -139,6 +141,8 @@ Run on 2026-11-04 on `bv3`, commit `3e953ef`, with the memory fix and the new `-
 |---|---|---|---|---|---|---|
 | `validate.py` | 2,139 | 1,999 | 12 | 128 | 1,570,472 | 0 |
 | `validate.py tiny --full` | 15,745 | 15,331 | 0 | 414 | 310,672 | 0 |
+
+`validate.py`, `inject_bugs.py` and `test_cli.py` were run again on `main` at commit `b92a64b`, with the same results.
 
 Of the damaged netlists and tables in the first run, 7,268 were noticed by the walk and 1,076 only by the forced check. Another 39 still computed the same function, and none were missed.
 

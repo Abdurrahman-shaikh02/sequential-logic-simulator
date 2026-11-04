@@ -1,6 +1,6 @@
 # Benchmarks
 
-How run time and memory grow with circuit size, activity, logic depth and stimulus length, measured against Icarus Verilog. How to run the scripts is in `benchmark/README.md`. This page covers what was measured and what it shows.
+How the [simulator](#simulator)'s run time and memory grow with circuit size, activity, logic depth and stimulus length, measured against Icarus Verilog, and how the [synthesizer](#synthesizer)'s run time, memory and netlist size grow with the FSM. How to run the scripts is in `benchmark/README.md`. This page covers what was measured and what it shows.
 
 ## Simulator
 
@@ -8,7 +8,7 @@ How run time and memory grow with circuit size, activity, logic depth and stimul
 
 | | |
 |---|---|
-| Data | `benchmark/simulation/hdl_sim/results.csv`, `benchmark/simulation/icarus/results.csv` (run 2026-11-04 on branch `bv3`, simulator code from commit `1d9689d`) |
+| Data | `benchmark/simulation/hdl_sim/results.csv`, `benchmark/simulation/icarus/results.csv` (run 2026-11-04 on branch `bv3`, simulator code from commit `1d9689d`; the simulator code on `main` at `b92a64b` is the same apart from removing an unused enum value) |
 | Plots | `benchmark/simulation/plots/*.png` |
 | Machine | 12th Gen Intel Core i5-12450HX, every run pinned to CPU core 0 |
 | Builds | Our simulator from `make` (`-O2`), Icarus Verilog 12.0, Yosys 0.68+112 |
