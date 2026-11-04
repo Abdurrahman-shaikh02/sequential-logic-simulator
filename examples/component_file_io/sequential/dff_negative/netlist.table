@@ -1,0 +1,6 @@
+dff_negative_test	d	-	-	pi	\d
+dff_negative_test	clk	-	-	pi	\clk
+dff_negative_test	q	-	-	po	\q
+dff_negative_test	$dff_negative_cell	$_DFF_N_	D	in	\d
+dff_negative_test	$dff_negative_cell	$_DFF_N_	C	in	\clk
+dff_negative_test	$dff_negative_cell	$_DFF_N_	Q	out	\q

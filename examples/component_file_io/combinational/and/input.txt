@@ -1,0 +1,6 @@
+# columns: a b | y
+# Input vectors and expected AND-gate output
+0 0 | 0
+0 1 | 0
+1 0 | 0
+1 1 | 1

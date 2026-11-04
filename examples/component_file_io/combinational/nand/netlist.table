@@ -1,0 +1,6 @@
+nand_test	a	-	-	pi	\a
+nand_test	b	-	-	pi	\b
+nand_test	y	-	-	po	\y
+nand_test	$nand_gate	$_NAND_	A	in	\a
+nand_test	$nand_gate	$_NAND_	B	in	\b
+nand_test	$nand_gate	$_NAND_	Y	out	\y

@@ -1,0 +1,6 @@
+ornot_test	a	-	-	pi	\a
+ornot_test	b	-	-	pi	\b
+ornot_test	y	-	-	po	\y
+ornot_test	$ornot_gate	$_ORNOT_	A	in	\a
+ornot_test	$ornot_gate	$_ORNOT_	B	in	\b
+ornot_test	$ornot_gate	$_ORNOT_	Y	out	\y

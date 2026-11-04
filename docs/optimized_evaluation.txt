@@ -16,7 +16,7 @@ while(combiq is not empty || seqq is not empty || atleast one node in the topolo
 		commit next element from the topological order.
 	}
 
-	reorder the seqq
+	apply sequential input changes immediately; drain queued clock state changes after combinational propagation
 
 	while(seqq is not empty){
 		keep running operations
@@ -51,3 +51,6 @@ if(commit is set)
 Later on when commit is called as part of the topolgical evaluation, it will happen as follows:-
 	reset commit flag
 	and CALL commit function.
+
+
+Current sequential input semantics: D/J/K/T inputs update directly in evaluate(). Only active clock edges enqueue state changes. Combinational propagation drains before sequential operations, so same-time input and clock events sample the newest input value. No SetPortOperation or queue reordering is used.

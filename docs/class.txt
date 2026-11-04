@@ -90,10 +90,7 @@ jkff : Sequential_Node{
 	void evaluate(enum port p, int val){
 		switch(P){
 			case J or K:
-				search if there is already a set_port(J/K..) operation pending for the ff in the sequential_queue
-				if yes delete that operation
-
-				enqueue operation set_port(J/K, val) in the Sequential Queue
+				update the internal J/K value immediately via set_port(p, val)
 			case CLK:
 				search if there is already a change_state operation pending in the sequential_queue
 				if yes delete that operation.
@@ -143,7 +140,6 @@ enum operation{
 	CHANGE_STATE
 	COMMIT
 	EVALUATE
-	SET_PORT
 }
 
 Operation {
@@ -170,12 +166,6 @@ class evaluateOperation : Operation {
 	}
 }
 
-class setPortOperation : Operation {
-	run(){
-		((Sequential_Node &)n).set_port(p, val);
-	}
-}
-
 class changeStateOperation : Operation {
 	run(){
 		((Sequential_Node &)n).change_state(p, val);
@@ -191,11 +181,6 @@ class commitOperation : Operation {
 Operation_Queue{
 	vector<Operation> q;	//or a queue whatever
 	
-	void reorder(){
-		if there is a CHANGE_STATE operation after a SET_PORT operation on the same flip flop
-		then swap those operations
-		all other operation remain in their position
-	}
 
 	int enqueue(Operation &op){
 		//construct operation and add to queue
@@ -242,7 +227,6 @@ class Simulator {
 				x.run();
 			}
 
-			sequential_queue.reorder();
 			
 			while(!sequential_queue.isEmpty()){
 				Operation x = sequential_queue.dequeue()
@@ -256,14 +240,9 @@ class Simulator {
 					run operation
 				}
 
-				Sort the S queue:
-					if there is a set_port before a change_state operation on the same ff.
-					then swap those two operations.
-					Idea is to always do the update first and the setting port.
-					(Because we are assuming zero propagation delay and because of that signals reach at the same time
-					and because edge happens first and then the level(we assume trigger is on edges and ports get set at the level)
-					so trigger first then set port.)
-	
+				// Sequential inputs are already current; no queue reordering is needed.
+
+
 				while(S queue is not empty){
 					dequeue()
 					run operation

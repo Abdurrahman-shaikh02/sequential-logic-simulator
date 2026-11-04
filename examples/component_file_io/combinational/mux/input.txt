@@ -1,0 +1,9 @@
+# a b s (all 8 combinations; s=0 selects a, s=1 selects b)
+0 0 0
+0 0 1
+0 1 0
+0 1 1
+1 0 0
+1 0 1
+1 1 0
+1 1 1

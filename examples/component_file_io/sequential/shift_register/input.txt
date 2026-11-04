@@ -1,0 +1,11 @@
+# columns: clk serial_in | q[0] q[1] q[2] q[3]
+# 4-bit serial-in parallel-out shift register
+
+0 1 | 0 0 0 0
+1 1 | 1 0 0 0
+0 0 | 1 0 0 0
+1 0 | 0 1 0 0
+0 1 | 0 1 0 0
+1 1 | 1 0 1 0
+0 0 | 1 0 1 0
+1 0 | 1 1 0 1

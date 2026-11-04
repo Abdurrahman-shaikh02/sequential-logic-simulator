@@ -1,0 +1,6 @@
+xor_test	a	-	-	pi	\a
+xor_test	b	-	-	pi	\b
+xor_test	y	-	-	po	\y
+xor_test	$xor_gate	$_XOR_	A	in	\a
+xor_test	$xor_gate	$_XOR_	B	in	\b
+xor_test	$xor_gate	$_XOR_	Y	out	\y

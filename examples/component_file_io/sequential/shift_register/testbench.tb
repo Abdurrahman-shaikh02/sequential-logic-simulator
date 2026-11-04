@@ -1,0 +1,21 @@
+# User-editable clocked input file and assertions for 4-bit SIPO Shift Register
+# Shifts serial data into register across successive clock edges
+
+NETLIST examples/component_file_io/sequential/shift_register/netlist.table
+CLOCK clk 10
+MAX_TIME 50
+
+# Apply serial bit stream on input 'serial_in'
+@0  serial_in=1
+@10 serial_in=0
+@20 serial_in=1
+@30 serial_in=1
+@40 serial_in=0
+
+# Independent reference model: shift on positive edges at 5,15,25,35,45 ns.
+# At each edge: q3 <- q2, q2 <- q1, q1 <- q0, q0 <- serial_in.
+ASSERT @5  q[0]=1 q[1]=0 q[2]=0 q[3]=0 "first bit captured"
+ASSERT @15 q[0]=0 q[1]=1 q[2]=0 q[3]=0 "first bit advances"
+ASSERT @25 q[0]=1 q[1]=0 q[2]=1 q[3]=0 "third bit captured"
+ASSERT @35 q[0]=1 q[1]=1 q[2]=0 q[3]=1 "fourth bit captured"
+ASSERT @45 q[0]=0 q[1]=1 q[2]=1 q[3]=0 "fifth bit captured"
