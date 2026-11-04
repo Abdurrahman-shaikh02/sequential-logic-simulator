@@ -184,7 +184,7 @@ def compare_graph(rows, other, other_name, plots):
     sweeps = (("states", "rows", "Rows, adding states"), ("inputs_full", "rows", "Rows, adding inputs"),
               ("inputs_sparse", "inputs", "Inputs, at 4,096 rows"), ("outputs", "outputs", "Outputs, at 4,096 rows"))
     figure, axes = plt.subplots(2, len(sweeps), figsize=(14, 6.6), constrained_layout=True)
-    figure.suptitle(f"This run against {other_name.replace('_', ' ')}", x=0.01, ha="left", fontsize=13, color=INK)
+    figure.suptitle(f"This run against {other_name}", x=0.01, ha="left", fontsize=13, color=INK)
     for column, (family, field, xlabel) in zip(axes.T, sweeps):
         for axis, (label, value) in zip(column, (TIME, MEMORY)):
             for run, name, color in ((other, "Before", ORANGE), (rows, "After", BLUE)):
