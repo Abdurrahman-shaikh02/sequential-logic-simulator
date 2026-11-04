@@ -1,73 +1,55 @@
-# SLMS – user-created input files for every supported component
+# Component examples
 
-This is an additive Worklet 3 test pack. It does not modify the original project source files. The original project files are preserved; this folder contains separate example netlists and editable input files.
+One folder per supported component, each with a netlist and two ways to drive it: an input-vectors file for `--interactive`, and a testbench file with assertions for `--testbench`. The GUI's Circuit Workbench loads these same testbenches.
 
-## 1. Combinational circuits: create your own `input.txt`
+| Folder | Components |
+|---|---|
+| `combinational/` | `and`, `or`, `not`, `xor`, `nand`, `nor`, `mux`, `andnot`, `ornot` |
+| `sequential/` | `dff_positive`, `dff_negative`, `jkff_positive`, `jkff_negative`, `tff_positive`, `tff_negative`, `shift_register` (4-bit serial-in, parallel-out) |
+| `fsm/` | `traffic_light`, `vending_machine` |
 
-Covered gates: AND, OR, NOT, XOR, NAND, NOR, MUX, ANDNOT, ORNOT.
+`component_manifest.csv` lists every component with its netlist and its main input file.
 
-Each `combinational/<gate>/` folder contains:
-- `netlist.table`: the circuit and its primary-input/output names.
-- `input.txt`: example input vectors. You may edit it or create another text file yourself.
-- `testbench.tb`: a separate reference test with expected-output assertions.
+## Files in each folder
 
-Input-file format:
-- One row per input vector.
-- Values are `0` or `1`, separated by spaces, commas, or tabs.
-- A comment line may start with `#`.
-- Values must follow the primary-input order printed by the simulator. The current CLI lists primary inputs alphabetically; follow that displayed order. The comments in each sample file show the intended order.
+| File | What it is |
+|---|---|
+| `netlist.table` | The circuit, in the netlist format ([docs/formats/netlist.md](../../docs/formats/netlist.md)) |
+| `input.txt` | Input vectors, one row per step ([docs/formats/vectors.md](../../docs/formats/vectors.md)). All the sequential and FSM files, and `and`, also give the expected outputs after a `\|`, so the run checks them |
+| `testbench.tb` | Timed stimuli, a clock and assertions ([docs/formats/testbench.md](../../docs/formats/testbench.md)) |
+| `netlist.net` | FSM folders only: the FSM table the netlist was synthesized from ([docs/formats/fsm.md](../../docs/formats/fsm.md)) |
 
-Run the file-input workflow from the project root:
+## Running a component
 
-```bash
-./simulator
-```
+From the project root:
 
-Choose option `3`, then enter the netlist path and your input-file path when prompted. The simulator runs one vector every 10 time units and writes:
-- `output/interactive_results.txt`
-- `output/interactive_waveform.txt`
-- `output/interactive_waveform.json`
-- `output/interactive_simulation.vcd`
+```sh
+# input vectors: answer the two prompts with the netlist and the input file
+printf 'examples/component_file_io/sequential/dff_positive/netlist.table\nexamples/component_file_io/sequential/dff_positive/input.txt\n' \
+    | ./simulator --interactive
 
-For a direct automated reference check, run the corresponding `.tb` file, for example:
-
-```bash
-./simulator --testbench examples/component_file_io/combinational/xor/testbench.tb
-```
-
-The `.tb` assertion run and the `input.txt` vector run are distinct checks: the first checks expected outputs; the second demonstrates user-supplied file input and exports the interactive output table/waveforms.
-
-## 2. Sequential circuits: the user-created `.tb` is the input file
-
-Covered cells:
-- Positive-edge and negative-edge DFF
-- Positive-edge and negative-edge JKFF
-- Positive-edge and negative-edge TFF
-- 4-bit shift register
-
-A sequential circuit needs timed input changes and a clock, so its input file is a clock-aware `.tb` file rather than a plain untimed vector list. Each `sequential/<cell>/testbench.tb` is editable and contains:
-- `NETLIST`: the corresponding circuit netlist.
-- `CLOCK`: clock name and period.
-- `MAX_TIME`: simulation duration.
-- `@time signal=value`: user stimulus events.
-- `ASSERT`: expected output values at selected times.
-
-Edit/copy the `.tb` file to supply your own input sequence. Keep the `NETLIST`, `CLOCK`, and `MAX_TIME` directives valid, and update assertions to match the behavior you expect. Then run it with:
-
-```bash
+# testbench with assertions
 ./simulator --testbench examples/component_file_io/sequential/dff_positive/testbench.tb
 ```
 
-Successful sequential verification requires a nonzero assertion count and zero failed assertions. A testbench that merely loads/runs with `Total Evaluated : 0` is not a correctness pass.
+`./simulator --interactive` can also be run without the pipe, to type the two paths. Menu option 3 does the same.
 
-## 3. FSMs
+In an input file, steps are 10 time units apart, and a sequential circuit's clock is an ordinary input column, so each clock edge takes two rows (`0` then `1`). The columns follow the input order the simulator prints: sorted by name, then by bit. The `# columns:` header names them.
 
-Traffic Light and Vending Machine each have a netlist and editable clock-aware `.tb` stimulus file under `fsm/`. Run them with `./simulator --testbench <path-to-testbench.tb>`.
+A run passes when it exits with 0 and reports `[ PASSED ]`. If a file has no expected outputs, the report shows `Total Evaluated : 0` and still says `[ PASSED ]`, which only means the run finished.
 
-## 4. Preserve each run's outputs
+For the FSM folders, give `--interactive` the `netlist.table`. Giving it `netlist.net` synthesizes the table again and overwrites `netlist.table` next to it.
 
-The simulator writes to the common `output/` directory and overwrites the previous run's filenames. Copy/rename the four generated files after each run if you need a separate record for every component.
+The FSM testbenches load the FSM tables themselves: `tests/netlists/fsm/traffic_light/traffic_light_fsm.net` (the same table as `fsm/traffic_light/netlist.net`) and `examples/vending_machine/vending_machine.net`.
 
-## 5. Important scope note
+## Checking every component
 
-This pack adds example netlists and editable input/testbench files only. It does not change Worklet 1/2 implementation sources or the existing W3 simulator code. It demonstrates the existing W3 file-input interfaces; it does not claim that a plain `.txt` vector file is the correct interface for clocked sequential circuits. For sequential logic, the timed `.tb` file is the input file.
+```sh
+bash examples/component_file_io/run_all_checks.sh
+```
+
+Runs every `testbench.tb` and requires at least one assertion and no failures. It also runs each combinational `input.txt` through `--interactive`. It does not run the sequential and FSM `input.txt` files. Logs and each run's output files are saved under `output/component_file_io/`.
+
+## Outputs
+
+Every run overwrites the files in `output/`: `results.txt`, `waveform.txt`, `waveform.json` and `simulation.vcd` for a testbench, with an `interactive_` prefix for `--interactive` ([docs/formats/output.md](../../docs/formats/output.md)). Copy them to keep a run.

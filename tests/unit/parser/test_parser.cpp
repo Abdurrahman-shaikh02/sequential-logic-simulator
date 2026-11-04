@@ -28,6 +28,11 @@
 #include "combinational/MUX.hpp"
 #include "combinational/OR.hpp"
 #include "sequential/DFF_P.hpp"
+#include "sequential/DFF_N.hpp"
+#include "sequential/TFF_P.hpp"
+#include "sequential/TFF_N.hpp"
+#include "sequential/JKFF_P.hpp"
+#include "sequential/JKFF_N.hpp"
 #include "primary/InputNode.hpp"
 #include "primary/OutputNode.hpp"
 
@@ -601,15 +606,38 @@ TEST(err_legacy_gate_names_rejected) {
     CHECK(errHas(r, "unknown component type"));
 }
 
-TEST(err_unsupported_ff_types_currently_commented_out) {
-    // $_DFF_N_ / $_TFF_*_ / $_JKFF_*_ are commented out in compTypeTable.
-    // Delete/adjust these checks when you enable them.
-    const char* types[] = {"$_DFF_N_", "$_TFF_P_", "$_TFF_N_", "$_JKFF_P_", "$_JKFF_N_"};
-    for (auto* t : types) {
-        auto r = run("ff_unsup", row("t", "ff", t, "D", "in", "w"));
-        CHECK(r.rc == -1);
-        CHECK(errHas(r, "unknown component type"));
-    }
+// Builds a netlist with one flip-flop of `type`: one primary input per data
+// port, a clock on C, and Q driving a primary output.
+static std::string oneFlipFlop(const std::string& type, const std::vector<std::string>& dataPorts) {
+    std::string nl = row("t", "clk", "-", "-", "pi", "wc") + row("t", "q", "-", "-", "po", "wq");
+    for (auto& p : dataPorts) nl += row("t", "in_" + p, "-", "-", "pi", "w" + p);
+    for (auto& p : dataPorts) nl += row("t", "ff", type, p, "in", "w" + p);
+    nl += row("t", "ff", type, "C", "in", "wc") + row("t", "ff", type, "Q", "out", "wq");
+    return nl;
+}
+
+template <class T>
+static void checkFlipFlopAccepted(const std::string& type, const std::vector<std::string>& dataPorts) {
+    auto r = run("ff_" + type.substr(2, type.size() - 3), oneFlipFlop(type, dataPorts));
+    CHECK(r.rc == 0);
+    CHECK(r.err.empty());
+    CHECK(nodesOfType<T>(r).size() == 1);
+}
+
+TEST(all_flip_flop_types_accepted) {
+    // every flip-flop in compTypeTable, with its own data ports
+    checkFlipFlopAccepted<DFF_N>("$_DFF_N_", {"D"});
+    checkFlipFlopAccepted<TFF_P>("$_TFF_P_", {"T"});
+    checkFlipFlopAccepted<TFF_N>("$_TFF_N_", {"T"});
+    checkFlipFlopAccepted<JKFF_P>("$_JKFF_P_", {"J", "K"});
+    checkFlipFlopAccepted<JKFF_N>("$_JKFF_N_", {"J", "K"});
+}
+
+TEST(err_flip_flop_wrong_data_port) {
+    // a T flip-flop has no D port
+    auto r = run("tff_d_port", row("t", "ff", "$_TFF_P_", "D", "in", "w"));
+    CHECK(r.rc == -1);
+    CHECK(errHas(r, "port D does not exist on $_TFF_P_"));
 }
 
 TEST(err_unknown_port_name) {
@@ -740,16 +768,14 @@ TEST(err_gate_input_wire_has_no_driver) {
 // Current behaviours worth knowing about (pin them so changes are deliberate)
 // ---------------------------------------------------------------------------
 
-TEST(unknown_primary_direction_is_currently_accepted_as_output) {
-    // The old "unknown primary port direction" error is gone: any direction other
-    // than "pi" is treated as an output. If you want it rejected again, change
-    // rc to -1 here and add the check back in Parser.cpp.
+TEST(err_unknown_primary_direction) {
+    // a primary node's direction must be "pi" or "po"
     std::string nl =
         row("t", "a", "-", "-", "pi", "w") +
         row("t", "y", "-", "-", "inout", "w");
     auto r = run("bad_pdir", nl);
-    CHECK(r.rc == 0);
-    CHECK(vec(r.po, "y").size() == 1);
+    CHECK(r.rc == -1);
+    CHECK(errHas(r, "unknown direction inout for primary node y"));
 }
 
 TEST(empty_file_current_behaviour) {

@@ -24,13 +24,13 @@ Run on `main` at commit `b92a64b`:
 | `./simulator --test all` | 30 / 30 passed |
 | `make examples-test` | AND gate 4/4, traffic light 31/31, vending machine 50/50 assertions |
 | `examples/component_file_io/run_all_checks.sh` | All components passed |
-| `make parser-test` | 51 tests, 196 checks, **7 checks failed** in 2 tests that expect old behavior (see below) |
+| `make parser-test` | 52 tests, 203 checks, 0 failed |
 | `python3 validation/icarus/validate.py` | 26 / 26 circuits, 62,676 rows, 0 mismatches, both flows |
 | `python3 validation/synthesizer/validate.py` | 2,139 FSMs, 1,570,472 checks, 0 mismatches. Of the damaged copies, 8,344 caught, 39 harmless, 0 missed |
 | `python3 validation/synthesizer/inject_bugs.py` | 12 / 12 injected bugs caught |
 | `python3 validation/synthesizer/test_cli.py` | 28 / 28 checks passed |
 
-`make test` runs the 7-category suite and then the parser regression suite, so it currently exits non-zero because of the 2 stale parser tests.
+`make test` runs the 7-category suite and then the parser regression suite, and exits non-zero if either fails.
 
 ## The 7-category suite
 
@@ -73,14 +73,7 @@ The Makefile picks up every `tests/<category>/Test*.cpp`.
 make parser-test
 ```
 
-A standalone program of 51 tests and 196 checks: every parser error message, buses, constants, topological priorities and cycle detection. Two tests were written when the parser behaved differently and now fail:
-
-| Test | Expects | Now |
-|---|---|---|
-| `err_unsupported_ff_types_currently_commented_out` | `$_DFF_N_`, `$_TFF_*` and `$_JKFF_*` rejected as unknown types (5 checks) | They are implemented and accepted |
-| `unknown_primary_direction_is_currently_accepted_as_output` | An unknown primary direction accepted as an output (2 checks) | It is rejected, as `parser.md` says it should be |
-
-The parser is right in both cases. The two tests need updating.
+A standalone program of 52 tests and 203 checks: every parser error message, every flip-flop type, buses, constants, topological priorities and cycle detection. It prints one `[ PASS ]` or `[ FAIL ]` line per test and exits 1 if any check fails.
 
 ## Example testbenches
 

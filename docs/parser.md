@@ -66,4 +66,4 @@ The whole parse is linear in the number of lines, apart from:
 
 ## Tests
 
-`make parser-test` builds and runs `tests/unit/parser/test_parser.cpp`, a standalone suite of 51 tests and 196 checks covering every error message, buses, constants, priorities and cycle detection. Two of its tests still expect older behavior and fail (7 checks); see [testing.md](testing.md#parser-regression-suite). The unit test `Parser_Negative_MissingFile` and the integration test `Combinational_Netlist_Evaluation` in the 7-category suite also exercise the parser.
+`make parser-test` builds and runs `tests/unit/parser/test_parser.cpp`, a standalone suite of 52 tests and 203 checks covering every error message, every flip-flop type, buses, constants, priorities and cycle detection; see [testing.md](testing.md#parser-regression-suite). The unit test `Parser_Negative_MissingFile` and the integration test `Combinational_Netlist_Evaluation` in the 7-category suite also exercise the parser.

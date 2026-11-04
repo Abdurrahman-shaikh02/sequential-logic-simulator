@@ -89,7 +89,6 @@ The synthesizer validation covers the netlists, not the FSM analysis: `DeadState
 
 | Issue | Effect |
 |---|---|
-| Two parser regression tests expect old behavior | `make parser-test` reports 7 failed checks, so `make test` exits non-zero although the parser is right (see [testing.md](testing.md#parser-regression-suite)) |
 | `tests/unit/combinational/or` and `ornot` have four-column `input.txt` files for two-input programs | Their output does not match `expected.txt` |
 | `tests/unit/synthesizer/traffict` returns right after synthesis | It no longer checks the netlist's behavior |
 | `tests/integration/{ringcounter,simple_dffp_not,sipo_register}` | Not built by any Makefile target |
