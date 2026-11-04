@@ -1,0 +1,101 @@
+# synthesized from docs/fsm_example/dead_unreachable_fsm.net
+# state encoding (Q2..Q0): A=000 B=001 T=010 U=011 V=100 H=101  (reset: A)
+
+# primary inputs / clock / reset
+dead_unreachable_fsm	x	-	-	pi	\x
+dead_unreachable_fsm	clk	-	-	pi	\clk
+dead_unreachable_fsm	reset	-	-	pi	\reset
+
+# state bit Q0: D = (next-state logic) AND NOT reset
+dead_unreachable_fsm	$not$0	$_NOT_	A	in	\reset
+dead_unreachable_fsm	$not$0	$_NOT_	Y	out	$not$0_Y
+dead_unreachable_fsm	$not$1	$_NOT_	A	in	$dff$q0_Q
+dead_unreachable_fsm	$not$1	$_NOT_	Y	out	$not$1_Y
+dead_unreachable_fsm	$not$2	$_NOT_	A	in	$dff$q1_Q
+dead_unreachable_fsm	$not$2	$_NOT_	Y	out	$not$2_Y
+dead_unreachable_fsm	$and$3	$_AND_	A	in	$not$1_Y
+dead_unreachable_fsm	$and$3	$_AND_	B	in	$not$2_Y
+dead_unreachable_fsm	$and$3	$_AND_	Y	out	$and$3_Y
+dead_unreachable_fsm	$not$4	$_NOT_	A	in	$dff$q2_Q
+dead_unreachable_fsm	$not$4	$_NOT_	Y	out	$not$4_Y
+dead_unreachable_fsm	$and$5	$_AND_	A	in	$and$3_Y
+dead_unreachable_fsm	$and$5	$_AND_	B	in	$not$4_Y
+dead_unreachable_fsm	$and$5	$_AND_	Y	out	$and$5_Y
+dead_unreachable_fsm	$and$6	$_AND_	A	in	$and$5_Y
+dead_unreachable_fsm	$and$6	$_AND_	B	in	\x
+dead_unreachable_fsm	$and$6	$_AND_	Y	out	$and$6_Y
+dead_unreachable_fsm	$and$7	$_AND_	A	in	$dff$q0_Q
+dead_unreachable_fsm	$and$7	$_AND_	B	in	$not$2_Y
+dead_unreachable_fsm	$and$7	$_AND_	Y	out	$and$7_Y
+dead_unreachable_fsm	$and$8	$_AND_	A	in	$and$7_Y
+dead_unreachable_fsm	$and$8	$_AND_	B	in	$dff$q2_Q
+dead_unreachable_fsm	$and$8	$_AND_	Y	out	$and$8_Y
+dead_unreachable_fsm	$not$9	$_NOT_	A	in	\x
+dead_unreachable_fsm	$not$9	$_NOT_	Y	out	$not$9_Y
+dead_unreachable_fsm	$and$10	$_AND_	A	in	$and$8_Y
+dead_unreachable_fsm	$and$10	$_AND_	B	in	$not$9_Y
+dead_unreachable_fsm	$and$10	$_AND_	Y	out	$and$10_Y
+dead_unreachable_fsm	$or$11	$_OR_	A	in	$and$6_Y
+dead_unreachable_fsm	$or$11	$_OR_	B	in	$and$10_Y
+dead_unreachable_fsm	$or$11	$_OR_	Y	out	$or$11_Y
+dead_unreachable_fsm	$and$12	$_AND_	A	in	$or$11_Y
+dead_unreachable_fsm	$and$12	$_AND_	B	in	$not$0_Y
+dead_unreachable_fsm	$and$12	$_AND_	Y	out	$and$12_Y
+dead_unreachable_fsm	$dff$q0	$_DFF_P_	D	in	$and$12_Y
+dead_unreachable_fsm	$dff$q0	$_DFF_P_	C	in	\clk
+dead_unreachable_fsm	$dff$q0	$_DFF_P_	Q	out	$dff$q0_Q
+
+# state bit Q1: D = (next-state logic) AND NOT reset
+dead_unreachable_fsm	$and$13	$_AND_	A	in	$and$7_Y
+dead_unreachable_fsm	$and$13	$_AND_	B	in	$not$4_Y
+dead_unreachable_fsm	$and$13	$_AND_	Y	out	$and$13_Y
+dead_unreachable_fsm	$and$14	$_AND_	A	in	$and$13_Y
+dead_unreachable_fsm	$and$14	$_AND_	B	in	\x
+dead_unreachable_fsm	$and$14	$_AND_	Y	out	$and$14_Y
+dead_unreachable_fsm	$and$15	$_AND_	A	in	$not$1_Y
+dead_unreachable_fsm	$and$15	$_AND_	B	in	$dff$q1_Q
+dead_unreachable_fsm	$and$15	$_AND_	Y	out	$and$15_Y
+dead_unreachable_fsm	$and$16	$_AND_	A	in	$and$15_Y
+dead_unreachable_fsm	$and$16	$_AND_	B	in	$not$4_Y
+dead_unreachable_fsm	$and$16	$_AND_	Y	out	$and$16_Y
+dead_unreachable_fsm	$and$17	$_AND_	A	in	$and$16_Y
+dead_unreachable_fsm	$and$17	$_AND_	B	in	$not$9_Y
+dead_unreachable_fsm	$and$17	$_AND_	Y	out	$and$17_Y
+dead_unreachable_fsm	$and$18	$_AND_	A	in	$and$16_Y
+dead_unreachable_fsm	$and$18	$_AND_	B	in	\x
+dead_unreachable_fsm	$and$18	$_AND_	Y	out	$and$18_Y
+dead_unreachable_fsm	$or$19	$_OR_	A	in	$and$14_Y
+dead_unreachable_fsm	$or$19	$_OR_	B	in	$and$17_Y
+dead_unreachable_fsm	$or$19	$_OR_	Y	out	$or$19_Y
+dead_unreachable_fsm	$or$20	$_OR_	A	in	$or$19_Y
+dead_unreachable_fsm	$or$20	$_OR_	B	in	$and$18_Y
+dead_unreachable_fsm	$or$20	$_OR_	Y	out	$or$20_Y
+dead_unreachable_fsm	$and$21	$_AND_	A	in	$or$20_Y
+dead_unreachable_fsm	$and$21	$_AND_	B	in	$not$0_Y
+dead_unreachable_fsm	$and$21	$_AND_	Y	out	$and$21_Y
+dead_unreachable_fsm	$dff$q1	$_DFF_P_	D	in	$and$21_Y
+dead_unreachable_fsm	$dff$q1	$_DFF_P_	C	in	\clk
+dead_unreachable_fsm	$dff$q1	$_DFF_P_	Q	out	$dff$q1_Q
+
+# state bit Q2: D = (next-state logic) AND NOT reset
+dead_unreachable_fsm	$and$22	$_AND_	A	in	$dff$q0_Q
+dead_unreachable_fsm	$and$22	$_AND_	B	in	$dff$q1_Q
+dead_unreachable_fsm	$and$22	$_AND_	Y	out	$and$22_Y
+dead_unreachable_fsm	$and$23	$_AND_	A	in	$and$22_Y
+dead_unreachable_fsm	$and$23	$_AND_	B	in	$not$4_Y
+dead_unreachable_fsm	$and$23	$_AND_	Y	out	$and$23_Y
+dead_unreachable_fsm	$and$24	$_AND_	A	in	$and$23_Y
+dead_unreachable_fsm	$and$24	$_AND_	B	in	\x
+dead_unreachable_fsm	$and$24	$_AND_	Y	out	$and$24_Y
+dead_unreachable_fsm	$or$25	$_OR_	A	in	$and$24_Y
+dead_unreachable_fsm	$or$25	$_OR_	B	in	$and$10_Y
+dead_unreachable_fsm	$or$25	$_OR_	Y	out	$or$25_Y
+dead_unreachable_fsm	$and$26	$_AND_	A	in	$or$25_Y
+dead_unreachable_fsm	$and$26	$_AND_	B	in	$not$0_Y
+dead_unreachable_fsm	$and$26	$_AND_	Y	out	$and$26_Y
+dead_unreachable_fsm	$dff$q2	$_DFF_P_	D	in	$and$26_Y
+dead_unreachable_fsm	$dff$q2	$_DFF_P_	C	in	\clk
+dead_unreachable_fsm	$dff$q2	$_DFF_P_	Q	out	$dff$q2_Q
+
+# output z
+dead_unreachable_fsm	z	-	-	po	$or$20_Y
