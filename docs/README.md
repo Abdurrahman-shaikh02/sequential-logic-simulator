@@ -23,6 +23,7 @@ Read from top to bottom the first time. Each page also stands on its own.
    - [Synthesizer](synthesizer/synthesizer.md): usage, output and errors.
    - [Algorithm and correctness](synthesizer/algorithm.md): how the FSM becomes gates, and why the circuit behaves like the table.
    - [FSM analysis](synthesizer/fsm-analysis.md): finding dead and unreachable states.
+   - [How we tested the synthesizer](synthesizer/testing-explained.md): a plain explanation of the validation and performance tests.
 
 ## Quality
 

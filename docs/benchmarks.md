@@ -164,19 +164,20 @@ The synthesizer used to copy each row's full list of signal names for every next
 
 | FSM | Rows | Time before (s) | Time after (s) | Faster | Memory before (MB) | Memory after (MB) | Smaller |
 |---|---|---|---|---|---|---|---|
-| 4,096 states, 2 inputs | 16,384 | 0.529 | 0.093 | 5.7× | 160 | 58 | 2.8× |
-| 65,536 states, 2 inputs | 262,144 | 19.8 | 3.11 | 6.4× | 3,535 | 1,053 | 3.4× |
-| 16 states, 14 inputs | 262,144 | 7.31 | 1.39 | 5.3× | 1,644 | 456 | 3.6× |
-| 256 states, 256 inputs | 4,096 | 4.61 | 0.77 | 6.0× | 824 | 306 | 2.7× |
-| 256 states, 1,024 outputs | 4,096 | 10.1 | 1.84 | 5.5× | 2,129 | 620 | 3.4× |
+| 4,096 states, 2 inputs | 16,384 | 0.529 | 0.117 | 4.5× | 160 | 58 | 2.8× |
+| 65,536 states, 2 inputs | 262,144 | 19.8 | 3.94 | 5.0× | 3,535 | 1,053 | 3.4× |
+| 16 states, 14 inputs | 262,144 | 7.31 | 1.82 | 4.0× | 1,644 | 456 | 3.6× |
+| 256 states, 256 inputs | 4,096 | 4.61 | 1.55 | 3.0× | 824 | 306 | 2.7× |
+| 256 states, 1,024 outputs | 4,096 | 10.1 | 2.59 | 3.9× | 2,129 | 620 | 3.4× |
 
-- **All cases:** none of the 51 FSMs became slower or used more memory. The 13 that used over 100 MB now use 2.6 to 3.6 times less. The 9 where both times are at least 0.1 s are 5.3 to 7.5 times faster.
+- **All cases:** none of the 51 FSMs became slower. The 13 that used over 100 MB now use 2.6 to 3.6 times less memory. The 13 where both times are at least 0.1 s are 3.0 to 5.0 times faster. The smallest FSM used 48 KB more memory, which is too little to matter.
+- **Time varies between runs, and memory does not.** The numbers above are from the run in `results/current/`. An earlier run of the same code, on the same machine, took 3.11 s on the 65,536-state FSM and 0.77 s on the 256-input FSM, while memory on the five FSMs in the table was the same to the nearest MB. Treat the speed-up as a rough figure.
 - **Larger FSMs:** the 1,048,576-row trial, which was killed before, now finishes in 13 s using 2.7 GB. This was a separate single run, not part of `results.csv`.
 - **The netlists did not change.** The old and new code gave byte-identical netlists, error messages and exit codes on 2,294 inputs, including all 51 benchmark FSMs and malformed files. Gates, flip-flops and depth also match on all 51 in the two benchmark runs.
-- **Scaling is still above linear in time.** Between the two largest `states` cases, 4 times the rows now take 5.8 times the time and 4.0 times the memory. Depth and gates are unchanged, because the netlists are the same.
+- **Scaling is still above linear in time.** Between the two largest `states` cases, 4 times the rows now take 5.0 times the time and 4.0 times the memory. Depth and gates are unchanged, because the netlists are the same.
 - **What remains:** the largest case still holds its 443 MB netlist in memory, because nothing may be written until the whole FSM has been checked.
 
-The graph `results/current/plots/compare_before_memory_fix.png` shows the sweeps before and after. Compare `results/current/plots/slopes.csv` with care, because the faster runs leave only 2 or 3 points above the 0.1 s noise level for the time slopes.
+The graph `results/current/plots/compare_before_memory_fix.png` shows the sweeps before and after. Compare `results/current/plots/slopes.csv` with care, because the faster runs leave only 2 to 4 points above the 0.1 s noise level for the time slopes.
 
 ### Reproducing
 
