@@ -71,7 +71,7 @@ Each circuit runs with 3 seeds.
 
 ### Results
 
-Run on 2026-11-04 on branch `bv3`, simulator code from commit `158d3a1`, Yosys 0.68+112 and Icarus Verilog 12.0:
+Run on 2026-11-04 on branch `bv3`, simulator code from commit `1d9689d`, Yosys 0.68+112 and Icarus Verilog 12.0:
 
 ```sh
 python3 validation/icarus/validate.py                  # abc
@@ -83,7 +83,7 @@ python3 validation/icarus/validate.py --flow techmap
 | `abc` | 26 / 26 | 62,676 | 0 |
 | `techmap` | 26 / 26 | 62,676 | 0 |
 
-Every row matched in both flows, with the default `make` build and with an `-O2` build (`make CXXFLAGS="-std=c++17 -Wall -Wextra -I./include -g -O2"`).
+Every row matched in both flows, with the `-O2` build from `make` and with an unoptimized build (`make CXXFLAGS="-std=c++17 -Wall -Wextra -I./include -g -O0"`).
 
 ### What this does not cover
 
