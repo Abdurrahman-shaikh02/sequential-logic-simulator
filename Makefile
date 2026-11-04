@@ -162,6 +162,7 @@ clean:
 	rm -rf validation/icarus/out
 	rm -rf validation/synthesizer/out
 	rm -rf benchmark/simulation/generated
+	rm -rf benchmark/synthesizer/generated
 	rm -f $(OLD_TEST_BIN)
 
 
