@@ -100,7 +100,7 @@ def without_unreachable(table, reset="s0"):
 
 
 def build_cases(quick):
-    """(family, value on the x axis, variant, seed text, function that makes the table, inputs, outputs)."""
+    """(family, value on the x axis, variant, function that makes the table, inputs, outputs)."""
     states_values = (16, 64, 256, 1024) if quick else (16, 64, 256, 1024, 4096, 16384, 65536)
     inputs_full = (2, 4, 6) if quick else (2, 4, 6, 8, 10, 12, 14)
     inputs_sparse = (8, 16) if quick else (8, 16, 32, 64, 128, 256)
