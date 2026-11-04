@@ -1,0 +1,8 @@
+# Two outputs share a wire, and one output is never 1.
+inputs: x
+outputs: p q never
+reset: A
+A | 0 | B | 1 1 0
+A | 1 | A | 0 0 0
+B | 0 | A | 1 1 0
+B | 1 | B | 1 1 0

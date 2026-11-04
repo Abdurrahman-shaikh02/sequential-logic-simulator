@@ -1,0 +1,10 @@
+# T1 and T2 only go to each other, so the machine never returns to A by itself.
+inputs: x
+outputs: z
+reset: A
+A | 0 | A | 0
+A | 1 | T1 | 0
+T1 | 0 | T2 | 1
+T1 | 1 | T2 | 1
+T2 | 0 | T1 | 0
+T2 | 1 | T1 | 0

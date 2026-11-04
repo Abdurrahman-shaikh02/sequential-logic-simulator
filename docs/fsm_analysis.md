@@ -11,6 +11,17 @@ Both functions consider only the rows written in the table. An input combination
 
 ## Usage
 
+From the command line:
+
+```sh
+simulator --fsm docs/fsm_example/dead_unreachable_fsm.net --dead
+simulator --fsm docs/fsm_example/dead_unreachable_fsm.net --unreachable
+```
+
+These print the reports below. They exit with 0 even when they find states, and with 1 if the FSM file can't be read.
+
+From C++:
+
 ```cpp
 #include "synthesizer/DeadStates.hpp"
 #include "synthesizer/UnreachableStates.hpp"
