@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sequential Logic Simulator & FSM Engine</title>
+  <link rel="stylesheet" href="style.css?v=6">
+</head>
+<body>
+<main class="shell">
+  <header class="topbar">
+    <div><h1>Sequential Logic Simulator</h1><p>Digital logic simulation and verification</p></div>
+    <span class="status" id="engineStatus">Connecting to C++…</span>
+  </header>
+  <div class="dashboard">
+    <section class="panel traffic-panel">
+      <h2>Traffic Light FSM</h2>
+      <div class="signal-box"><div class="traffic-housing">
+        <div class="lamp red" id="lampRed" aria-label="Red light"></div>
+        <div class="lamp yellow" id="lampYellow" aria-label="Yellow light"></div>
+        <div class="lamp green" id="lampGreen" aria-label="Green light"></div>
+      </div><p class="current-state">Current State: <b id="stateLabel">—</b></p></div>
+    </section>
+    <section class="panel waveform-panel"><div class="panel-head"><h2 id="waveformTitle">Waveform Viewer</h2><span id="timeLabel">Time: —</span></div><div class="waveform-scroll"><canvas id="waveformCanvas" aria-label="Digital timing traces"></canvas></div></section>
+    <section class="panel controls-panel"><h2>Input Controls</h2>
+      <label class="switch-row"><span>Enable (en) – Advance state</span><input id="enableSwitch" type="checkbox" checked><span class="switch-track"></span></label>
+      <label class="switch-row"><span>Reset (reset) – Force Green</span><input id="resetSwitch" type="checkbox"><span class="switch-track"></span></label>
+      <button class="btn tick" id="stepBtn">▶ Step Clock (Tick)</button>
+      <div class="button-pair"><button class="btn secondary" id="autoBtn">▶ Auto Clock</button><button class="btn reset" id="resetBtn">Reset</button></div>
+      <p class="hint" id="stepInfo">Each Tick runs the C++ simulator with your current inputs and adds new waveform data.</p>
+    </section>
+    <section class="panel assertions-panel"><h2>Traffic-light checks</h2><p class="panel-note">Live signal checks for the traffic-light demonstration only.</p>
+      <div class="assertion" id="aMutual"><span>Mutual Exclusion: Red and Green never active together</span><b class="result">—</b></div>
+      <div class="assertion" id="aOneHot"><span>One-Hot Invariant: Exactly one light is illuminated</span><b class="result">—</b></div>
+      <div class="assertion" id="aSequence"><span>Sequence Progression: Green → Yellow → Red → Green</span><b class="result">—</b></div>
+    </section>
+  </div>
+
+  <section class="panel generic-panel">
+    <div class="section-heading"><div><h2>Circuit Workbench</h2><p class="panel-note">Choose a circuit from the examples bundled with this project. Its matching stimulus sequence and reference assertions load automatically.</p></div><span class="catalog-count" id="catalogCount">Loading circuit library…</span></div>
+    <div class="form-grid circuit-grid">
+      <label>Category<select id="genericCategory"><option value="combinational">Combinational</option><option value="sequential">Sequential</option><option value="fsm">Finite State Machine (FSM)</option></select></label>
+      <label>Circuit<select id="genericCircuit"><option value="">Loading circuits…</option></select></label>
+      <label>Maximum time (ns)<input id="genericMaxTime" type="number" min="1" max="100000" value="40"></label>
+      <label>Clock period (ns)<input id="genericClock" type="number" min="2" max="10000" value="10"></label>
+    </div>
+    <label class="block-label" for="genericPath">Netlist path</label>
+    <input id="genericPath" class="path-input" spellcheck="false" value="examples/component_file_io/combinational/and/netlist.table">
+    <p class="hint" id="circuitDescription">Select a circuit to load its reference testbench.</p>
+    <label class="block-label" for="genericStimuli">Input events and assertions</label>
+    <textarea id="genericStimuli" class="short-textarea" spellcheck="false" aria-describedby="stimuliHelp"></textarea>
+    <p class="hint" id="stimuliHelp">The editor accepts timed input changes (<code>@0 a=0</code>), native C++ <code>ASSERT</code> statements, and <code>INVARIANT</code> statements. Reference examples are loaded from their bundled .tb files.</p>
+    <div class="advanced-actions"><button class="btn tick" id="genericRunBtn">Run selected circuit</button><button class="btn secondary" id="genericReloadBtn">Restore reference testbench</button></div>
+    <pre id="genericOutput" class="terminal" hidden></pre>
+  </section>
+  <section class="panel vending-panel">
+    <h2>Vending Machine</h2>
+    <p class="panel-note">Run coin inputs through the bundled FSM using the C++ simulator. A 10-unit item accepts 5-unit or 10-unit coins.</p>
+    <div class="vending-controls"><button class="btn secondary" id="coin5Btn">Insert 5</button><button class="btn secondary" id="coin10Btn">Insert 10</button><button class="btn reset" id="vendingResetBtn">Reset session</button></div>
+    <div class="vending-readout"><div><span>Coins entered</span><b id="vendingCoins">None</b></div><div><span>Vend output</span><b id="vendingVend">—</b></div><div><span>Stored 5-unit credit</span><b id="vendingCredit">—</b></div></div>
+    <pre id="vendingOutput" class="terminal">Insert a coin to run the vending-machine FSM.</pre>
+  </section>
+
+  <section class="panel suite-panel"><div class="panel-head"><h2>Automated Test Suite</h2><button class="btn tests" id="testsBtn">Run All Test Categories</button></div><pre id="testOutput" class="terminal">Runs the test cases registered by the C++ test runner. The results shown here are the cases actually returned by that runner.</pre></section>
+  <section class="panel advanced-panel"><details id="advanced"><summary>Advanced: Run a custom FSM testbench and download waveforms</summary>
+    <p>Optional: Enter a testbench script to run through the existing C++ engine. Traffic-light controls apply only to the traffic-light preset.</p>
+    <div class="upload-row">
+      <label for="tbFileInput" class="btn secondary upload-label">Browse / Upload .tb file</label>
+      <input id="tbFileInput" type="file" accept=".tb,text/plain" aria-label="Choose testbench file" />
+      <span id="tbFileStatus" role="status" aria-live="polite">No file selected — you can also type or paste below.</span>
+    </div>
+    <div class="upload-row">
+      <label for="netlistFileInput" class="btn secondary upload-label">Browse / Upload netlist (.table or .net)</label>
+      <input id="netlistFileInput" type="file" accept=".table,.tbl,.net" aria-label="Choose netlist file" />
+      <span id="netlistFileStatus" role="status">No external netlist selected; existing .tb path will be used.</span>
+    </div>
+    <p>To run a new netlist from your computer, select both its netlist and .tb input file. For existing project netlists, use the .tb file alone.</p>
+    <textarea id="tbEditor" spellcheck="false" aria-label="Custom testbench script"></textarea>
+    <div class="advanced-actions"><button class="btn secondary" id="loadTrafficBtn">Restore traffic-light example</button><button class="btn tick" id="runCustomBtn">Run this testbench</button><button class="btn secondary" id="vcdBtn">Download VCD</button><button class="btn secondary" id="txtBtn">Download TXT</button><button class="btn secondary" id="jsonBtn">Download JSON</button></div>
+    <pre id="simOutput" class="terminal" hidden></pre>
+  </details></section>
+</main><script src="app.js?v=6"></script>
+</body></html>
