@@ -1,0 +1,6 @@
+# The reset state only appears on the reset: line and as a next state.
+inputs: x
+outputs: z
+reset: Home
+A | 0 | Home | 1
+A | 1 | A | 1

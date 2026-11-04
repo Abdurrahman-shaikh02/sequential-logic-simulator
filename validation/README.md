@@ -8,6 +8,16 @@ make
 python3 validation/icarus/validate.py
 ```
 
+`synthesizer/` checks synthesized netlists against their FSM tables. It needs
+only a built simulator:
+
+```
+make
+python3 validation/synthesizer/validate.py
+```
+
+To add an unusual FSM to it, put a `.net` file in `synthesizer/fsms/`.
+
 ## Writing circuits
 
 **A bus output must come from a single vector, not from separate wires or regs.**

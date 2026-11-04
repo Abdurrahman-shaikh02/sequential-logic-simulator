@@ -1,0 +1,8 @@
+# Only the next state matters.
+inputs: x
+outputs:
+reset: A
+A | 0 | A |
+A | 1 | B |
+B | 0 | A |
+B | 1 | B |

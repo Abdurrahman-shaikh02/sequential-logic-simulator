@@ -1,0 +1,4 @@
+# No rows at all. Must be rejected.
+inputs: x
+outputs: z
+reset: A

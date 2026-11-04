@@ -1,0 +1,6 @@
+# The only state loops to itself, so the state bit is read but never changes.
+inputs: x
+outputs: z
+reset: Only
+Only | 0 | Only | 0
+Only | 1 | Only | 1
