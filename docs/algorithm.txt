@@ -1,25 +1,16 @@
+SLMS SIMULATION ALGORITHM (CURRENT INPUT/ CLOCK SEMANTICS)
 
-Simulator.run(){
-	while(C queue is not empty || S queue is not empty){
-		while(C queue is not empty){
-			dequeue()
-				run operation
-		}
+1. Input nodes receive their scheduled values.
+2. Evaluate operations are drained from the combinational queue.
+3. The simulator commits nodes in topological order and continues draining
+   combinational work until propagation is complete.
+4. Sequential state-change operations are then drained.
+5. A flip-flop's data/control inputs (D, J, K, or T) are updated immediately
+   when their evaluate() method is called. A detected active clock edge queues
+   only a ChangeStateOperation.
+6. Because combinational propagation completes before the sequential queue is
+   drained, a data/control input and active clock edge arriving in the same
+   simulation time are sampled using the newest data/control value.
 
-		Sort the S queue:
-			if there is a set_port before a change_state operation on the same ff.
-				then swap those two operations.
-				Idea is to always do the update first and the setting port.
-				(Because we are assuming zero propagation delay and because of that signals reach at the same time
-				and because edge happens first and then the level(we assume trigger is on edges and ports get set at the level)
-				so trigger first then set port.)
-
-				Then while(S queue is not empty){
-					dequeue()
-					run operation
-				}
-	}
-
-	return
-}
-next signal change
+There is no SetPortOperation, no SET_PORT operation type, and no sequential
+queue reordering or hold-time warning for same-time input/clock events.
