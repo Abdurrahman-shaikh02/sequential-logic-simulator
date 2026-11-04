@@ -1,0 +1,8 @@
+test_jkff_pos	clk	-	-	pi	\clk
+test_jkff_pos	j	-	-	pi	\j
+test_jkff_pos	k	-	-	pi	\k
+test_jkff_pos	q	-	-	po	\q
+test_jkff_pos	ff0	$_JKFF_P_	C	in	\clk
+test_jkff_pos	ff0	$_JKFF_P_	J	in	\j
+test_jkff_pos	ff0	$_JKFF_P_	K	in	\k
+test_jkff_pos	ff0	$_JKFF_P_	Q	out	\q

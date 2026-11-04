@@ -1,0 +1,8 @@
+test_jkff_neg	clk	-	-	pi	\clk
+test_jkff_neg	j	-	-	pi	\j
+test_jkff_neg	k	-	-	pi	\k
+test_jkff_neg	q	-	-	po	\q
+test_jkff_neg	ff0	$_JKFF_N_	C	in	\clk
+test_jkff_neg	ff0	$_JKFF_N_	J	in	\j
+test_jkff_neg	ff0	$_JKFF_N_	K	in	\k
+test_jkff_neg	ff0	$_JKFF_N_	Q	out	\q

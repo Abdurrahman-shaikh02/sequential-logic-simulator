@@ -1,0 +1,6 @@
+test_tff_neg	clk	-	-	pi	\clk
+test_tff_neg	t	-	-	pi	\t
+test_tff_neg	q	-	-	po	\q
+test_tff_neg	ff0	$_TFF_N_	C	in	\clk
+test_tff_neg	ff0	$_TFF_N_	T	in	\t
+test_tff_neg	ff0	$_TFF_N_	Q	out	\q
