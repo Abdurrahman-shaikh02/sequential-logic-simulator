@@ -1,0 +1,5 @@
+name,damage,mismatches,noticed
+states_1024,output,4,True
+states_1024,next,175,True
+states_4096,output,1,True
+states_4096,next,253,True

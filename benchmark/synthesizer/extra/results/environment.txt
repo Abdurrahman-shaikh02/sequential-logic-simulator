@@ -1,0 +1,7 @@
+a3af6a1
+synth-perf
+0
+Yosys 0.67+post (git sha1 22c15a7ecd53437f18f67c72572bd693f78357ca, GNU /usr/bin/g++ 16.1.1)
+Model name:                              Intel(R) Core(TM) Ultra 5 125H
+Mem:              14           6           4           1           6           8
+Thu Nov  5 06:32:08 AM IST 2026
