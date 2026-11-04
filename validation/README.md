@@ -8,6 +8,16 @@ make
 python3 validation/icarus/validate.py
 ```
 
+`synthesizer/` checks synthesized netlists against their FSM tables. It needs
+only a built simulator:
+
+```
+make
+python3 validation/synthesizer/validate.py
+```
+
+To add an unusual FSM to it, put a `.net` file in `synthesizer/fsms/`.
+
 Our simulator is driven through the Worklet 3 interface, `simulator
 --interactive`. The script answers its two prompts on stdin (the netlist path,
 then an input-vectors file) and reads `output/interactive_results.txt`. It

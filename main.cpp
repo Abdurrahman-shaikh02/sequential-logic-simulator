@@ -28,7 +28,13 @@ void printHelp() {
     std::cout << "  ./simulator                              Launch interactive menu\n";
     std::cout << "  ./simulator --testbench <file.tb>        Run simulation from testbench file\n";
     std::cout << "  ./simulator --interactive                Interactively enter circuit inputs\n";
-    std::cout << "  ./simulator --fsm <file.net>             Synthesize FSM and analyze states\n";
+    std::cout << "  ./simulator --fsm <file.net>             Analyze FSM states, then synthesize it\n";
+    std::cout << "  ./simulator --fsm <file.net> --synth [-o <netlist>]\n";
+    std::cout << "                                           Only synthesize: netlist to stdout or a file\n";
+    std::cout << "  ./simulator --fsm <file.net> --dead      Only list dead states\n";
+    std::cout << "  ./simulator --fsm <file.net> --unreachable\n";
+    std::cout << "                                           Only list unreachable states\n";
+    std::cout << "  ./simulator --check <netlist>            Only check that the parser accepts a netlist\n";
     std::cout << "  ./simulator --truthtable <netlist> <out> Generate combinational truth table\n";
     std::cout << "  ./simulator --test [category]            Run software tests (all, unit, etc.)\n";
     std::cout << "  ./simulator --gui [port]                 Launch web GUI server\n";
@@ -293,14 +299,14 @@ bool runTestbenchDemo(const std::string &tbPath) {
     return ok;
 }
 
-void runFsmAnalysis(const std::string &fsmPath) {
+bool runFsmAnalysis(const std::string &fsmPath) {
     std::cout << "[+] Analyzing FSM: " << fsmPath << " ...\n";
     std::vector<std::string> dead, unreachable;
     std::cout << "\n--- Dead States --- \n";
-    DeadStates::find(fsmPath, dead, true);
+    bool ok = DeadStates::find(fsmPath, dead, true);
 
     std::cout << "\n--- Unreachable States ---\n";
-    UnreachableStates::find(fsmPath, unreachable, true);
+    ok = UnreachableStates::find(fsmPath, unreachable, true) && ok;
 
     std::cout << "\n[+] Synthesizing FSM into flip-flops and gates ...\n";
     std::string table = Simulator::synthesize(fsmPath);
@@ -308,7 +314,81 @@ void runFsmAnalysis(const std::string &fsmPath) {
         std::cout << "[+] Synthesized Netlist Table: " << table << "\n\n";
     } else {
         std::cerr << "[-] FSM Synthesis failed.\n\n";
+        ok = false;
     }
+    return ok;
+}
+
+// Writes only the netlist, so its output can be saved or read by a script.
+// An output file is opened after synthesis succeeds, so a failure leaves it alone.
+bool runFsmSynth(const std::string &fsmPath, const std::string &outputPath) {
+    if (outputPath.empty())
+        return Synthesizer::synthesize(fsmPath, std::cout);
+
+    std::ostringstream netlist;
+    if (!Synthesizer::synthesize(fsmPath, netlist))
+        return false;
+    std::ofstream file(outputPath);
+    if (!file.is_open()) {
+        std::cerr << "cannot write file " << outputPath << "\n";
+        return false;
+    }
+    file << netlist.str();
+    return true;
+}
+
+int fsmUsageError(const std::string &message) {
+    std::cerr << message << "\nusage: simulator --fsm <file.net> [--synth [-o <netlist>] | --dead | --unreachable]\n";
+    return 1;
+}
+
+// simulator --fsm <file.net> [one action]. With no action, runs all of them.
+int runFsmCommand(int argc, char* argv[]) {
+    if (argc < 3 || argv[2][0] == '-')
+        return fsmUsageError("--fsm needs an FSM file");
+
+    std::string fsmPath = argv[2], action, outputPath;
+    for (int i = 3; i < argc; i++) {
+        std::string option = argv[i];
+        if (option == "--synth" || option == "--dead" || option == "--unreachable") {
+            if (!action.empty())
+                return fsmUsageError("--fsm takes only one of --synth, --dead and --unreachable");
+            action = option;
+        } else if (option == "-o") {
+            if (i + 1 == argc)
+                return fsmUsageError("-o needs a file");
+            outputPath = argv[++i];
+        } else {
+            return fsmUsageError("unknown option " + option);
+        }
+    }
+    if (!outputPath.empty() && action != "--synth")
+        return fsmUsageError("-o only works with --synth");
+
+    bool ok;
+    std::vector<std::string> states;
+    if (action.empty())
+        ok = runFsmAnalysis(fsmPath);
+    else if (action == "--synth")
+        ok = runFsmSynth(fsmPath, outputPath);
+    else if (action == "--dead")
+        ok = DeadStates::find(fsmPath, states, true);
+    else
+        ok = UnreachableStates::find(fsmPath, states, true);
+    return ok ? 0 : 1;
+}
+
+int runCheck(int argc, char* argv[]) {
+    if (argc != 3) {
+        std::cerr << "usage: simulator --check <netlist>\n";
+        return 1;
+    }
+    Simulator::clear();
+    if (Simulator::parse(argv[2]) != 0) {
+        std::cerr << "[-] Failed to parse netlist.\n";
+        return 1;
+    }
+    return 0;
 }
 
 void runTruthTable(const std::string &netlistPath, const std::string &outputPath) {
@@ -379,9 +459,10 @@ int main(int argc, char* argv[]) {
             return runTestbenchDemo(argv[2]) ? 0 : 1;
         } else if (arg == "--interactive") {
             return runInteractiveSimulation() ? 0 : 1;
-        } else if (arg == "--fsm" && argc >= 3) {
-            runFsmAnalysis(argv[2]);
-            return 0;
+        } else if (arg == "--fsm") {
+            return runFsmCommand(argc, argv);
+        } else if (arg == "--check") {
+            return runCheck(argc, argv);
         } else if (arg == "--truthtable" && argc >= 4) {
             runTruthTable(argv[2], argv[3]);
             return 0;

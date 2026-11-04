@@ -1,0 +1,5 @@
+# One row out of 8: everything else goes to reset with zero outputs.
+inputs: a b
+outputs: z
+reset: A
+B | 11 | A | 1

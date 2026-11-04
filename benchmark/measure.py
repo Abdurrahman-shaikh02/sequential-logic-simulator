@@ -63,13 +63,13 @@ def read_cases(generated):
         return list(csv.DictReader(f))
 
 
-def write_results(path, cases, run_case):
+def write_results(path, cases, run_case, fields=FIELDS):
     """Writes one CSV row per case, as each finishes, so a stopped run keeps its rows."""
     with open(path, "w", newline="") as f:
-        writer = csv.DictWriter(f, FIELDS, lineterminator="\n")
+        writer = csv.DictWriter(f, fields, lineterminator="\n")
         writer.writeheader()
         for case in cases:
-            row = {name: case[name] for name in FIELDS if name in case}
+            row = {name: case[name] for name in fields if name in case}
             row.update(run_case(case))
             writer.writerow(row)
             f.flush()

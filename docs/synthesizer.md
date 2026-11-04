@@ -9,14 +9,30 @@ traffic_light_fsm.net  ──Synthesizer──▶  traffic_light_fsm.table  ─�
 
 ## Usage
 
+From the command line:
+
+```sh
+simulator --fsm docs/fsm_example/traffic_light_fsm.net --synth                     # netlist to the screen
+simulator --fsm docs/fsm_example/traffic_light_fsm.net --synth -o traffic.table    # netlist to a file
+simulator --fsm docs/fsm_example/traffic_light_fsm.net                             # also list dead and unreachable states
+simulator --check traffic.table                                                    # check that the parser accepts a netlist
+```
+
+These exit with 1 on failure and 0 otherwise. With `--synth`, a failure writes no netlist and leaves an existing `-o` file as it was. Plain `--fsm` writes the netlist next to the input file.
+
+From C++:
+
 ```cpp
 #include "synthesizer/Synthesizer.hpp"
 
 std::string netlist = Synthesizer::synthesize("docs/fsm_example/traffic_light_fsm.net");
 // netlist == "docs/fsm_example/traffic_light_fsm.table", or "" on error
+
+// or writes it to a stream; nothing is written on error
+bool ok = Synthesizer::synthesize("docs/fsm_example/traffic_light_fsm.net", std::cout);
 ```
 
-`Simulator::synthesize(path)` calls the same function. The netlist is written next to the input file, with the same name and a `.table` extension. Errors are reported on `std::cerr` as `file:line: message`.
+`Simulator::synthesize(path)` calls the first form, which writes the netlist next to the input file, with the same name and a `.table` extension. Errors are reported on `std::cerr` as `file:line: message`.
 
 ## Input: FSM format
 

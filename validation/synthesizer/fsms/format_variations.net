@@ -1,0 +1,9 @@
+# Spaced and packed bits, comments, odd spacing, and names with underscores.
+outputs:   out_1   _out2
+inputs:	in_a  in_b
+reset:   _start
+
+_start |0 0| s_2 |1 0      # spaced
+_start | 01 | _start | 01
+  s_2  |  1 0  |  _start  |  1 1
+s_2 | 11 | s_2 | 00        # trailing comment | with a bar
