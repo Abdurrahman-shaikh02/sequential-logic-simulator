@@ -2,8 +2,8 @@
 """Turns one folder's results.csv into graphs and slopes.csv in its plots/ folder.
 
     benchmark/synthesizer/plot.py                      plots results/current/
-    benchmark/synthesizer/plot.py before_memory_fix    plots a saved run
-    benchmark/synthesizer/plot.py --compare before_memory_fix
+    benchmark/synthesizer/plot.py before_memory_fix_bv3    plots a saved run
+    benchmark/synthesizer/plot.py --compare before_memory_fix_bv3
                                                        also draws current against a saved run
 
 Exits 1 if a compared run built netlists of a different size on any FSM, because

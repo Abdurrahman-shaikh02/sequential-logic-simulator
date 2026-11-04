@@ -122,9 +122,8 @@ The tables and findings below describe the synthesizer **before** the memory fix
 
 | | |
 |---|---|
-| Data | `benchmark/synthesizer/results/before_memory_fix_bv3/results.csv` (run on 2026-11-04 on `bv3`, commit `3e953ef`, with the synthesizer from before the memory fix) |
+| Data | `benchmark/synthesizer/results/before_memory_fix_bv3/results.csv` (run on 2026-11-04 on `bv3`, commit `01c3349`, with `Synthesizer.cpp` from before the memory fix) |
 | Plots | `benchmark/synthesizer/results/before_memory_fix_bv3/plots/*.png` |
-| Earlier run | `benchmark/synthesizer/results/before_memory_fix/` is the first run, from the `stress-synthesizer` branch. Same memory, but different times, so keep it only as a record |
 | Data and plots after the fix | `benchmark/synthesizer/results/current/` |
 | Machine | Intel Core Ultra 5 125H with 14 GB of memory, every run pinned to CPU core 0. This is not the machine used for the simulator results above, so do not compare the two |
 | Build | `make` (`-O2`) |
@@ -154,11 +153,11 @@ Rows are tied to the other sizes, because a full table has `rows = states × 2^i
 
 | FSM | Rows | Time (s) | Memory (MB) | Gates | Flip-flops | Depth |
 |---|---|---|---|---|---|---|
-| 256 states, 2 inputs | 1,024 | 0.029 | 11 | 7,930 | 8 | 525 |
-| 4,096 states, 2 inputs | 16,384 | 0.94 | 160 | 160,831 | 12 | 8,330 |
-| 16,384 states, 2 inputs | 65,536 | 5.82 | 750 | 710,241 | 14 | 32,970 |
-| 65,536 states, 2 inputs | 262,144 | 33.0 | 3,536 | 3,103,349 | 16 | 131,504 |
-| 16 states, 14 inputs | 262,144 | 11.4 | 1,644 | 1,571,225 | 4 | 131,472 |
+| 256 states, 2 inputs | 1,024 | 0.058 | 10 | 7,930 | 8 | 525 |
+| 4,096 states, 2 inputs | 16,384 | 0.99 | 160 | 160,831 | 12 | 8,330 |
+| 16,384 states, 2 inputs | 65,536 | 5.51 | 750 | 710,241 | 14 | 32,970 |
+| 65,536 states, 2 inputs | 262,144 | 41.3 | 3,535 | 3,103,349 | 16 | 131,504 |
+| 16 states, 14 inputs | 262,144 | 11.3 | 1,643 | 1,571,225 | 4 | 131,472 |
 
 ### Scaling
 
@@ -166,22 +165,22 @@ Slope of log(value) against log(size), where 1 means linear and 2 means quadrati
 
 | Family, against | Time | Memory | Gates | Depth |
 |---|---|---|---|---|
-| `states`, rows | 1.29 (4 points) | 0.84 | 1.08 | 0.97 |
-| `inputs_full`, rows | 1.15 (3 points) | 0.74 | 1.00 | 0.97 |
+| `states`, rows | 1.28 (4 points) | 0.84 | 1.08 | 0.97 |
+| `inputs_full`, rows | 1.23 (3 points) | 0.74 | 1.00 | 0.97 |
 | `inputs_sparse`, inputs | 1.14 | 0.85 | 0.91 | 0.03 |
-| `outputs`, outputs | 0.75 | 0.65 | 0.65 | 0.01 |
+| `outputs`, outputs | 0.69 | 0.65 | 0.65 | 0.01 |
 
-The memory slopes below 1 include small runs, where the program's fixed start-up memory dominates. Between the two largest `states` cases, 4 times the rows took 5.7 times the time and 4.7 times the memory.
+The memory slopes below 1 include small runs, where the program's fixed start-up memory dominates. Between the two largest `states` cases, 4 times the rows took 7.5 times the time and 4.7 times the memory.
 
 `plots/slopes.csv` holds these values. Peak memory is plotted in `rows.png`.
 
 ### What the results show
 
 - **Memory was the limit.** The largest `states` case used about 13.8 KB per row, about 8 times the size of the netlist it writes. An early trial with 1,048,576 rows reached 11 GB of 14 GB before the system killed it. The memory fix addresses this.
-- **Rows cost more as states grow.** The same 262,144 rows take 33.0 s with 65,536 states and 11.4 s with 16 states. With more state bits, each row feeds more next-state lines, giving more OR gates.
+- **Rows cost more as states grow.** The same 262,144 rows take 41.3 s with 65,536 states and 11.3 s with 16 states. With more state bits, each row feeds more next-state lines, giving more OR gates.
 - **Depth grows linearly with rows.** It is about rows ÷ 2 when half the bits are 1, because the OR gates are chained. It does not depend on the number of inputs or outputs.
-- **Each extra input or output has a steady cost.** Time is close to linear in the number of inputs at fixed rows. With 4,096 rows, 1,024 outputs take 16.1 s.
-- **More 1s cost more.** From 0 to 75% ones, time goes from 0.095 s to 0.341 s and gates from 24,443 to 73,479. At 100% gates fall to 28,492 because all the output columns are identical and share one chain, but time stays at 0.249 s. Depth rises to 4,107, because that chain includes every row.
+- **Each extra input or output has a steady cost.** Time is close to linear in the number of inputs at fixed rows. With 4,096 rows, 1,024 outputs take 17.7 s.
+- **More 1s cost more.** From 0 to 75% ones, time goes from 0.062 s to 0.220 s and gates from 24,443 to 73,479. At 100% gates fall to 28,492 because all the output columns are identical and share one chain, but time stays at 0.173 s. Depth rises to 4,107, because that chain includes every row.
 - **Regular FSMs get no benefit.** A counter (36,868 gates) costs about the same as a random table (36,119), because nothing is minimized.
 - **Row order hardly matters:** 32,777 gates sorted and 32,584 shuffled.
 - **Unreachable states are expensive.** When 75% of the states are unreachable, removing them reduces gates from 35,196 to 8,090 and flip-flops from 10 to 8. The synthesizer does not remove them. In `unreachable.png`, the 0% case still shrinks slightly, because a random table leaves 25 of its states unreachable by chance. Its times are mostly under 0.1 s, so read them as a trend only.
@@ -192,22 +191,23 @@ The synthesizer used to copy each row's full list of signal names for every next
 
 | FSM | Rows | Time before (s) | Time after (s) | Faster | Memory before (MB) | Memory after (MB) | Smaller |
 |---|---|---|---|---|---|---|---|
-| 4,096 states, 2 inputs | 16,384 | 0.943 | 0.169 | 5.6× | 160 | 58 | 2.8× |
-| 65,536 states, 2 inputs | 262,144 | 33.0 | 6.62 | 5.0× | 3,536 | 1,053 | 3.4× |
-| 16 states, 14 inputs | 262,144 | 11.4 | 2.94 | 3.9× | 1,644 | 456 | 3.6× |
-| 256 states, 256 inputs | 4,096 | 9.06 | 1.67 | 5.4× | 824 | 306 | 2.7× |
-| 256 states, 1,024 outputs | 4,096 | 16.1 | 3.88 | 4.2× | 2,129 | 620 | 3.4× |
+| 4,096 states, 2 inputs | 16,384 | 0.987 | 0.135 | 7.3× | 160 | 58 | 2.8× |
+| 65,536 states, 2 inputs | 262,144 | 41.3 | 4.16 | 9.9× | 3,535 | 1,053 | 3.4× |
+| 16 states, 14 inputs | 262,144 | 11.3 | 2.38 | 4.7× | 1,643 | 456 | 3.6× |
+| 256 states, 256 inputs | 4,096 | 8.99 | 1.01 | 8.9× | 823 | 306 | 2.7× |
+| 256 states, 1,024 outputs | 4,096 | 17.7 | 2.06 | 8.6× | 2,129 | 620 | 3.4× |
 
-Both versions were built against `bv3` and measured one after the other through the same command. Only `Synthesizer.cpp` differs.
+Both versions were built against `bv3` and measured through the same command, one run after the other in the same session. Only `Synthesizer.cpp` differs.
 
-- **All cases:** none of the 51 FSMs became slower or used more memory. The 13 that used over 100 MB now use 2.6 to 3.6 times less memory. The 15 where both times are at least 0.1 s are 3.9 to 6.1 times faster.
-- **Time varies between runs, and memory does not.** The first runs, on `stress-synthesizer` on the same machine, took 19.8 s before and 3.1 to 3.9 s after on the 65,536-state FSM, while memory was the same to the nearest few MB. The gap between sessions is probably other work on the machine, though that was not checked. Compare times only within one session, and treat the speed-up as a rough figure.
+- **Memory:** the 13 FSMs that used over 100 MB now use 2.6 to 3.6 times less. This holds across every session. The one FSM that grew, the 16-state FSM, grew by 12 KB.
+- **Time:** the median speed-up is 6.6× across the 13 FSMs where both times are at least 0.1 s, with a range of 1.8× to 9.9×. The one FSM that got slower is the smallest of `inputs_full`, from 0.003 s to 0.020 s, which is below the noise level.
+- **Time varies between runs, and memory does not.** On the 65,536-state FSM, earlier sessions on the same machine took 19.8 s and 33.0 s before the fix, and 3.1 s to 6.6 s after it, with almost the same memory. Treat the speed-up as a rough figure, and compare times only within one session.
 - **Larger FSMs:** an FSM with 1,048,576 rows, which was killed at 11 GB before the fix, now finishes in 29 s using 2.7 GB. This was a separate single run, not part of `results.csv`.
 - **The netlists did not change.** The old and new code gave byte-identical netlists, error messages and exit codes on 2,294 inputs, including all 51 benchmark FSMs and malformed files. The netlist hashes in the two benchmark runs also match on all 51.
-- **Scaling is still above linear in time.** Between the two largest `states` cases, 4 times the rows now take 6.2 times the time and 4.0 times the memory. Depth and gates are unchanged, because the netlists are the same.
+- **Scaling is still above linear in time.** Between the two largest `states` cases, 4 times the rows now take 4.4 times the time and 4.0 times the memory. Depth and gates are unchanged, because the netlists are the same.
 - **What remains:** the largest case still holds its 443 MB netlist in memory, because nothing may be written until the whole FSM has been checked.
 
-The graph `results/current/plots/compare_before_memory_fix_bv3.png` shows the sweeps before and after. Compare `results/current/plots/slopes.csv` with care, because the faster runs leave only 3 or 4 points above the 0.1 s noise level for the time slopes.
+The graph `results/current/plots/compare_before_memory_fix_bv3.png` shows the sweeps before and after. Compare `results/current/plots/slopes.csv` with care, because the faster runs leave only 2 to 5 points above the 0.1 s noise level for the time slopes. In this run, the `inputs_full` and `inputs_sparse` time slopes come out below 1, which is more likely noise than a real change.
 
 ### Reproducing
 

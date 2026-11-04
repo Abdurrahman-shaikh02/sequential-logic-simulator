@@ -99,8 +99,7 @@ benchmark/synthesizer/
 ├── fsms/                    one .net file per FSM, plus manifest.csv (not committed)
 └── results/
     ├── current/             the latest run
-    ├── before_memory_fix_bv3/   saved run on bv3, from before the memory fix
-    └── before_memory_fix/       first saved run, from the stress-synthesizer branch
+    └── before_memory_fix_bv3/   saved run on bv3, from before the memory fix
 ```
 
 ### `generate.py`: writes the test FSMs
@@ -216,7 +215,7 @@ cp -r benchmark/synthesizer/results/current benchmark/synthesizer/results/<name>
 python3 benchmark/synthesizer/plot.py --compare <name>     # after a later run
 ```
 
-`results/before_memory_fix_bv3/` and `results/before_memory_fix/` are saved runs like this, so do not overwrite them.
+`results/before_memory_fix_bv3/` is a saved run like this, so do not overwrite it.
 Compare times only from runs on the same machine.
 
 `generate.py --quick` followed by `run.py` replaces `results/current/results.csv`
