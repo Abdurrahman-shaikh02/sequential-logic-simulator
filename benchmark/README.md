@@ -51,4 +51,28 @@ Each case runs 3 times, or 2 times from 100,000 cells up. Times under about
 
 ## Synthesizer
 
-Not built yet.
+Measures our synthesizer on generated FSMs. Each family changes one thing, such
+as states, inputs or outputs, and holds the others still.
+
+```
+make
+python3 benchmark/synthesizer/generate.py         # add --quick for small sizes
+python3 benchmark/synthesizer/hdl_synth/run.py    # about 5 minutes
+```
+
+| Output | Contents |
+|---|---|
+| `synthesizer/hdl_synth/results.csv` | One row per FSM |
+
+Graphs are not built yet. Results are in `docs/benchmarks.md`.
+
+### What is measured
+
+- **`run_s`, `rss_kb`:** median wall time and peak memory of the whole process.
+- **`gates`, `and_gates`, `or_gates`, `not_gates`, `flip_flops`:** size of the netlist.
+- **`depth`:** the longest path through the netlist, in gates.
+- **`netlist_kb`:** size of the netlist file.
+- **`output_sha256`:** hash of the netlist. The script stops if two runs differ.
+
+Each run has a memory limit of 6 GB, changed with `--max-memory-gb`. A case over
+the limit fails alone and leaves its time and memory empty.
