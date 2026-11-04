@@ -1,0 +1,19 @@
+# MUX gate file-I/O testbench
+NETLIST examples/component_file_io/combinational/mux/netlist.table
+MAX_TIME 80
+@0 a=0 b=0 s=0
+ASSERT @5 y=0 "mux vector 0"
+@10 a=0 b=1 s=0
+ASSERT @15 y=0 "mux vector 1"
+@20 a=0 b=0 s=1
+ASSERT @25 y=0 "mux vector 2"
+@30 a=0 b=1 s=1
+ASSERT @35 y=1 "mux vector 3"
+@40 a=1 b=0 s=0
+ASSERT @45 y=1 "mux vector 4"
+@50 a=1 b=0 s=1
+ASSERT @55 y=0 "mux vector 5"
+@60 a=1 b=1 s=0
+ASSERT @65 y=1 "mux vector 6"
+@70 a=1 b=1 s=1
+ASSERT @75 y=1 "mux vector 7"

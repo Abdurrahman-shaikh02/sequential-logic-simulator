@@ -1,0 +1,8 @@
+mux_test	a	-	-	pi	\a
+mux_test	b	-	-	pi	\b
+mux_test	s	-	-	pi	\s
+mux_test	y	-	-	po	\y
+mux_test	$mux_gate	$_MUX_	A	in	\a
+mux_test	$mux_gate	$_MUX_	B	in	\b
+mux_test	$mux_gate	$_MUX_	S	in	\s
+mux_test	$mux_gate	$_MUX_	Y	out	\y

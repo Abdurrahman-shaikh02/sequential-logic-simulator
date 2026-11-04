@@ -1,0 +1,6 @@
+andnot_test	a	-	-	pi	\a
+andnot_test	b	-	-	pi	\b
+andnot_test	y	-	-	po	\y
+andnot_test	$andnot_gate	$_ANDNOT_	A	in	\a
+andnot_test	$andnot_gate	$_ANDNOT_	B	in	\b
+andnot_test	$andnot_gate	$_ANDNOT_	Y	out	\y

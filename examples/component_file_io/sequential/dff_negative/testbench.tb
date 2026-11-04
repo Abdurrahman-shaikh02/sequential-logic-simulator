@@ -1,0 +1,16 @@
+# dff_negative clocked input file with expected-output assertions
+NETLIST examples/component_file_io/sequential/dff_negative/netlist.table
+CLOCK clk 10
+MAX_TIME 50
+@0 d=0
+@7 d=1
+@17 d=0
+@27 d=1
+@37 d=1
+
+# Expected values sampled after negative clock edges.
+ASSERT @10 q=1 "negative-edge DFF captures one"
+ASSERT @20 q=0 "negative-edge DFF captures zero"
+ASSERT @30 q=1 "negative-edge DFF captures one"
+ASSERT @40 q=1 "negative-edge DFF holds one"
+ASSERT @50 q=1 "negative-edge DFF holds one"

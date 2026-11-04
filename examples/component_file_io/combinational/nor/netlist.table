@@ -1,0 +1,6 @@
+nor_test	a	-	-	pi	\a
+nor_test	b	-	-	pi	\b
+nor_test	y	-	-	po	\y
+nor_test	$nor_gate	$_NOR_	A	in	\a
+nor_test	$nor_gate	$_NOR_	B	in	\b
+nor_test	$nor_gate	$_NOR_	Y	out	\y

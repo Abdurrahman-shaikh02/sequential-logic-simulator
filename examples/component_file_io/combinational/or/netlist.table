@@ -1,0 +1,6 @@
+or_test	a	-	-	pi	\a
+or_test	b	-	-	pi	\b
+or_test	y	-	-	po	\y
+or_test	$or_gate	$_OR_	A	in	\a
+or_test	$or_gate	$_OR_	B	in	\b
+or_test	$or_gate	$_OR_	Y	out	\y

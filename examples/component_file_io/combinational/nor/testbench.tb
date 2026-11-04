@@ -1,0 +1,11 @@
+# NOR gate file-I/O testbench
+NETLIST examples/component_file_io/combinational/nor/netlist.table
+MAX_TIME 40
+@0 a=0 b=0
+ASSERT @5 y=1 "nor vector 0"
+@10 a=0 b=1
+ASSERT @15 y=0 "nor vector 1"
+@20 a=1 b=0
+ASSERT @25 y=0 "nor vector 2"
+@30 a=1 b=1
+ASSERT @35 y=0 "nor vector 3"

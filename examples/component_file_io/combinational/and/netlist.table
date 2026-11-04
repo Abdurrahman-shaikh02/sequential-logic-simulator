@@ -1,0 +1,6 @@
+and_test	a	-	-	pi	\a
+and_test	b	-	-	pi	\b
+and_test	y	-	-	po	\y
+and_test	$and_gate	$_AND_	A	in	\a
+and_test	$and_gate	$_AND_	B	in	\b
+and_test	$and_gate	$_AND_	Y	out	\y

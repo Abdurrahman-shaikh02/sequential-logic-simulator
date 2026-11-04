@@ -1,0 +1,16 @@
+# jkff_positive clocked input file with expected-output assertions
+NETLIST examples/component_file_io/sequential/jkff_positive/netlist.table
+CLOCK clk 10
+MAX_TIME 50
+@0 j=0 k=0
+@10 j=1 k=0
+@20 j=0 k=1
+@30 j=1 k=1
+@40 j=0 k=0
+
+# Expected values sampled after positive clock edges.
+ASSERT @5 q=0 "JK hold"
+ASSERT @15 q=1 "JK set"
+ASSERT @25 q=0 "JK reset"
+ASSERT @35 q=1 "JK toggle"
+ASSERT @45 q=1 "JK hold"

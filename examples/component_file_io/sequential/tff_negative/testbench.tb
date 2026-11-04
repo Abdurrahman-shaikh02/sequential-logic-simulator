@@ -1,0 +1,16 @@
+# tff_negative clocked input file with expected-output assertions
+NETLIST examples/component_file_io/sequential/tff_negative/netlist.table
+CLOCK clk 10
+MAX_TIME 50
+@0 t=0
+@7 t=1
+@17 t=1
+@27 t=0
+@37 t=1
+
+# Expected values sampled after negative clock edges.
+ASSERT @10 q=1 "TFF toggles to one on negative edge"
+ASSERT @20 q=0 "TFF toggles to zero on negative edge"
+ASSERT @30 q=0 "TFF holds when T is zero"
+ASSERT @40 q=1 "TFF toggles to one on negative edge"
+ASSERT @50 q=0 "TFF toggles on negative edge when T is one"
