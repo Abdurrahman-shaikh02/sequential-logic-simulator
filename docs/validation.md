@@ -126,7 +126,7 @@ FSMs with more than 16 bits of state, inputs and reset cannot try every input. T
 
 ### Results
 
-Run on 2026-11-04 on commit `ffa0a5f`, with Python 3.14.7. `validate.py` itself was not yet committed.
+Run on 2026-11-04 on commit `ffa0a5f`, with Python 3.14.7. `validate.py` itself was not yet committed. The default run gave the same counts again after the memory fix.
 
 | Command | FSMs | Tried every input | Sampled | Rejected as expected | Checks | Mismatches |
 |---|---|---|---|---|---|---|
@@ -135,7 +135,7 @@ Run on 2026-11-04 on commit `ffa0a5f`, with Python 3.14.7. `validate.py` itself 
 
 Of the damaged netlists and tables in the first run, 7,268 were noticed by the walk and 1,076 only by the forced check. Another 39 still computed the same function, and none were missed.
 
-`validation/synthesizer/inject_bugs.py` also checks the script against real code mistakes. It builds 12 copies of the synthesizer, each with one bug in `Synthesizer.cpp`, and `validate.py` must fail on all of them. All 12 were caught. One bug only appears with 10 or more inputs, and only the `wide` family caught it, which is why the FSMs vary in kind as well as in number.
+`validation/synthesizer/inject_bugs.py` also checks the script against real code mistakes. It builds 12 copies of the synthesizer, each with one bug in `Synthesizer.cpp`, and `validate.py` must fail on all of them. All 12 were caught. One bug only appears with 100 or more inputs, and only the `wide` family caught it, which is why the FSMs vary in kind as well as in number.
 
 These runs and the `synthesizer` unit tests together execute every line of `Synthesizer.cpp`. The unit tests supply the error handling, the code that writes the file and the module name clean-up.
 

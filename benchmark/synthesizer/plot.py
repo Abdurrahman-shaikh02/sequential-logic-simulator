@@ -3,8 +3,11 @@
 
     benchmark/synthesizer/plot.py                      plots results/current/
     benchmark/synthesizer/plot.py before_memory_fix    plots a saved run
+    benchmark/synthesizer/plot.py --compare before_memory_fix
+                                                       also draws current against a saved run
 
-Needs matplotlib.
+Exits 1 if a compared run built netlists of a different size on any FSM, because
+then the two are not doing the same work. Needs matplotlib.
 """
 import argparse
 import csv
@@ -164,6 +167,36 @@ def comparison_graph(rows, plots):
     finish(figure, path)
 
 
+def same_netlists(rows, other):
+    """Prints and returns the FSMs where the two runs built netlists of a different size."""
+    fields = ("gates", "flip_flops", "depth")
+    earlier = {row["name"]: row for row in other}
+    different = [row["name"] for row in rows if row["name"] not in earlier
+                 or any(row[field] != earlier[row["name"]][field] for field in fields)]
+    print(f"netlist sizes compared on {len(rows)} FSMs, {len(different)} differ")
+    for name in different:
+        print("  DIFFERENT", name)
+    return not different
+
+
+def compare_graph(rows, other, other_name, plots):
+    """The sweeps that reach large sizes: one column each, time above and memory below."""
+    sweeps = (("states", "rows", "Rows, adding states"), ("inputs_full", "rows", "Rows, adding inputs"),
+              ("inputs_sparse", "inputs", "Inputs, at 4,096 rows"), ("outputs", "outputs", "Outputs, at 4,096 rows"))
+    figure, axes = plt.subplots(2, len(sweeps), figsize=(14, 6.6), constrained_layout=True)
+    figure.suptitle(f"This run against {other_name.replace('_', ' ')}", x=0.01, ha="left", fontsize=13, color=INK)
+    for column, (family, field, xlabel) in zip(axes.T, sweeps):
+        for axis, (label, value) in zip(column, (TIME, MEMORY)):
+            for run, name, color in ((other, "Before", ORANGE), (rows, "After", BLUE)):
+                points = sorted(of_family(run, family), key=lambda row: row[field])
+                line(axis, [row[field] for row in points], [value(row) for row in points], color, name)
+            style(axis, label, xlabel)
+    handles, names = axes[0][0].get_legend_handles_labels()
+    figure.legend(handles, names, frameon=False, labelcolor=INK, loc="upper right", ncols=2)
+    figure.savefig(plots / f"compare_{other_name}.png", dpi=150)
+    plt.close(figure)
+
+
 def write_slopes(rows, plots):
     """1 means the value grows in step with size, 2 means quadratic."""
     sweeps = (("states", "rows"), ("inputs_full", "rows"), ("inputs_sparse", "inputs"), ("outputs", "outputs"))
@@ -189,6 +222,7 @@ def write_slopes(rows, plots):
 def main():
     parser = argparse.ArgumentParser(description="Draw graphs from one benchmark run.")
     parser.add_argument("folder", nargs="?", default="current", help="folder under results/")
+    parser.add_argument("--compare", metavar="FOLDER", help="saved run under results/ to draw this one against")
     args = parser.parse_args()
 
     folder = RESULTS / args.folder
@@ -212,7 +246,13 @@ def main():
     unreachable_graph(rows, plots)
     comparison_graph(rows, plots)
     write_slopes(rows, plots)
+    same = True
+    if args.compare:
+        other = load(RESULTS / args.compare / "results.csv")
+        same = same_netlists(rows, other)
+        compare_graph(rows, other, args.compare, plots)
     print(f"graphs in {plots}")
+    sys.exit(0 if same else 1)
 
 
 if __name__ == "__main__":

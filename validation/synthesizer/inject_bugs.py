@@ -33,20 +33,20 @@ GROUPS = ["edge", "random", "tiny/1s", "tiny/2s_1i_1o"]
 BUGS = {
     "reset_not_gated": (
         "the D inputs ignore reset",
-        'net.gate("$_AND_", sumOfProducts(dTerms[i]), net.notGate("\\\\reset"))',
-        "sumOfProducts(dTerms[i])"),
+        "int notReset = net.notGate(reset);\n                d = net.andGate(sumOfProducts(dRows[i]), notReset);",
+        "d = sumOfProducts(dRows[i]);"),
     "state_literal_inverted": (
         "minterms read the state bits inverted",
-        "((cur >> i) & 1) != 0",
-        "((cur >> i) & 1) == 0"),
+        "((currentCode[n] >> i) & 1) != 0",
+        "((currentCode[n] >> i) & 1) == 0"),
     "first_input_dropped": (
         "minterms skip the first input",
-        "for (size_t k = 0; k < fsm.inputs.size(); k++)\n            term.push_back",
-        "for (size_t k = 1; k < fsm.inputs.size(); k++)\n            term.push_back"),
+        "for (size_t k = 0; k < fsm.inputs.size(); k++)\n                addLiteral",
+        "for (size_t k = 1; k < fsm.inputs.size(); k++)\n                addLiteral"),
     "last_state_bit_dropped": (
         "minterms skip the top state bit",
-        "for (int i = 0; i < bits; i++)\n            term.push_back",
-        "for (int i = 0; i < bits - 1; i++)\n            term.push_back"),
+        "for (int i = 0; i < bits; i++)\n                addLiteral",
+        "for (int i = 0; i < bits - 1; i++)\n                addLiteral"),
     "too_few_bits": (
         "one flip-flop too few at 2^k + 1 states",
         "while ((size_t(1) << bits) < states.size())",
@@ -57,32 +57,32 @@ BUGS = {
         "while ((size_t(1) << bits) <= states.size())"),
     "sharing_ignores_second_input": (
         "gates with different second inputs get shared",
-        "auto key = type + ' ' + a + ' ' + b;",
-        "auto key = type + ' ' + a;"),
+        "uint64_t key = (static_cast<uint64_t>(a) << 32) | static_cast<uint32_t>(b);",
+        "uint64_t key = static_cast<uint64_t>(a) << 32;"),
     "not_sharing_wrong": (
-        "wires with the same first 3 characters share a NOT, so needs 10+ inputs",
-        "auto it = inverted.find(a);",
-        "auto it = inverted.find(a.substr(0, 3));"),
+        "wires numbered 100 and up share a NOT, so needs 100+ inputs",
+        "if (wires[a].inverted != -1)\n                return wires[a].inverted;",
+        "if (wires[a >= 100 ? 100 : a].inverted != -1)\n                return wires[a >= 100 ? 100 : a].inverted;"),
     "constant_is_one": (
         "lines that are never 1 get tied to 1",
-        'zero = net.gate("$_AND_", "\\\\reset", net.notGate("\\\\reset"));',
-        'zero = net.gate("$_OR_", "\\\\reset", net.notGate("\\\\reset"));'),
+        "zero = net.andGate(reset, net.notGate(reset));",
+        "zero = net.orGate(reset, net.notGate(reset));"),
     "or_chain_keeps_last_only": (
         "each OR keeps only its last minterm",
-        'acc = acc.empty() ? w : gate("$_OR_", acc, w);',
-        "acc = w;"),
+        "acc = acc == -1 ? wire : orGate(acc, wire);",
+        "acc = wire;"),
     "output_needs_nonzero_next": (
         "outputs are lost on rows that go to code 0",
-        "if (r.outputs[j] == '1')",
-        "if (r.outputs[j] == '1' && next != 0)"),
+        "if (r.outputs[j] == \x271\x27)",
+        "if (r.outputs[j] == \x271\x27 && next != 0)"),
     "reset_not_code_zero": (
         "the first state in the table gets code 0 instead of the reset state",
         "std::vector<std::string> states = {fsm.reset};",
         "std::vector<std::string> states = {fsm.reset};\n"
-        "    if (!fsm.rows.empty() && fsm.rows[0].current != fsm.reset) {\n"
-        "        code = {{fsm.rows[0].current, 0}};\n"
-        "        states = {fsm.rows[0].current};\n"
-        "    }"),
+        "        if (!fsm.rows.empty() && fsm.rows[0].current != fsm.reset) {\n"
+        "            code = {{fsm.rows[0].current, 0}};\n"
+        "            states = {fsm.rows[0].current};\n"
+        "        }"),
 }
 
 

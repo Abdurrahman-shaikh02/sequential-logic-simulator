@@ -58,7 +58,7 @@ as states, inputs or outputs, with other params kept constant.
 make
 python3 benchmark/synthesizer/generate.py         # add --quick for small sizes
 python3 benchmark/synthesizer/run.py              # about 5 minutes
-python3 benchmark/synthesizer/plot.py             # needs matplotlib
+python3 benchmark/synthesizer/plot.py --compare before_memory_fix   # needs matplotlib
 ```
 
 | Output | Contents |
@@ -74,6 +74,9 @@ Results are in `docs/benchmarks.md`.
 only writes to `results/current/`, and `plot.py before_memory_fix` redraws the saved
 graphs from the saved results. Fixed seeds generate the same FSMs each time.
 Compare times only from runs on the same machine.
+
+`--compare` also draws `compare_<folder>.png` in `results/current/plots/`, and
+exits 1 if the gates, flip-flops or depth differ from that run on any FSM.
 
 ### What is measured
 

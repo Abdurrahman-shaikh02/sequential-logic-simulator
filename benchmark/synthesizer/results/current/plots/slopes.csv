@@ -1,0 +1,5 @@
+family,against,time_points,time,memory,gates,depth
+states,rows,2,1.27,0.69,1.08,0.97
+inputs_full,rows,2,1.2,0.57,1.0,0.97
+inputs_sparse,inputs,3,1.21,0.85,0.91,0.03
+outputs,outputs,2,1.23,0.58,0.65,0.01
