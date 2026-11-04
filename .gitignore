@@ -3,6 +3,8 @@ temp/
 private/
 .clangd
 # build outputs and files the simulator writes when it runs
-/simulator
-/tests/test_suite
-/output/
+simulator
+tests/test_suite/
+output/
+sandbox/
+demoandppt/

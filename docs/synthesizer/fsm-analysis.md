@@ -1,6 +1,6 @@
 # FSM analysis: dead and unreachable states
 
-Two functions that check an FSM description (format: `docs/fsm.net`) directly from its transition table, without synthesizing or simulating it. They live next to the synthesizer.
+Two functions that check an FSM description (format: [formats/fsm.md](../formats/fsm.md)) directly from its transition table, without synthesizing or simulating it. They live next to the synthesizer.
 
 | Function | Finds |
 |---|---|
@@ -60,13 +60,24 @@ unreachable: U V H
 
 When there is nothing to report, they print `dead states: none` and `unreachable: none`. The comments in the example file explain why each state is or isn't reported.
 
-## Testing
-
-From the repo root:
+## From the command line
 
 ```sh
-make tests/unit/synthesizer/analysist
-./tests/unit/synthesizer/analysist | diff - tests/unit/synthesizer/analysis_expected.txt
+./simulator --fsm docs/fsm_example/dead_unreachable_fsm.net
 ```
 
-The test calls both functions in print mode and then in return mode, and prints the returned states. No output from `diff` means the test passed.
+prints both reports, then synthesizes the FSM. Menu option 4 does the same.
+
+## Testing
+
+| Test | How to run | Checks |
+|---|---|---|
+| `Synthesizer_DeadAndUnreachableDetection` | `./simulator --test unit` | Both functions on `docs/fsm_example/dead_unreachable_fsm.net` |
+| `tests/unit/synthesizer/analysist.cpp` | see below | Both functions in print mode and in return mode, against a saved report |
+
+```sh
+make build/standalone/tests/unit/synthesizer/analysist
+./build/standalone/tests/unit/synthesizer/analysist | diff - tests/unit/synthesizer/analysis_expected.txt
+```
+
+No output from `diff` means the test passed.

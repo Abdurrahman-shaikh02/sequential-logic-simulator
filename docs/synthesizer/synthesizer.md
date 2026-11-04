@@ -36,6 +36,8 @@ bool ok = Synthesizer::synthesize("docs/fsm_example/traffic_light_fsm.net", std:
 
 ## Input: FSM format
 
+The full format is in [formats/fsm.md](../formats/fsm.md).
+
 ```
 inputs:  en
 outputs: R Y G
@@ -83,7 +85,7 @@ traffic_light_fsm  G       -       -    po   $or$19_Y
 
 ## How it works
 
-The algorithm is in `docs/synthesis_algorithm.txt`.
+The algorithm, and the argument for why the circuit behaves like the table, are in [algorithm.md](algorithm.md). The pseudocode is in `docs/synthesis_algorithm.txt`.
 
 1. **Encode the states in binary.** The reset state is all zeros, and the other states are numbered in the order they first appear. This needs `n = max(1, ceil(log2(#states)))` positive-edge D flip-flops, `Q0..Qn-1`.
 2. **Turn each row into a minterm:** an AND over every state bit and every input, e.g. `¬Q0·¬Q1·en` for `Sg | 1`.
@@ -105,16 +107,28 @@ Synthesis stops without writing a file when:
 - a signal name is repeated, reserved, or not an identifier
 - the `reset:` line is missing
 - an input, or the state itself, never affects anything (the FSM has no logic that reads it)
+- the input file already ends in `.table`, which would be overwritten
+- the output file cannot be written
 
 When the next state or an output is never 1, it is driven by the constant `reset AND NOT reset`.
 
-## Testing
-
-From the repo root:
+## From the command line
 
 ```sh
-make tests/unit/synthesizer/traffict
-./tests/unit/synthesizer/traffict < tests/unit/synthesizer/input.txt | diff - tests/unit/synthesizer/expected.txt
+./simulator --fsm docs/fsm_example/traffic_light_fsm.net
 ```
 
-The test synthesizes the traffic-light example, evaluates the generated netlist cycle by cycle, and prints `R Y G` for each input line `reset en`. No output from `diff` means the test passed.
+prints the FSM analysis, then synthesizes and prints the netlist's path. A testbench line `FSM file.net` synthesizes the file when it is loaded, so the netlist never has to be written by hand.
+
+## Testing
+
+| Test | Where | Checks |
+|---|---|---|
+| `FSM_Synthesis_ReferenceSequence` | `./simulator --test regression` | Synthesizes the traffic light and compares four enabled rising edges with an independently written sequence |
+| `Worklet1_2_3_FSM_Pipeline` | `./simulator --test integration` | FSM → synthesizer → parser → simulator → assertions, end to end |
+| `GoldenModel_FSM_HoldCondition`, `SafetyInvariant_MutualExclusion` | `./simulator --test validation` | The synthesized traffic light holds its state with `en = 0`, and never shows red and green together |
+| `examples/traffic_light/traffic_light.tb`, `examples/vending_machine/vending_machine.tb` | `make examples-test` | 31 and 50 assertions on two synthesized FSMs |
+
+`tests/unit/synthesizer/traffict.cpp` is a standalone program that once evaluated the generated netlist cycle by cycle. It now only checks that synthesis succeeds, and its input and expected files are gone.
+
+> **TODO (synthesizer validation):** the synthesizer has not been compared with an independent reference yet. See [validation.md](../validation.md#synthesizer).

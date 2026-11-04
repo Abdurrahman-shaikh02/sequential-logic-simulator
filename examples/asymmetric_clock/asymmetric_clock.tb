@@ -1,4 +1,6 @@
-# Demonstration of a 30% duty-cycle clock (3 HIGH, 7 LOW per 10-unit period).
+# Asymmetric clock: CLOCK clk 10 3 gives a 10-unit period that is LOW for
+# 3 units, then HIGH for 7 (rising edges at 3, 13, 23, ...; falling at 10, 20, ...).
+# See docs/formats/testbench.md#clock.
 FSM tests/netlists/fsm/traffic_light/traffic_light_fsm.net
 CLOCK clk 10 3
 MAX_TIME 43

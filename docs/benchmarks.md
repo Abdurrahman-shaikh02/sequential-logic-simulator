@@ -8,7 +8,7 @@ How run time and memory grow with circuit size, activity, logic depth and stimul
 
 | | |
 |---|---|
-| Data | `benchmark/simulation/hdl_sim/results.csv`, `benchmark/simulation/icarus/results.csv` (run 2026-11-04 on branch `bv3`, simulator code from commit `1d9689d`) |
+| Data | `benchmark/simulation/hdl_sim/results.csv`, `benchmark/simulation/icarus/results.csv` (run 2026-11-04 on branch `bv3`, simulator code from commit `1d9689d`; the simulator code on `main` at `684fb4a` is the same apart from removing an unused enum value) |
 | Plots | `benchmark/simulation/plots/*.png` |
 | Machine | 12th Gen Intel Core i5-12450HX, every run pinned to CPU core 0 |
 | Builds | Our simulator from `make` (`-O2`), Icarus Verilog 12.0, Yosys 0.68+112 |
