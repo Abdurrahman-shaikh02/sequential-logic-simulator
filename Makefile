@@ -81,7 +81,7 @@ gui: $(TARGET)
 
 clean:
 	@echo "Removing generated build files and executables..."
-	rm -rf build output
+	rm -rf build output validation/icarus/out
 	rm -f $(TARGET) $(TEST_SUITE_BIN) $(STANDALONE_BINS)
 
 
