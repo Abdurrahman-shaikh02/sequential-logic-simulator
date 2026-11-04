@@ -99,4 +99,4 @@ make test TESTS=fsm_flow        # synthesized netlists simulated against their t
 
 The `fsm_flow` tests synthesize FSMs, including randomly generated ones, then simulate the netlists and check every step against the table. That covers the next state, the outputs, missing transitions and reset. See [testing.md](../testing.md).
 
-> **TODO (synthesizer validation):** link the synthesizer validation in [validation.md](../validation.md#synthesizer) once it is done.
+The netlists are also checked against their tables by an independent script. See [validation.md](../validation.md#synthesizer).

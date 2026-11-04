@@ -1,0 +1,6 @@
+# No row sets any bit to 1, so no gate reads the input. Must be rejected.
+inputs: x
+outputs: z
+reset: A
+A | 0 | A | 0
+A | 1 | A | 0

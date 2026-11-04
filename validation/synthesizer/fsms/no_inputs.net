@@ -1,0 +1,7 @@
+# A free-running 3-state cycle: one state bit needs a full unused code.
+inputs:
+outputs: a b
+reset: S0
+S0 | | S1 | 01
+S1 | | S2 | 10
+S2 | | S0 | 11

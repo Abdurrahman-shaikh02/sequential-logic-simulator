@@ -87,11 +87,105 @@ Run nothing else heavy at the same time, and do not compare timings from differe
 
 ## Synthesizer
 
-> **TODO (synthesizer benchmarks):** to be written by the synthesizer benchmarking work. Suggested contents:
->
-> - **Setup:** machine, commit, what is timed (`simulator synth -p` reports `synth_ms`), and how many runs.
-> - **Inputs:** FSM sizes swept (states, inputs, outputs, rows), and how they were generated.
-> - **Results:** synthesis time and memory against FSM size, and the size of the netlist produced (gates, flip-flops, depth). Compare with Yosys on the same FSM if possible.
-> - **Scaling:** the slope of time against size, in the same form as the simulator's.
-> - **Where the time goes**, if profiled.
-> - **Reproducing:** the commands, and where the scripts and results live (for example `benchmark/synthesizer/`).
+How run time, memory and the size of the netlist grow with the FSM. How to run the scripts is in `benchmark/README.md`. Correctness is checked separately (see [validation.md](validation.md#synthesizer)).
+
+The tables and findings below describe the synthesizer **before** the memory fix, kept for comparison. [Effect of the memory fix](#effect-of-the-memory-fix) gives the current numbers.
+
+### Setup
+
+| | |
+|---|---|
+| Data | `benchmark/synthesizer/results/before_memory_fix/results.csv` (run on 2026-11-04 on commit `ffa0a5f`; the benchmark scripts were not yet committed) |
+| Plots | `benchmark/synthesizer/results/before_memory_fix/plots/*.png` |
+| Data and plots after the fix | `benchmark/synthesizer/results/current/` |
+| Machine | Intel Core Ultra 5 125H with 14 GB of memory, every run pinned to CPU core 0. This is not the machine used for the simulator results above, so do not compare the two |
+| Build | `make` (`-O2`) |
+| What is timed | Wall time of the whole process, including reading the FSM and writing the netlist to `/dev/null`, as the median of 3 runs (2 from 100,000 rows up) |
+| Memory | Peak RSS of the run, with a limit of 6 GB. No case reached it |
+| Netlist size | Gates, flip-flops and depth (the longest path in gates) from an extra untimed run. A second untimed run confirms the file is identical |
+
+Times under about 0.1 s are noisy. Yosys is not compared yet.
+
+### Inputs
+
+Rows are tied to the other sizes, because a full table has `rows = states × 2^inputs`, so each family changes one thing:
+
+| Family | Changes | Held still |
+|---|---|---|
+| `states` | 16 to 65,536 states | 2 inputs, 4 outputs, full table |
+| `inputs_full` | 2 to 14 inputs, so rows grow too | 16 states, 4 outputs, full table |
+| `inputs_sparse` | 8 to 256 inputs | 4,096 rows, 256 states, 4 outputs |
+| `outputs` | 1 to 1,024 outputs | 256 states, 4 inputs, full table |
+| `output_ones` | Fraction of output bits that are 1 | 256 states, 4 inputs, 16 outputs |
+| `fill` | Fraction of rows present | 256 states, 6 inputs, 4 outputs |
+| `structure` | Random, ring, counter or binary tree | 1,024 states, 2 inputs, 4 outputs |
+| `row_order` | Sorted or shuffled rows | 256 states, 4 inputs, 4 outputs |
+| `unreachable` | Fraction of states that cannot be entered, with their rows kept or removed | 1,024 states, 2 inputs, 4 outputs |
+
+### Results by size
+
+| FSM | Rows | Time (s) | Memory (MB) | Gates | Flip-flops | Depth |
+|---|---|---|---|---|---|---|
+| 256 states, 2 inputs | 1,024 | 0.016 | 11 | 7,930 | 8 | 525 |
+| 4,096 states, 2 inputs | 16,384 | 0.53 | 160 | 160,831 | 12 | 8,330 |
+| 16,384 states, 2 inputs | 65,536 | 3.42 | 750 | 710,241 | 14 | 32,970 |
+| 65,536 states, 2 inputs | 262,144 | 19.8 | 3,535 | 3,103,349 | 16 | 131,504 |
+| 16 states, 14 inputs | 262,144 | 7.3 | 1,644 | 1,571,225 | 4 | 131,472 |
+
+### Scaling
+
+Slope of log(value) against log(size), where 1 means linear and 2 means quadratic. Time slopes use only runs of at least 0.1 s.
+
+| Family, against | Time | Memory | Gates | Depth |
+|---|---|---|---|---|
+| `states`, rows | 1.31 (3 points) | 0.84 | 1.08 | 0.97 |
+| `inputs_full`, rows | 1.09 (3 points) | 0.74 | 1.00 | 0.97 |
+| `inputs_sparse`, inputs | 1.04 | 0.85 | 0.91 | 0.03 |
+| `outputs`, outputs | 0.84 (5 points) | 0.65 | 0.65 | 0.01 |
+
+The memory slopes below 1 include small runs, where the program's fixed start-up memory dominates. Between the two largest `states` cases, 4 times the rows took 5.8 times the time and 4.7 times the memory.
+
+`plots/slopes.csv` holds these values. Peak memory is plotted in `rows.png`.
+
+### What the results show
+
+- **Memory was the limit.** The largest `states` case used about 13.8 KB per row, about 8 times the size of the netlist it writes. An early trial with 1,048,576 rows reached 11 GB of 14 GB before the system killed it. The memory fix addresses this.
+- **Rows cost more as states grow.** The same 262,144 rows take 19.8 s with 65,536 states and 7.3 s with 16 states. With more state bits, each row feeds more next-state lines, giving more OR gates.
+- **Depth grows linearly with rows.** It is about rows ÷ 2 when half the bits are 1, because the OR gates are chained. It does not depend on the number of inputs or outputs.
+- **Each extra input or output has a steady cost.** Time is close to linear in the number of inputs at fixed rows. With 4,096 rows, 1,024 outputs take 10.1 s.
+- **More 1s cost more.** From 0 to 75% ones, time goes from 0.065 s to 0.248 s and gates from 24,443 to 73,479. At 100% gates fall to 28,492 because all the output columns are identical and share one chain, but time stays at 0.235 s. Depth rises to 4,107, because that chain includes every row.
+- **Regular FSMs get no benefit.** A counter (36,868 gates) costs about the same as a random table (36,119), because nothing is minimized.
+- **Row order hardly matters:** 32,777 gates sorted and 32,584 shuffled.
+- **Unreachable states are expensive.** When 75% of the states are unreachable, removing them reduces gates from 35,196 to 8,090 and flip-flops from 10 to 8. The synthesizer does not remove them. In `unreachable.png`, the 0% case still shrinks slightly, because a random table leaves 25 of its states unreachable by chance. Its times are mostly under 0.1 s, so read them as a trend only.
+
+### Effect of the memory fix
+
+The synthesizer used to copy each row's full list of signal names for every next-state and output line it fed, and to look up gates by long names. Each line now lists row numbers, each row's AND chain is built once, and wires are numbers.
+
+| FSM | Rows | Time before (s) | Time after (s) | Faster | Memory before (MB) | Memory after (MB) | Smaller |
+|---|---|---|---|---|---|---|---|
+| 4,096 states, 2 inputs | 16,384 | 0.529 | 0.117 | 4.5× | 160 | 58 | 2.8× |
+| 65,536 states, 2 inputs | 262,144 | 19.8 | 3.94 | 5.0× | 3,535 | 1,053 | 3.4× |
+| 16 states, 14 inputs | 262,144 | 7.31 | 1.82 | 4.0× | 1,644 | 456 | 3.6× |
+| 256 states, 256 inputs | 4,096 | 4.61 | 1.55 | 3.0× | 824 | 306 | 2.7× |
+| 256 states, 1,024 outputs | 4,096 | 10.1 | 2.59 | 3.9× | 2,129 | 620 | 3.4× |
+
+- **All cases:** none of the 51 FSMs became slower. The 13 that used over 100 MB now use 2.6 to 3.6 times less memory. The 13 where both times are at least 0.1 s are 3.0 to 5.0 times faster. The smallest FSM used 48 KB more memory, which is too little to matter.
+- **Time varies between runs, and memory does not.** The numbers above are from the run in `results/current/`. An earlier run of the same code, on the same machine, took 3.11 s on the 65,536-state FSM and 0.77 s on the 256-input FSM, while memory on the five FSMs in the table was the same to the nearest MB. Treat the speed-up as a rough figure.
+- **Larger FSMs:** the 1,048,576-row trial, which was killed before, now finishes in 13 s using 2.7 GB. This was a separate single run, not part of `results.csv`.
+- **The netlists did not change.** The old and new code gave byte-identical netlists, error messages and exit codes on 2,294 inputs, including all 51 benchmark FSMs and malformed files. Gates, flip-flops and depth also match on all 51 in the two benchmark runs.
+- **Scaling is still above linear in time.** Between the two largest `states` cases, 4 times the rows now take 5.0 times the time and 4.0 times the memory. Depth and gates are unchanged, because the netlists are the same.
+- **What remains:** the largest case still holds its 443 MB netlist in memory, because nothing may be written until the whole FSM has been checked.
+
+The graph `results/current/plots/compare_before_memory_fix.png` shows the sweeps before and after. Compare `results/current/plots/slopes.csv` with care, because the faster runs leave only 2 to 4 points above the 0.1 s noise level for the time slopes.
+
+### Reproducing
+
+```sh
+make
+python3 benchmark/synthesizer/generate.py
+python3 benchmark/synthesizer/run.py
+python3 benchmark/synthesizer/plot.py --compare before_memory_fix
+```
+
+These write to `benchmark/synthesizer/results/current/`, leaving the saved results in `results/before_memory_fix/` untouched.
