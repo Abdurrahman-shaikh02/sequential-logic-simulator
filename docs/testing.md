@@ -8,14 +8,16 @@ Several layers check the code. Each answers a different question:
 | Parser regression | `tests/unit/parser/test_parser.cpp` | Does the parser accept and reject exactly what it should? | `make parser-test` |
 | Example testbenches | `examples/` | Do the shipped examples pass their own assertions? | `make examples-test`, `examples/component_file_io/run_all_checks.sh` |
 | Standalone programs | `tests/unit/`, `tests/netlists/` | The original per-component test programs | `make standalone-build` |
-| Validation | `validation/` | Does our simulator agree with Icarus Verilog on the same netlist? | `python3 validation/icarus/validate.py` |
-| Benchmarks | `benchmark/` | How do time and memory grow? | see [benchmarks.md](benchmarks.md) |
+| Simulator validation | `validation/icarus/` | Does our simulator agree with Icarus Verilog on the same netlist? | `python3 validation/icarus/validate.py` |
+| Synthesizer validation | `validation/synthesizer/` | Does each synthesized netlist behave exactly like its FSM table? Would a bug in the synthesizer be caught? | `python3 validation/synthesizer/validate.py`, `inject_bugs.py` |
+| Command-line checks | `validation/synthesizer/test_cli.py` | Do `--fsm`, `--synth`, `-o`, `--dead`, `--unreachable` and `--check` give the right exit codes, output and errors? | `python3 validation/synthesizer/test_cli.py` |
+| Benchmarks | `benchmark/` | How do time and memory grow, for the simulator and the synthesizer? | see [benchmarks.md](benchmarks.md) |
 
 Run everything from the project root. Validation and benchmarks have their own pages: [validation.md](validation.md) and [benchmarks.md](benchmarks.md).
 
 ## Current results
 
-Run on commit `684fb4a`:
+Run on `main` at commit `b92a64b`:
 
 | Check | Result |
 |---|---|
@@ -24,6 +26,9 @@ Run on commit `684fb4a`:
 | `examples/component_file_io/run_all_checks.sh` | All components passed |
 | `make parser-test` | 51 tests, 196 checks, **7 checks failed** in 2 tests that expect old behavior (see below) |
 | `python3 validation/icarus/validate.py` | 26 / 26 circuits, 62,676 rows, 0 mismatches, both flows |
+| `python3 validation/synthesizer/validate.py` | 2,139 FSMs, 1,570,472 checks, 0 mismatches. Of the damaged copies, 8,344 caught, 39 harmless, 0 missed |
+| `python3 validation/synthesizer/inject_bugs.py` | 12 / 12 injected bugs caught |
+| `python3 validation/synthesizer/test_cli.py` | 28 / 28 checks passed |
 
 `make test` runs the 7-category suite and then the parser regression suite, so it currently exits non-zero because of the 2 stale parser tests.
 
@@ -99,7 +104,7 @@ cd tests/unit/combinational/and
 ../../../../build/standalone/tests/unit/combinational/and/andt < input.txt | diff - expected.txt
 ```
 
-Status on commit `684fb4a`:
+Status on commit `b92a64b`:
 
 | Programs | Status |
 |---|---|
@@ -114,6 +119,7 @@ Status on commit `684fb4a`:
 ## Testing strategy
 
 - **Bottom-up.** Gates and flip-flops are tested alone (unit), then wired into netlists (integration), then through the testbench and its output files (system).
-- **Independent oracles.** Regression tests compare against tables written by hand, not against the simulator's own earlier output. Validation compares against Icarus Verilog on the same netlist.
+- **Independent oracles.** Regression tests compare against tables written by hand, not against the simulator's own earlier output. The simulator validation compares against Icarus Verilog on the same netlist, and the synthesizer validation compares each netlist with its FSM table using code that shares nothing with the synthesizer.
+- **Testing the tests.** The synthesizer validation damages netlists and tables, and `inject_bugs.py` puts real bugs into `Synthesizer.cpp`, to show that the checks can fail.
 - **Negative tests.** Missing files, unknown signals, bad bit indices and wrong assertions must fail loudly.
-- **What is not covered.** No line-coverage measurement is set up. The GUI is checked by hand and by calling its API, not by a browser test.
+- **What is not covered.** No line-coverage measurement is set up on `main`. The GUI is checked by hand and by calling its API, not by a browser test.

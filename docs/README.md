@@ -29,9 +29,9 @@ Read from top to bottom the first time. Each page also stands on its own.
 
 ## Quality
 
-12. [Testing](testing.md): the 7-category suite, the parser regression suite, standalone tests and example checks.
-13. [Validation](validation.md): comparison against Icarus Verilog.
-14. [Benchmarks](benchmarks.md): run time and memory against Icarus Verilog.
+12. [Testing](testing.md): the 7-category suite, the parser regression suite, standalone tests, example checks, and the command-line checks.
+13. [Validation](validation.md): the simulator against Icarus Verilog, and every synthesized netlist against its FSM table.
+14. [Benchmarks](benchmarks.md): the simulator's run time and memory against Icarus Verilog, and how the synthesizer scales with the FSM.
 15. [Limitations](limitations.md): known issues and unsupported features.
 
 ## Other files in this folder
@@ -50,10 +50,6 @@ Read from top to bottom the first time. Each page also stands on its own.
 
 Many of them describe an earlier state of the code and are now wrong. For example, some say the negative-edge, JK and T flip-flops are empty placeholders (they are implemented and tested), quote older test counts, or say that `CLOCK clk 10 3` gives 3 units HIGH (it gives 3 LOW, then 7 HIGH; see [formats/testbench.md](formats/testbench.md#clock)). Where the archive and these pages disagree, these pages are right.
 
-## Unfinished
+## Results and commits
 
-Sections still waiting for the synthesizer validation and benchmarks are marked `TODO (`:
-
-```sh
-grep -rn "TODO (" README.md docs/ --exclude-dir=archive
-```
+Every result in these pages names the commit or branch it was measured on, and the script and data files that reproduce it. The test and validation results were rerun on `main` at `b92a64b`. The benchmark data was recorded on branch `bv3` and is kept in `benchmark/`; the pages say which code it was measured on.

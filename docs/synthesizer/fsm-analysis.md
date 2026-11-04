@@ -66,7 +66,7 @@ When there is nothing to report, they print `dead states: none` and `unreachable
 ./simulator --fsm docs/fsm_example/dead_unreachable_fsm.net
 ```
 
-prints both reports, then synthesizes the FSM. Menu option 4 does the same.
+prints both reports, then synthesizes the FSM. Menu option 4 does the same. `--dead` or `--unreachable` prints only one report (see [Usage](#usage)).
 
 ## Testing
 
@@ -81,3 +81,5 @@ make build/standalone/tests/unit/synthesizer/analysist
 ```
 
 No output from `diff` means the test passed.
+
+`validation/synthesizer/test_cli.py` also runs `--dead` and `--unreachable` from the command line and checks their exit codes and output. The synthesizer validation does not check these two functions ([validation.md](../validation.md#what-this-does-not-cover-1)).

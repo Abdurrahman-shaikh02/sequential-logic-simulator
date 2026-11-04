@@ -4,14 +4,20 @@
 ./simulator                              Launch interactive menu
 ./simulator --testbench <file.tb>        Run simulation from testbench file
 ./simulator --interactive                Interactively enter circuit inputs
-./simulator --fsm <file.net>             Synthesize FSM and analyze states
+./simulator --fsm <file.net>             Analyze FSM states, then synthesize it
+./simulator --fsm <file.net> --synth [-o <netlist>]
+                                         Only synthesize: netlist to stdout or a file
+./simulator --fsm <file.net> --dead      Only list dead states
+./simulator --fsm <file.net> --unreachable
+                                         Only list unreachable states
+./simulator --check <netlist>            Only check that the parser accepts a netlist
 ./simulator --truthtable <netlist> <out> Generate combinational truth table
 ./simulator --test [category]            Run software tests (all, unit, etc.)
 ./simulator --gui [port]                 Launch web GUI server
 ./simulator --help                       Display this help menu
 ```
 
-Only the first argument is read as an option. Run every command from the project root: paths inside `.tb` files, the examples and the GUI are relative to it. The code is in `main.cpp`.
+The first argument picks the command. Only `--fsm` reads further options. Run every command from the project root: paths inside `.tb` files, the examples and the GUI are relative to it. The code is in `main.cpp`.
 
 ## `--testbench <file.tb>`
 
@@ -55,13 +61,36 @@ With no vectors file and `q` at the first step, it lists the inputs and exits wi
 
 ## `--fsm <file.net>`
 
-Analyzes an FSM table and synthesizes it:
+With no further option, analyzes an FSM table and synthesizes it:
 
 1. Prints its dead states ([synthesizer/fsm-analysis.md](synthesizer/fsm-analysis.md)).
 2. Prints its reachable and unreachable states.
 3. Synthesizes it and writes the netlist next to the input, with the extension changed to `.table` ([synthesizer/synthesizer.md](synthesizer/synthesizer.md)).
 
-Always exits 0. Look for `[-] FSM Synthesis failed.` and the error lines before it.
+One option runs a single step instead:
+
+| Option | Does |
+|---|---|
+| `--synth` | Only synthesizes, and prints the netlist alone to standard output, so it can be piped or saved |
+| `--synth -o <netlist>` | Only synthesizes, and writes the netlist to `<netlist>`. The file is opened only after synthesis succeeds, so a failure leaves an existing file as it was |
+| `--dead` | Only prints the dead-state report |
+| `--unreachable` | Only prints the reachable and unreachable states |
+
+| Exit code | Meaning |
+|---|---|
+| 0 | Every step that ran succeeded. Finding dead or unreachable states is not a failure |
+| 1 | The FSM file could not be read, synthesis failed, the output file could not be written, or the options were wrong (more than one of `--synth`, `--dead` and `--unreachable`, `-o` without `--synth`, or an unknown option) |
+
+Errors go to standard error, with synthesis errors as `file:line: message`.
+
+## `--check <netlist>`
+
+Loads a netlist with the parser and does nothing else: no simulation and no output files. Exits 0 if the parser accepts it, and 1 with the parser's error otherwise. The synthesizer validation uses it to confirm that every generated netlist loads ([validation.md](validation.md#synthesizer)).
+
+```sh
+./simulator --fsm docs/fsm_example/traffic_light_fsm.net --synth -o traffic.table
+./simulator --check traffic.table && echo ok
+```
 
 ## `--truthtable <netlist> <out>`
 
@@ -92,7 +121,7 @@ Runs `python3 gui/server.py <port>` (default 8080) and waits for it. Open `http:
   8. Exit
 ```
 
-Option 1 runs `examples/traffic_light/traffic_light.tb`. The others ask for their paths and do the same as the option of the same name above. Paths typed at the menu cannot contain spaces.
+Option 1 runs `examples/traffic_light/traffic_light.tb`. The others ask for their paths and do the same as the option of the same name above. Option 4 is `--fsm` with no further option. Paths typed at the menu cannot contain spaces.
 
 ## `tools/run_file_testbench.py`
 

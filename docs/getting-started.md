@@ -125,7 +125,7 @@ Each row holds the values after that input row has settled. Bus bits are listed 
 ./simulator --fsm docs/fsm_example/traffic_light_fsm.net
 ```
 
-This reports dead and unreachable states, then writes the synthesized netlist next to the input as `traffic_light_fsm.table`. The synthesizer adds `clk` and `reset` inputs, and reset is synchronous. A `.tb` file can name the `.net` file directly with `FSM`, and it is synthesized on load. The FSM format is in [formats/fsm.md](formats/fsm.md).
+This reports dead and unreachable states, then writes the synthesized netlist next to the input as `traffic_light_fsm.table`. Add `--synth` to print only the netlist, or `--synth -o <file>` to write it somewhere else ([cli.md](cli.md#--fsm-filenet)). The synthesizer adds `clk` and `reset` inputs, and reset is synchronous. A `.tb` file can name the `.net` file directly with `FSM`, and it is synthesized on load. The FSM format is in [formats/fsm.md](formats/fsm.md).
 
 ## Truth table of a combinational circuit
 

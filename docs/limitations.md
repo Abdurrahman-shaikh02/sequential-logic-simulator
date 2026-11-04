@@ -1,6 +1,6 @@
 # Limitations
 
-Known issues and unsupported features, grouped by component. Each one says what happens, and how to work around it where possible. Everything here was checked against the code on commit `684fb4a`.
+Known issues and unsupported features, grouped by component. Each one says what happens, and how to work around it where possible. Everything here was checked against the code on `main` at commit `b92a64b`.
 
 ## Simulation model
 
@@ -54,7 +54,7 @@ Known issues and unsupported features, grouped by component. Each one says what 
 | Limitation | Effect |
 |---|---|
 | `--interactive` steps are fixed at 10 time units | No other spacing, and the clock is an ordinary column |
-| `--fsm` and `--truthtable` always exit 0 | Scripts must look for `[-]` in the output to detect a failure |
+| `--truthtable` always exits 0 | Scripts must look for `[-]` in the output to detect a failure |
 | `--truthtable` handles at most 20 input bits and only combinational circuits | Fails with a message otherwise |
 | Paths typed at the menu cannot contain spaces | The menu reads one word |
 | `tools/run_file_testbench.py` replaces only a `NETLIST` or `FSM` line | If the testbench uses `CIRCUIT`, the given netlist is added at the top and then replaced by the `CIRCUIT` line's circuit |
@@ -73,14 +73,17 @@ Known issues and unsupported features, grouped by component. Each one says what 
 
 | Limitation | Effect |
 |---|---|
-| No logic minimization | Netlists are correct sums of products, larger than needed |
+| No logic minimization | Netlists are correct sums of products, larger than needed. A regular FSM such as a counter costs as many gates as a random table of the same size ([benchmarks](benchmarks.md#what-the-results-show)) |
+| Unreachable states are kept | Their rows are still turned into gates. With 75% of the states unreachable, removing them by hand cuts the gates from 35,196 to 8,090 ([benchmarks](benchmarks.md#what-the-results-show)). `--fsm <file> --unreachable` lists them |
+| OR gates are chained | Logic depth grows linearly with the rows, about rows ÷ 2 when half the bits are 1. This has no cost in our zero-delay simulator, but would be slow as real hardware |
+| The whole netlist is held in memory | Nothing is written until the whole FSM has been checked, so the largest benchmark case, 262,144 rows, peaks at about 1 GB |
 | Binary state encoding only | No one-hot or Gray encoding |
 | Synchronous reset only | Reset takes effect on the next rising clock edge |
 | Outputs are not gated by reset | While `reset` is high, the outputs show the current state's outputs |
 | Only `$_DFF_P_` flip-flops | No choice of clock edge |
-| The netlist is written next to the input | `x.net` always produces `x.table` in the same folder, overwriting it |
+| Plain `--fsm` writes the netlist next to the input | `x.net` produces `x.table` in the same folder, overwriting it. Use `--fsm x.net --synth -o <file>` to choose the file |
 
-> **TODO (synthesizer validation):** add anything the synthesizer validation and benchmarks find.
+The synthesizer validation covers the netlists, not the FSM analysis: `DeadStates` and `UnreachableStates` are checked only by the unit tests ([validation.md](validation.md#what-this-does-not-cover-1)).
 
 ## Tests
 

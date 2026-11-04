@@ -107,7 +107,8 @@ Synthesis stops without writing a file when:
 - a signal name is repeated, reserved, or not an identifier
 - the `reset:` line is missing
 - an input, or the state itself, never affects anything (the FSM has no logic that reads it)
-- the input file already ends in `.table`, which would be overwritten
+- the input file cannot be opened
+- the input file already ends in `.table`, which would be overwritten (only when the netlist is written next to the input)
 - the output file cannot be written
 
 When the next state or an output is never 1, it is driven by the constant `reset AND NOT reset`.
@@ -118,12 +119,15 @@ When the next state or an output is never 1, it is driven by the constant `reset
 ./simulator --fsm docs/fsm_example/traffic_light_fsm.net
 ```
 
-prints the FSM analysis, then synthesizes and prints the netlist's path. A testbench line `FSM file.net` synthesizes the file when it is loaded, so the netlist never has to be written by hand.
+prints the FSM analysis, then synthesizes and prints the netlist's path. `--synth` skips the analysis and prints only the netlist, or writes it with `-o` (see [Usage](#usage) and [cli.md](../cli.md#--fsm-filenet)). A testbench line `FSM file.net` synthesizes the file when it is loaded, so the netlist never has to be written by hand.
 
 ## Testing
 
 | Test | Where | Checks |
 |---|---|---|
+| Synthesizer validation | `python3 validation/synthesizer/validate.py` | Thousands of edge-case, exhaustive and random FSMs, each compared with its own table by code independent of the synthesizer, and damaged copies that must be caught. See [validation.md](../validation.md#synthesizer) |
+| Injected bugs | `python3 validation/synthesizer/inject_bugs.py` | 12 copies of the synthesizer, each with one bug, must all fail the validation |
+| Command line | `python3 validation/synthesizer/test_cli.py` | 28 checks of `--fsm`, `--synth`, `-o`, `--dead`, `--unreachable` and `--check`: exit codes, output and errors |
 | `FSM_Synthesis_ReferenceSequence` | `./simulator --test regression` | Synthesizes the traffic light and compares four enabled rising edges with an independently written sequence |
 | `Worklet1_2_3_FSM_Pipeline` | `./simulator --test integration` | FSM → synthesizer → parser → simulator → assertions, end to end |
 | `GoldenModel_FSM_HoldCondition`, `SafetyInvariant_MutualExclusion` | `./simulator --test validation` | The synthesized traffic light holds its state with `en = 0`, and never shows red and green together |
@@ -131,4 +135,4 @@ prints the FSM analysis, then synthesizes and prints the netlist's path. A testb
 
 `tests/unit/synthesizer/traffict.cpp` is a standalone program that once evaluated the generated netlist cycle by cycle. It now only checks that synthesis succeeds, and its input and expected files are gone.
 
-> **TODO (synthesizer validation):** the synthesizer has not been compared with an independent reference yet. See [validation.md](../validation.md#synthesizer).
+How run time, memory and netlist size grow with the FSM is in [benchmarks.md](../benchmarks.md#synthesizer).

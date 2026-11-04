@@ -92,6 +92,6 @@ The outputs come from gates fed by the current state and the current inputs, as 
 
 ## Testing
 
-The regression test `FSM_Synthesis_ReferenceSequence` and the example testbenches check the claim on the traffic light and the vending machine: they synthesize the table, simulate it, and assert the expected state outputs at each clock edge. See [synthesizer.md](synthesizer.md#testing).
+`validation/synthesizer/validate.py` checks the claim on thousands of FSMs with code that shares nothing with the synthesizer. It walks the table and the netlist side by side from reset, trying every input value with `reset` at 0 and 1 in every state reached. Because the state and inputs decide the next step, a match covers input sequences of any length. It also forces the flip-flops to every code, which checks the unused-code argument above: those codes output zeros and go to reset. See [validation.md](../validation.md#synthesizer).
 
-> **TODO (synthesizer validation):** check the claim on many FSMs against code independent of the synthesizer, for example random tables simulated both through the synthesized netlist and by a direct interpreter of the table. See [validation.md](../validation.md#synthesizer).
+The regression test `FSM_Synthesis_ReferenceSequence` and the example testbenches check the same claim through our own simulator, on the traffic light and the vending machine. See [synthesizer.md](synthesizer.md#testing).
