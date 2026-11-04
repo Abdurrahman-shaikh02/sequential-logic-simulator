@@ -93,8 +93,8 @@ How run time, memory and the size of the netlist grow with the FSM. How to run t
 
 | | |
 |---|---|
-| Data | `benchmark/synthesizer/before_memory_fix/results.csv` (run on 2026-11-04 on commit `ffa0a5f`; the benchmark scripts were not yet committed) |
-| Plots | `benchmark/synthesizer/before_memory_fix/plots/*.png` |
+| Data | `benchmark/synthesizer/results/before_memory_fix/results.csv` (run on 2026-11-04 on commit `ffa0a5f`; the benchmark scripts were not yet committed) |
+| Plots | `benchmark/synthesizer/results/before_memory_fix/plots/*.png` |
 | Machine | Intel Core Ultra 5 125H with 14 GB of memory, every run pinned to CPU core 0. This is not the machine used for the simulator results above, so do not compare the two |
 | Build | `make` (`-O2`) |
 | What is timed | Wall time of the whole process, including reading the FSM and writing the netlist to `/dev/null`, as the median of 3 runs (2 from 100,000 rows up) |
@@ -160,8 +160,8 @@ The memory slopes below 1 include small runs, where the program's fixed start-up
 ```sh
 make
 python3 benchmark/synthesizer/generate.py
-python3 benchmark/synthesizer/hdl_synth/run.py
+python3 benchmark/synthesizer/run.py
 python3 benchmark/synthesizer/plot.py
 ```
 
-These write to `benchmark/synthesizer/hdl_synth/`, leaving the saved results in `before_memory_fix/` untouched.
+These write to `benchmark/synthesizer/results/current/`, leaving the saved results in `results/before_memory_fix/` untouched.

@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Writes every benchmark FSM to generated/.
+"""Writes every benchmark FSM to fsms/, as one .net file each.
 
     benchmark/synthesizer/generate.py            everything
     benchmark/synthesizer/generate.py --quick    small sizes, to try the scripts
 
 Rows, states and inputs are tied together, because a full table has
 rows = states * 2^inputs. So each family changes one thing and holds the others
-still. Fixed seeds make every file identical on each run.
+still. Fixed seeds make every file identical on each run, so the files are not
+committed.
 """
 import argparse
 import csv
@@ -15,7 +16,7 @@ import shutil
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-GENERATED = HERE / "generated"
+FSMS = HERE / "fsms"
 
 BASE = dict(states=256, inputs=4, outputs=4)    # 4096 rows when full
 
@@ -148,14 +149,14 @@ def main():
     parser.add_argument("--quick", action="store_true", help="small sizes, to try the scripts")
     args = parser.parse_args()
 
-    shutil.rmtree(GENERATED, ignore_errors=True)
-    GENERATED.mkdir()
+    shutil.rmtree(FSMS, ignore_errors=True)
+    FSMS.mkdir()
     rows = []
     for family, value, variant, build, inputs, outputs in build_cases(args.quick):
         name = f"{family}_{value}" + (f"_{variant}" if variant else "")
         # The variants of a value share a seed, so they start from the same table
         table = build(random.Random(f"{family}/{value}"))
-        path = GENERATED / f"{name}.net"
+        path = FSMS / f"{name}.net"
         path.write_text(table_text(table, inputs, outputs))
         states = {row[0] for row in table} | {row[2] for row in table} | {"s0"}
         one_bits = sum(row[3].count("1") for row in table)
@@ -164,11 +165,11 @@ def main():
                      "output_ones": one_bits, "file_kb": path.stat().st_size // 1024})
         print(f"{name:28} {len(table):8} rows", flush=True)
 
-    with (GENERATED / "manifest.csv").open("w", newline="") as f:
+    with (FSMS / "manifest.csv").open("w", newline="") as f:
         writer = csv.DictWriter(f, list(rows[0]), lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
-    print(f"{len(rows)} cases in {GENERATED}")
+    print(f"{len(rows)} cases in {FSMS}")
 
 
 if __name__ == "__main__":

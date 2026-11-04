@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Times our synthesizer on every FSM in ../generated/ and writes results.csv.
+"""Times our synthesizer on every FSM in fsms/ and writes results/current/results.csv.
 
     make
-    benchmark/synthesizer/hdl_synth/run.py
-    benchmark/synthesizer/hdl_synth/run.py --sim path/to/simulator
-    benchmark/synthesizer/hdl_synth/run.py --max-memory-gb 10
+    benchmark/synthesizer/run.py
+    benchmark/synthesizer/run.py --sim path/to/simulator
+    benchmark/synthesizer/run.py --max-memory-gb 10
 
 Timed runs send the netlist to /dev/null. Two extra untimed runs save it, to
 measure its size and check that both runs wrote the same bytes.
@@ -21,7 +21,7 @@ import tempfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(HERE.parents[1]))
+sys.path.insert(0, str(HERE.parent))
 from measure import REPO, measure, read_cases, runs_for, write_results
 
 FIELDS = ["name", "family", "value", "variant", "states", "inputs", "outputs", "rows", "output_ones", "file_kb",
@@ -98,8 +98,10 @@ def main():
         sys.exit(f"no simulator at {args.sim} (run make)")
 
     limit = int(args.max_memory_gb * (1 << 30))
-    cases = read_cases(HERE.parent / "generated")
-    write_results(HERE / "results.csv", cases, lambda case: run_case(args.sim, limit, case), FIELDS)
+    cases = read_cases(HERE / "fsms")
+    results = HERE / "results" / "current"
+    results.mkdir(parents=True, exist_ok=True)
+    write_results(results / "results.csv", cases, lambda case: run_case(args.sim, limit, case), FIELDS)
 
 
 if __name__ == "__main__":

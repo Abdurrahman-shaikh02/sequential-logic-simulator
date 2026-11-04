@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Turns one folder's results.csv into graphs and slopes.csv in its plots/ folder.
 
-    benchmark/synthesizer/plot.py                      plots hdl_synth/
+    benchmark/synthesizer/plot.py                      plots results/current/
     benchmark/synthesizer/plot.py before_memory_fix    plots a saved run
 
 Needs matplotlib.
@@ -18,6 +18,7 @@ import numpy as np
 from matplotlib.ticker import FuncFormatter, LogLocator, NullFormatter
 
 HERE = Path(__file__).resolve().parent
+RESULTS = HERE / "results"
 
 BLUE, ORANGE = "#2a78d6", "#eb6834"
 INK, MUTED, GRID = "#1f1f1d", "#6b6a66", "#e4e3df"
@@ -187,13 +188,13 @@ def write_slopes(rows, plots):
 
 def main():
     parser = argparse.ArgumentParser(description="Draw graphs from one benchmark run.")
-    parser.add_argument("folder", nargs="?", default="hdl_synth", help="folder under benchmark/synthesizer/")
+    parser.add_argument("folder", nargs="?", default="current", help="folder under results/")
     args = parser.parse_args()
 
-    folder = HERE / args.folder
+    folder = RESULTS / args.folder
     results = folder / "results.csv"
     if not results.is_file():
-        sys.exit(f"no {results} (run hdl_synth/run.py)")
+        sys.exit(f"no {results} (run run.py)")
     rows = load(results)
     plots = folder / "plots"
     plots.mkdir(exist_ok=True)

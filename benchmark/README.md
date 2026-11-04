@@ -19,7 +19,7 @@ Run nothing else heavy at the same time, because other processes disturb the
 timings. Each command runs pinned to CPU core 0.
 
 | Output | Contents |
-|---|---|
+| --- | --- |
 | `simulation/hdl_sim/results.csv`, `simulation/icarus/results.csv` | One row per case, same columns |
 | `simulation/plots/*.png` | Graphs of time and memory |
 | `simulation/plots/slopes.csv` | Slope of time against size: 1 is linear, 2 is quadratic |
@@ -29,7 +29,7 @@ timings. Each command runs pinned to CPU core 0.
 ### Circuits
 
 | Family | Source | Contents |
-|---|---|---|
+| --- | --- | --- |
 | `random` | `generate.py` | Layers of random gates, using every gate type |
 | `mixed` | `generate.py` | The same, with about 9% flip-flops |
 | `multiplier` | `circuits/multiplier.v`, through Yosys | Registered array multipliers, 8 to 64 bits |
@@ -51,26 +51,27 @@ Each case runs 3 times, or 2 times from 100,000 cells up. Times under about
 
 ## Synthesizer
 
-Measures our synthesizer on generated FSMs. Each family changes one thing, such
-as states, inputs or outputs, and holds the others still.
+Measures the synthesizer on generated FSMs. Each family changes one thing, such
+as states, inputs or outputs, with other params kept constant.
 
 ```
 make
 python3 benchmark/synthesizer/generate.py         # add --quick for small sizes
-python3 benchmark/synthesizer/hdl_synth/run.py    # about 5 minutes
+python3 benchmark/synthesizer/run.py              # about 5 minutes
 python3 benchmark/synthesizer/plot.py             # needs matplotlib
 ```
 
 | Output | Contents |
-|---|---|
-| `synthesizer/hdl_synth/results.csv` | One row per FSM |
-| `synthesizer/hdl_synth/plots/` | Graphs and `slopes.csv`, from `plot.py` |
-| `synthesizer/before_memory_fix/` | Saved results, graphs and slopes from before the memory fix |
+| --- | --- |
+| `synthesizer/fsms/` | One `.net` file per FSM. Not committed, and fixed seeds rebuild the same files |
+| `synthesizer/results/current/results.csv` | One row per FSM, from the latest run |
+| `synthesizer/results/current/plots/` | Graphs and `slopes.csv`, from `plot.py` |
+| `synthesizer/results/before_memory_fix/` | Saved results, graphs and slopes from before the memory fix |
 
 Results are in `docs/benchmarks.md`.
 
 `before_memory_fix/` is there for comparison, so do not overwrite it. `run.py`
-only writes to `hdl_synth/`, and `plot.py before_memory_fix` redraws the saved
+only writes to `results/current/`, and `plot.py before_memory_fix` redraws the saved
 graphs from the saved results. Fixed seeds generate the same FSMs each time.
 Compare times only from runs on the same machine.
 
