@@ -93,7 +93,8 @@ How run time, memory and the size of the netlist grow with the FSM. How to run t
 
 | | |
 |---|---|
-| Data | `benchmark/synthesizer/hdl_synth/results.csv` (run on 2026-11-04 on commit `ffa0a5f`; the benchmark scripts were not yet committed) |
+| Data | `benchmark/synthesizer/before_memory_fix/results.csv` (run on 2026-11-04 on commit `ffa0a5f`; the benchmark scripts were not yet committed) |
+| Plots | `benchmark/synthesizer/before_memory_fix/plots/*.png` |
 | Machine | Intel Core Ultra 5 125H with 14 GB of memory, every run pinned to CPU core 0. This is not the machine used for the simulator results above, so do not compare the two |
 | Build | `make` (`-O2`) |
 | What is timed | Wall time of the whole process, including reading the FSM and writing the netlist to `/dev/null`, as the median of 3 runs (2 from 100,000 rows up) |
@@ -141,6 +142,8 @@ Slope of log(value) against log(size), where 1 means linear and 2 means quadrati
 
 The memory slopes below 1 include small runs, where the program's fixed start-up memory dominates. Between the two largest `states` cases, 4 times the rows took 5.8 times the time and 4.7 times the memory.
 
+`plots/slopes.csv` holds these values. Peak memory is plotted in `rows.png`.
+
 ### What the results show
 
 - **Memory is the limit.** The largest `states` case uses about 13.8 KB per row, about 8 times the size of the netlist it writes. An early trial with 1,048,576 rows reached 11 GB of 14 GB before the system killed it.
@@ -150,7 +153,7 @@ The memory slopes below 1 include small runs, where the program's fixed start-up
 - **More 1s cost more.** From 0 to 75% ones, time goes from 0.065 s to 0.248 s and gates from 24,443 to 73,479. At 100% gates fall to 28,492 because all the output columns are identical and share one chain, but time stays at 0.235 s. Depth rises to 4,107, because that chain includes every row.
 - **Regular FSMs get no benefit.** A counter (36,868 gates) costs about the same as a random table (36,119), because nothing is minimized.
 - **Row order hardly matters:** 32,777 gates sorted and 32,584 shuffled.
-- **Unreachable states are expensive.** When 75% of the states are unreachable, removing them reduces gates from 35,196 to 8,090 and flip-flops from 10 to 8. The synthesizer does not remove them.
+- **Unreachable states are expensive.** When 75% of the states are unreachable, removing them reduces gates from 35,196 to 8,090 and flip-flops from 10 to 8. The synthesizer does not remove them. In `unreachable.png`, the 0% case still shrinks slightly, because a random table leaves 25 of its states unreachable by chance. Its times are mostly under 0.1 s, so read them as a trend only.
 
 ### Reproducing
 
@@ -158,4 +161,7 @@ The memory slopes below 1 include small runs, where the program's fixed start-up
 make
 python3 benchmark/synthesizer/generate.py
 python3 benchmark/synthesizer/hdl_synth/run.py
+python3 benchmark/synthesizer/plot.py
 ```
+
+These write to `benchmark/synthesizer/hdl_synth/`, leaving the saved results in `before_memory_fix/` untouched.

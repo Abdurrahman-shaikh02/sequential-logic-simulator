@@ -58,13 +58,21 @@ as states, inputs or outputs, and holds the others still.
 make
 python3 benchmark/synthesizer/generate.py         # add --quick for small sizes
 python3 benchmark/synthesizer/hdl_synth/run.py    # about 5 minutes
+python3 benchmark/synthesizer/plot.py             # needs matplotlib
 ```
 
 | Output | Contents |
 |---|---|
 | `synthesizer/hdl_synth/results.csv` | One row per FSM |
+| `synthesizer/hdl_synth/plots/` | Graphs and `slopes.csv`, from `plot.py` |
+| `synthesizer/before_memory_fix/` | Saved results, graphs and slopes from before the memory fix |
 
-Graphs are not built yet. Results are in `docs/benchmarks.md`.
+Results are in `docs/benchmarks.md`.
+
+`before_memory_fix/` is there for comparison, so do not overwrite it. `run.py`
+only writes to `hdl_synth/`, and `plot.py before_memory_fix` redraws the saved
+graphs from the saved results. Fixed seeds generate the same FSMs each time.
+Compare times only from runs on the same machine.
 
 ### What is measured
 
