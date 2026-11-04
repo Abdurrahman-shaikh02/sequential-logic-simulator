@@ -1,0 +1,11 @@
+# Adds NAND, NOR, ANDNOT and ORNOT, which the techmap flow never produces.
+# Every flip-flop starts at 0, the same as our simulator.
+hierarchy -auto-top
+synth -flatten -noabc -auto-top
+attrmap -remove init
+dfflegalize -cell $_DFF_P_ x -cell $_DFF_N_ x
+abc -g AND,NAND,OR,NOR,XOR,ANDNOT,ORNOT,MUX
+opt_clean
+setundef -zero
+setundef -init -zero
+opt_clean

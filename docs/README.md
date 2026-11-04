@@ -193,3 +193,8 @@ The parser now registers these sequential primitives: `$_DFF_P_`, `$_DFF_N_`, `$
 
 Run the main functional suite and the parser regression suite together with `make test`. The main suite covers 30 tests; the parser suite covers 51 cases/check groups, including recognition of all newly registered flip-flop types. `make examples-test` runs the AND-gate, traffic-light, and vending-machine testbench examples.
 
+
+## Validation and benchmarks
+
+- [validation.md](validation.md): our simulator against Icarus Verilog on 26 circuits, through `./simulator --interactive`. Scripts in `validation/`.
+- [benchmarks.md](benchmarks.md): run time and memory against Icarus, from 1k to 256k cells, through `./simulator --interactive`. Scripts and results in `benchmark/`.

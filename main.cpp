@@ -364,7 +364,9 @@ void launchGui(int port) {
     std::cout << "[+] Launching SLMS Web GUI Server on port " << port << " ...\n";
     std::cout << "[+] Opening URL: http://localhost:" << port << "\n";
     std::string cmd = "python3 gui/server.py " + std::to_string(port);
-    std::system(cmd.c_str());
+    if (std::system(cmd.c_str()) != 0) {
+        std::cerr << "[-] GUI server exited with an error.\n";
+    }
 }
 
 int main(int argc, char* argv[]) {

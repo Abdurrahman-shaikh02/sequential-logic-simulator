@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -I./include -g
+CXXFLAGS = -std=c++17 -Wall -Wextra -I./include -g -O2
 
 TARGET = simulator
 
@@ -81,7 +81,7 @@ gui: $(TARGET)
 
 clean:
 	@echo "Removing generated build files and executables..."
-	rm -rf build output
+	rm -rf build output validation/icarus/out
 	rm -f $(TARGET) $(TEST_SUITE_BIN) $(STANDALONE_BINS)
 
 

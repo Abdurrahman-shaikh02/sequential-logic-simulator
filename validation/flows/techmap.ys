@@ -1,0 +1,13 @@
+# Basic gates: AND, OR, NOT, XOR, MUX and D flip-flops.
+# Every flip-flop starts at 0, the same as our simulator.
+hierarchy -auto-top
+flatten
+proc
+opt
+dffunmap
+techmap
+opt -nodffe -nosdff
+attrmap -remove init
+setundef -zero
+setundef -init -zero
+opt_clean
