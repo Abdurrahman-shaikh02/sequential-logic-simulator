@@ -1,0 +1,39 @@
+Run everything from this folder:
+cd demoandppt/15_shiftregister/abc
+
+
+Yosys synthesis (abc flow, local copy: abc.ys)
+==============================================
+yosys -q -p "read_verilog test.v; script abc.ys; write_table netlist.table; write_verilog -noattr netlist.v"
+
+netlist.table  -> input for our simulator
+netlist.v      -> gate-level Verilog for Icarus
+
+
+Icarus Verilog (compile + run)
+==============================
+iverilog -g2012 -o tb.vvp tb.v netlist.v
+vvp tb.vvp > icarus.out
+
+
+Our simulator on the same netlist
+=================================
+../../../simulator --interactive
+  (it prompts for the netlist table path: netlist.table
+   then for the input-vectors file:        vectors)
+Results are written to output/ in this folder.
+
+
+sim.out (our results in the same form as icarus.out)
+====================================================
+There is no simulator flag for this; validate.py builds it in Python.
+For this circuit: keep only q's columns from interactive_results.txt
+(columns 4-7 = q[0]..q[3]) and print them MSB first.
+
+{ echo "// outputs: q[3:0]"; awk -F'\t' 'NR>1 {print $7 $6 $5 $4}' output/interactive_results.txt; } > sim.out
+
+To get icarus.out in exactly the same form, drop vvp's $finish line:
+vvp tb.vvp | grep -v '\$finish' > icarus.out
+
+Compare (no output = they match):
+diff sim.out icarus.out

@@ -1,0 +1,6 @@
+test_dff_pos	clk	-	-	pi	\clk
+test_dff_pos	d	-	-	pi	\d
+test_dff_pos	q	-	-	po	\q
+test_dff_pos	$auto$ff.cc:337:slice$3	$_DFF_P_	C	in	\clk
+test_dff_pos	$auto$ff.cc:337:slice$3	$_DFF_P_	D	in	\d
+test_dff_pos	$auto$ff.cc:337:slice$3	$_DFF_P_	Q	out	\q

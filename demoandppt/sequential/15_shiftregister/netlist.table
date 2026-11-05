@@ -1,0 +1,15 @@
+test_shift_register	clk	-	-	pi	\clk
+test_shift_register	q	-	-	po	\state
+test_shift_register	serial_in	-	-	pi	\serial_in
+test_shift_register	$auto$ff.cc:337:slice$3	$_DFF_P_	C	in	\clk
+test_shift_register	$auto$ff.cc:337:slice$3	$_DFF_P_	D	in	\serial_in
+test_shift_register	$auto$ff.cc:337:slice$3	$_DFF_P_	Q	out	\state [0]
+test_shift_register	$auto$ff.cc:337:slice$4	$_DFF_P_	C	in	\clk
+test_shift_register	$auto$ff.cc:337:slice$4	$_DFF_P_	D	in	\state [0]
+test_shift_register	$auto$ff.cc:337:slice$4	$_DFF_P_	Q	out	\state [1]
+test_shift_register	$auto$ff.cc:337:slice$5	$_DFF_P_	C	in	\clk
+test_shift_register	$auto$ff.cc:337:slice$5	$_DFF_P_	D	in	\state [1]
+test_shift_register	$auto$ff.cc:337:slice$5	$_DFF_P_	Q	out	\state [2]
+test_shift_register	$auto$ff.cc:337:slice$6	$_DFF_P_	C	in	\clk
+test_shift_register	$auto$ff.cc:337:slice$6	$_DFF_P_	D	in	\state [2]
+test_shift_register	$auto$ff.cc:337:slice$6	$_DFF_P_	Q	out	\state [3]

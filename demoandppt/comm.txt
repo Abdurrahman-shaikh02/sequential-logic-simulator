@@ -1,0 +1,32 @@
+Yosys synthesis
+===============
+Replace design.v with your Verilog source. Run from the repo root.
+
+# abc flow (all two-input gate types: AND, NAND, OR, NOR, XOR, ANDNOT, ORNOT, MUX + DFFs)
+yosys -q -p "read_verilog design.v; script validation/flows/abc.ys; write_table design.table; write_verilog -noattr design_netlist.v"
+
+# techmap flow (only AND, OR, NOT, XOR, MUX + DFFs, closer to the source)
+yosys -q -p "read_verilog design.v; script validation/flows/techmap.ys; write_table design.table; write_verilog -noattr design_netlist.v"
+
+# parameterized top module (as the benchmark multiplier does)
+yosys -q -p "read_verilog design.v; chparam -set WIDTH 16 top; script validation/flows/abc.ys; write_table design.table; write_verilog -noattr design_netlist.v"
+
+design.table      -> input for our simulator
+design_netlist.v  -> gate-level Verilog for Icarus
+
+
+Icarus Verilog (compile + run)
+==============================
+Replace tb.v with your testbench.
+
+iverilog -g2012 -o tb.vvp tb.v design_netlist.v
+vvp tb.vvp
+
+# with a plusarg (the benchmark testbench uses +dump to print outputs)
+vvp tb.vvp +dump
+
+
+Our simulator on the same netlist
+=================================
+./simulator --interactive
+  (it prompts for the netlist table path, then for an input-vectors file)
